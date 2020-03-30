@@ -1,0 +1,38 @@
+{
+  "name": "xdccjs",
+  "version": "1.0.0",
+  "description": "xdcc protocol for nodejs",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JiPaix/xdccJS.git"
+  },
+  "keywords": [
+    "irc",
+    "xdcc",
+    "ctcp"
+  ],
+  "author": "JiPaix",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JiPaix/xdccJS/issues"
+  },
+  "homepage": "https://github.com/JiPaix/xdccJS#readme",
+  "devDependencies": {
+    "@types/node": "^13.9.5",
+    "prettier": "^2.0.2",
+    "tslint": "^6.1.0",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "eventemitter3": "^4.0.0",
+    "events": "^3.1.0",
+    "irc-framework": "^4.7.0"
+  }
+}
