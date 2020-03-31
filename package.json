@@ -25,6 +25,9 @@
   "homepage": "https://github.com/JiPaix/xdccJS#readme",
   "devDependencies": {
     "@types/node": "^13.9.5",
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/parser": "^2.26.0",
+    "eslint": "^6.8.0",
     "prettier": "^2.0.2",
     "tslint": "^6.1.0",
     "tslint-config-prettier": "^1.18.0",
