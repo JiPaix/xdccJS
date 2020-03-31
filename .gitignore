@@ -3,3 +3,4 @@ node_modules
 dl
 dist
 test.ts
+docs
