@@ -70,20 +70,20 @@ xdcc.on('xdcc-ready', () => {
 ### Constructor
 ```ts
 new XDCC({
-    host: string; // irc server, e.g: irc.rizon.net
-    port: number; 
-    nick: string; // nickname, truncated if > 6 characters.
-    chan: string; // #channel to join.
-    path: string; // path relative to your project directory
-    disconnect?: boolean | undefined; // default = false - disconnect from irc once download complete. 
-    verbose?: boolean | undefined; // default = false - enable console logging (mostly connection and download progress). 
+    host: String, // irc server, e.g: irc.rizon.net
+    port: Number, 
+    nick: String, // nickname, truncated if > 6 characters.
+    chan: String, // #channel to join.
+    path: String, // path relative to your project directory
+    disconnect?: Boolean | undefined; // default = false - disconnect from irc once download complete. 
+    verbose?: Boolean | undefined; // default = false - enable console logging (mostly connection and download progress). 
 })
 ```
 ### Method
 ```ts
 .send(
-  target: string; // nickname of XDCC bot to receive the file from.
-  pack: string | number; // pack id you need to download
+  target: String, // nickname of XDCC bot to receive the file from.
+  pack: String | Number; // pack id you need to download
 )
 ```
 ```js
