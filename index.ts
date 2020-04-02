@@ -1,11 +1,11 @@
 import * as IRC from 'irc-framework';
-import fs from 'fs'
-import path from 'path'
-import net from 'net'
+import * as fs from 'fs'
+import * as path from 'path'
+import * as net from 'net'
 
 type packageNumber = string | number;
 
-class XDCC extends IRC.Client {
+export default class XDCC extends IRC.Client {
     nick: string
     chan: string
     path: string
@@ -153,4 +153,3 @@ class XDCC extends IRC.Client {
     }
 }
 
-export = XDCC
