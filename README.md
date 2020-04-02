@@ -4,7 +4,7 @@
 `npm i xdccjs`
 ## USAGE
 ```js
-const XDCC = require('xdccjs')
+const XDCC = require('xdccjs').default
 
 let opts = {
   host: 'irc.server.net',
