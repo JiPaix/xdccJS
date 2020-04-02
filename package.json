@@ -1,13 +1,15 @@
 {
   "name": "xdccjs",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "xdcc protocol for nodejs",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["/dist"],
+  "files": [
+    "/dist"
+  ],
   "scripts": {
-    "build": "tsc",
-    "prepublishOnly": "tsc"
+    "build": "rimraf dist && tsc",
+    "prepublishOnly": "rimraf dist && tsc"
   },
   "repository": {
     "type": "git",
@@ -30,6 +32,7 @@
     "@typescript-eslint/parser": "^2.26.0",
     "eslint": "^6.8.0",
     "prettier": "^2.0.2",
+    "rimraf": "^3.0.2",
     "tslint": "^6.1.0",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.8.3"
