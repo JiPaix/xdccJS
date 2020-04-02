@@ -2,15 +2,10 @@
 
 ## INSTALLATION
 `npm i xdccjs`
-```js
-// ES6
-import XDCC from 'xdccjs'
-
-// CommonJS
-const XDCC = require('xdccjs')
-```
 ## USAGE
 ```js
+const XDCC = require('xdccjs')
+
 let opts = {
   host: 'irc.server.net',
   nick: 'JiPaix',
@@ -31,7 +26,7 @@ xdcc.on('xdcc-ready', () => {
 ```
 
 ## More examples
-running an http server with express and starting download with POST
+http server with express : downloading files from POST data
 ```js
 // xdccJS setup
 const XDCC = require('xdccjs')
@@ -75,8 +70,8 @@ new XDCC({
     nick: String, // nickname, truncated if > 6 characters.
     chan: String, // #channel to join.
     path: String, // path relative to your project directory
-    disconnect?: Boolean | undefined; // default = false - disconnect from irc once download complete. 
-    verbose?: Boolean | undefined; // default = false - enable console logging (mostly connection and download progress). 
+    disconnect: Boolean // [optional] default = false - disconnect from irc once download complete.
+    verbose: Boolean// [optional] default = false - enable console logging (mostly connection and download progress). 
 })
 ```
 ### Method
