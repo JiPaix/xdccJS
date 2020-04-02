@@ -2,10 +2,16 @@
 
 ## INSTALLATION
 `npm i xdccjs`
+
+```js
+// commonJS
+const XDCC = require('xdccjs').default
+
+// ES6 or TypeScript
+import XDCC from 'xdccjs'
+```
 ## USAGE
 ```js
-const XDCC = require('xdccjs')
-
 let opts = {
   host: 'irc.server.net',
   nick: 'JiPaix',
@@ -29,7 +35,7 @@ xdcc.on('xdcc-ready', () => {
 http server with express : downloading files from POST data
 ```js
 // xdccJS setup
-const XDCC = require('xdccjs')
+const XDCC = require('xdccjs').default
 
 let opts = {
   host: 'irc.server.net',
