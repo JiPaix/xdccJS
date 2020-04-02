@@ -1,11 +1,13 @@
-import * as IRC from 'irc-framework';
+/* eslint-disable @typescript-eslint/triple-slash-reference */
+/// <reference path="@types/irc-framework.ts"/>
+import { Client } from 'irc-framework';
 import * as fs from 'fs'
 import * as path from 'path'
 import * as net from 'net'
 
 type packageNumber = string | number;
 
-export default class XDCC extends IRC.Client {
+export default class XDCC extends Client {
     nick: string
     chan: string
     path: string
