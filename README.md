@@ -1,4 +1,8 @@
-# XDCC for nodejs
+# XDCC downloader for nodejs
+
+`xdccjs` is build around [kiwiirc/irc-framework](https://github.com/kiwiirc/irc-framework) (a nodejs IRC client).  
+[`irc-framework` API](https://github.com/kiwiirc/irc-framework/blob/master/docs/clientapi.md) is 100% compatible with `xdccjs`  
+###### ( 90% for TypeScript users, thanks to [@guyguy2001](https://github.com/guyguy2001) )
 
 ## INSTALLATION
 `npm i xdccjs`
@@ -10,29 +14,34 @@ const XDCC = require('xdccjs').default
 // ES6 or TypeScript
 import XDCC from 'xdccjs'
 ```
-## USAGE
+## OPTIONS
 ```js
 let opts = {
-  host: 'irc.server.net',
-  nick: 'JiPaix',
-  chan: '#friendly',
-  path: 'dl',
-  port: 6660,
-  verbose: false,
-  disconnect: false
+  host: 'irc.server.net', // IRC server
+  nick: 'ItsMeJiPaix', // Nickname
+  chan: '#friendly', // Channel to join
+  path: 'dl', // Download path (relative)
+  port: 6660, // IRC server's port
+  verbose: false, // Show download progress
+  disconnect: false // Disconnect from server once download is complete
 }
 ```
+## USAGE
 ```js
 const xdcc = new  XDCC(opts)
 
 xdcc.on('xdcc-ready', () => {
-  // your code..
   xdcc.send("xdcc-bot-nickname", 23) //=> /MSG xdcc-bot-nickname xdcc send #23
 })
-```
 
+xdcc.on('downloaded' (fileInfo) => {
+  console.log(fileInfo.filePath) //=> /home/USER/folder/dl/filename.mp4
+  //  Works on Windows too :
+  //=> C:/users/USERNAME/folder/dl/filename.mp4
+})
+```
 ## More examples
-http server with express : downloading files from POST data
+run an http server with express and download files from POST data
 ```js
 // xdccJS setup
 const XDCC = require('xdccjs').default
@@ -71,44 +80,48 @@ xdcc.on('xdcc-ready', () => {
 ### Constructor
 ```ts
 new XDCC({
-    host: String, // irc server, e.g: irc.rizon.net
-    port: Number, 
-    nick: String, // nickname, truncated if > 6 characters.
-    chan: String, // #channel to join.
-    path: String, // path relative to your project directory
-    disconnect: Boolean // [optional] default = false - disconnect from irc once download complete.
-    verbose: Boolean// [optional] default = false - enable console logging (mostly connection and download progress). 
+    host: String, // IRC server - e.g: "irc.rizon.net"
+    port: Number, // IRC server's port - e.g: 6660
+    nick: String, // Nickname (truncated if > 6 chars + adds random number) - e.g: "ItsMeMario" = "ItsMeM293"
+    chan: String, // Channel to join - e.g: "#friendly".
+    path: String, // Download path is relative. - e.g: "dl"
+    disconnect: Boolean, // [optional][default = false] Disconnect from server once download is complete. 
+    verbose: Boolean // [optional][default = false] Enable console logging (connection status and download progress). 
 })
 ```
 ### Method
 ```ts
 .send(
-  target: String, // nickname of XDCC bot to receive the file from.
-  pack: String | Number; // pack id you need to download
+  target: String, // XDCC bot's nickname - e.g : XDCC|Aurora.
+  package: String | Number // pack #id - e.g : 152
 )
 ```
 ```js
 //> EXAMPLE
-xdcc.send('XDCC-BOT', 23) // equivalent of irc command : /MSG XDCC-BOT xdcc send #23
+xdcc.send('XDCC-BOT', 23) // is equivalent of IRC command : /MSG XDCC-BOT xdcc send #23
 ```
 ### Events
 ```ts
 .on('xdcc-ready', callback)
-// trigger once connected to IRC and #channel is joined
+// triggers once IRC is connected to the server server and the channel is joined
 ```
 ```js
 .on('download start', callback)
-// triggered when a download starts
+// triggers when a download starts
 
 .on('download start', (fileInfo) => {
   console.log(fileInfo)
-  // {
-  //   file: "filename.mp4",
-  //   filePath: "/home/myproject/dl/filename.mp4;
-  //   ip: "104.244.42.1";
-  //   port: 3010;
-  //   length: 204800;
-  //   }
+/**
+ *   {
+ *     file: "filename.mp4",
+ *     filePath: "/home/myproject/dl/filename.mp4,
+ *     ip: "104.244.42.1";
+ *     port: 3010;
+ *     length: 204800;
+ *   }
+ * 
+ * .filePath always shows absolute path
+ */
 })
 
 ```
@@ -137,7 +150,7 @@ xdcc.send('XDCC-BOT', 23) // equivalent of irc command : /MSG XDCC-BOT xdcc send
 ```
 ```js
 .on('download error', callback)
-// triggers if download fails partway.
+// triggers if a download fails partway.
 
 
 .on('download error', (fileInfo) => {
