@@ -1,9 +1,5 @@
 # XDCC downloader for nodejs
 
-`xdccjs` is build around [kiwiirc/irc-framework](https://github.com/kiwiirc/irc-framework) (a nodejs IRC client).  
-[`irc-framework` API](https://github.com/kiwiirc/irc-framework/blob/master/docs/clientapi.md) is 100% compatible with `xdccjs`  
-###### ( 90% for TypeScript users, thanks to [@guyguy2001](https://github.com/guyguy2001) )
-
 ## INSTALLATION
 `npm i xdccjs`
 
@@ -158,3 +154,9 @@ xdcc.send('XDCC-BOT', 23) // is equivalent of IRC command : /MSG XDCC-BOT xdcc s
   //=> could not download: filename.mp4
 })
 ```
+
+## MORE API?
+
+`xdccjs` is built around [kiwiirc/irc-framework](https://github.com/kiwiirc/irc-framework) (a nodejs IRC client).  
+As a result `xdccjs` inherits 100% of [`irc-framework` API](https://github.com/kiwiirc/irc-framework/blob/master/docs/clientapi.md)
+###### Psst.. You don't need to install `irc-framework`, of course it's bundled with `xdccjs` <br>(TypeScript users: thanks to [@guyguy2001](https://github.com/guyguy2001) ~80% of it is typed)
