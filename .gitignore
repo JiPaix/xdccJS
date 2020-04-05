@@ -1,6 +1,7 @@
 node_modules
 .vscode
-dl
+downloads
 dist
 test.ts
+test.js
 docs
