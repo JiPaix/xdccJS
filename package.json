@@ -1,6 +1,6 @@
 {
   "name": "xdccjs",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "IRC library to download from XDCC bots.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
