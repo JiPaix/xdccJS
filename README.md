@@ -215,7 +215,7 @@ As a result `xdccjs` inherits 100% of [`irc-framework` API](https://github.com/k
 ## ADVANCED EXEMPLE
 
 ### run an http server with using express and download from browser :
-Goal : trigger a download by visiting `/download?bot=BOTNAME&pack=32`
+Goal : trigger a download by visiting `/download?bot=BOTNAME&pack=32`<br>
 Goal#2: directly send file to client's web browser
 
 ```js
