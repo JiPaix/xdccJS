@@ -7,40 +7,82 @@ import * as path from 'path'
 import * as net from 'net'
 
 type packageNumber = string | number;
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type constructor = { host: string; port: number; nick: string; chan: string | string[]; path: false | string; disconnect?: any; verbose?: boolean; randomizeNick?: boolean }
 export default class XDCC extends Client {
     private nick: string
-    private chan: string
-    public path: false | string
+    private chan: string[]
+    private path: false | string
     public verbose: boolean
-    private disconnect: boolean
-    constructor(parameters: { host: string; port: number; nick: string; chan: string; path: false | string; disconnect?: boolean; verbose?: boolean }) {
+
+    constructor(parameters: constructor) {
         super()
-        this.path = parameters.path
-        this.verbose = parameters.verbose || false
-        this.disconnect = parameters.disconnect || false
-        this.nick = this.nickRandomizer(parameters.nick)
-        this.chan = this.HashTag(parameters.chan)
+        if (typeof parameters.host !== 'string') {
+            throw TypeError(`unexpected type of 'host': a string was expected but got '${typeof parameters.host}'`)
+        }
+        if (typeof parameters.port !== 'number') {
+            throw TypeError(`unexpected type of 'port': a number was expected but got '${typeof parameters.port}'`)
+        }
+        if (typeof parameters.nick !== 'string') {
+            throw TypeError(`unexpected type of 'nick': a string was expected but got '${typeof parameters.port}'`)
+        }
+        if (typeof parameters.path === 'string' || parameters.path == false) {
+            if (typeof parameters.path === 'string') {
+                this.path = path.join(path.resolve('./'), parameters.path)
+                fs.mkdirSync(this.path, { recursive: true })
+            } else {
+                this.path = false
+            }
+        } else {
+            throw TypeError(`unexpected type of 'path': a string or false was expected but got '${typeof parameters.path}'`)
+        }
+        if (typeof parameters.verbose == "boolean" || typeof parameters.verbose == "undefined") {
+            this.verbose = parameters.verbose || false
+        } else {
+            throw TypeError(`unexpected type of 'verbose': a boolean was expected but got '${typeof parameters.verbose}'`)
+        }
+        if (typeof parameters.disconnect !== "undefined") {
+            console.log('disconnect option is deprecated and will be ignored')
+        }
+        if (typeof parameters.randomizeNick == "boolean" || typeof parameters.randomizeNick == "undefined") {
+            if (parameters.randomizeNick === false) {
+                this.nick = parameters.nick
+            } else {
+                this.nick = this.nickRandomizer(parameters.nick)
+            }
+        } else {
+            throw TypeError(`unexpected type of 'randomizeNick': a boolean was expected but got '${typeof parameters.randomizeNick}'`)
+        }
+        if (typeof parameters.chan === 'string') {
+            this.chan = [this.checkHashtag(parameters.chan, true)]
+        } else if (Array.isArray(parameters.chan)) {
+            this.chan = parameters.chan
+        } else {
+            throw TypeError(`unexpected type of 'chan': a boolean was expected but got '${typeof parameters.chan}'`)
+        }
+
         this.connect({
             host: parameters.host,
             port: parameters.port,
             nick: this.nick,
             encoding: 'utf8',
             // eslint-disable-next-line @typescript-eslint/camelcase
-            auto_reconnect: false,
+            auto_reconnect: true,
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            ping_interval: 30,
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            ping_timeout: 120,
         })
-        if (typeof this.path === 'string') {
-            this.path = path.join(path.resolve('./'), this.path)
-            fs.mkdirSync(this.path, { recursive: true })
-        }
         this.live()
     }
+
     private live(): void {
         const self = this
         this.on('connected', () => {
-            const channel = this.channel(this.chan);
-            channel.join();
-
+            for (let index = 0; index < this.chan.length; index++) {
+                const channel = this.channel(this.checkHashtag(this.chan[index], true))
+                channel.join();
+            }
             self.emit('xdcc-ready')
             if (this.verbose) { console.log(`connected and joined ${this.chan}`) }
         });
@@ -52,15 +94,14 @@ export default class XDCC extends Client {
             if (resp.message === null || typeof resp.message !== 'string') {
                 throw new TypeError('CTCP : unexpected response.')
             }
-
             if (this.path) {
                 this.downloadToFile(resp)
             } else {
                 this.downloadToPipe(resp)
             }
-
         })
     }
+
     private downloadToPipe(resp: { [prop: string]: string }): void {
         const self = this
         const fileInfo = this.parseCtcp(resp.message)
@@ -120,17 +161,16 @@ export default class XDCC extends Client {
                 file.end()
                 self.emit('downloaded', fileInfo)
                 if (this.verbose) { console.log(`downloading done: ${file.path}`) }
-                if (this.disconnect) { self.quit('muybueno') }
             })
             client.on('error', (err) => {
                 self.emit('download error', err, fileInfo)
                 file.end()
-                if (this.verbose) { console.log('download error', err) }
+                if (this.verbose) { console.log(`download error : ${err}`) }
             })
         })
     }
     public download(target: string, packet: packageNumber): void {
-        packet = this.HashTag(packet)
+        packet = this.checkHashtag(packet, false)
         this.emit('request', { target, packet })
     }
 
@@ -148,26 +188,36 @@ export default class XDCC extends Client {
         const i = Math.floor(Math.log(bytes) / Math.log(k))
         return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
     }
-    private HashTag(value: packageNumber): string {
-        if (typeof value === 'string') {
-            if (RegExp(/(^[0-9]+$|^#[0-9]+$)/g).test(value) || RegExp(/(^[A-z]+$|^#[A-z]+$)/g).test(value)) {
+    private checkHashtag(value: packageNumber, isChannel: boolean): string {
+        if (isChannel) {
+            if (typeof value === 'string') {
                 if (value.charAt(0) === '#') {
                     return value
                 } else {
                     return `#${value}`
                 }
+            } else if (typeof value === 'number') {
+                return value.toString()
             } else {
-                throw new TypeError(`Package: string must match this pattern: /(^[0-9]+$|^#[0-9]+$)/g`)
+                throw TypeError(`unexpected type of 'chan': a string|number was expected but got '${typeof value}'`)
             }
-        } else if (typeof value === 'number') {
-            if (value % 1 === 0) {
-                return `#${value.toString()}`
-            } else {
-                throw new TypeError(`Package: number must be an integer.`)
-            }
-
         } else {
-            throw new TypeError(`Package: expect package to be a number or a string matching this pattern: /(^[0-9]+$|^#[0-9]+$)/g`)
+            if (typeof value === 'number') {
+                if (value % 1 === 0) {
+                    return `#${value.toString()}`
+                } else {
+                    throw TypeError(`unexpected 'package': number must be an integer'`)
+                }
+            } else if (typeof value === 'string') {
+                const isPack = RegExp(/^\d+-\d+$|^#\d+-\d+$|^\d+$|^#\d+$/gm).test(value)
+                if (isPack) {
+                    return value
+                } else {
+                    throw new TypeError(`unexpected 'package': string must be '100' or '#100' or '100-102' or '#102-102'`)
+                }
+            } else {
+                throw new TypeError(`unexpected type of 'package': a string|number was expected but got ${typeof value}`)
+            }
         }
     }
     private uint32ToIP(n: number): string {

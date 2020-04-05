@@ -40,7 +40,7 @@ let opts = {
   path: 'downloads',
   port: 6660,
   verbose: true,
-  disconnect: false
+  randomizeNick: true,
 }
 
 const xdccJS = new  XDCC(opts)
@@ -70,7 +70,7 @@ let opts = {
   path: false,
   port: 6660,
   verbose: false,
-  disconnect: false
+  randomizeNick: true
 }
 const xdccJS = new  XDCC(opts)
 
@@ -97,20 +97,20 @@ new XDCC({
     nick: "JiPaix",
     chan: "#friendly",
     path: "dl",
-    disconnect: false,
+    randomizeNick: false,
     verbose: true
 })
 ```
 
-| Fields                   | Type            | Description                                                                                                                                                  |
-| ------------------------ | --------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| host                     | String          | IRC server <br> e.g., `irc.rizon.net`                                                                                                                        |
-| port                     | Number          | IRC server's port                                                                                                                                            |
-| nick                     | String          | Nickname to use. <br>- automatically truncated if more than 6 characters<br> - automatically adds random number at the end.                                  |
-| chan                     | String          | Channel to join<br> e.g., `#mychannel` or `mychannel`                                                                                                        |
-| path                     | String \| false | Download folder's name, e.g, `"downloads"` will save your files into *`/yourProject/downloads`*<br>If set to `false` disable file saving and **enable pipe** |
-| disconnect<br>[optional] | Boolean         | Disconnect from IRC once download is complete<br> - default: `false`                                                                                         |
-| verbose<br>[optional]    | Boolean         | Enable console logging (mostly download progress)<br>- default: `false`                                                                                      |
+| Fields                      | Type               | Description                                                                                                                                                  |
+| --------------------------- | ------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| host                        | String             | IRC server <br> e.g., `irc.rizon.net`                                                                                                                        |
+| port                        | Number             | IRC server's port                                                                                                                                            |
+| nick                        | String             | Nickname to use.                                                                                                                                             |
+| chan                        | String \| String[] | Channel to join<br> e.g., `#mychannel` or `mychannel` or `['#mychannel','yourchannel']`                                                                      |
+| path                        | String \| false    | Download folder's name, e.g, `"downloads"` will save your files into *`/yourProject/downloads`*<br>If set to `false` disable file saving and **enable pipe** |
+| randomizeNick<br>[optional] | Boolean            | Automatically truncate nickname if more than 6 characters and add number at the end<br>- default: `true`                                                     |
+| verbose<br>[optional]       | Boolean            | Enable console logging (mostly download progress)<br>- default: `false`                                                                                      |
 > download(target, package)
 
 Download file from XDCC bot.
