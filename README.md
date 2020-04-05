@@ -214,7 +214,10 @@ As a result `xdccjs` inherits 100% of [`irc-framework` API](https://github.com/k
 
 ## ADVANCED EXEMPLE
 
-### run an http server with using express and download from browser : [http://hostname:3000/download?bot=BOTNAME&pack=32](http://localost:3000/download?bot=BOTNAME&pack=32)
+### run an http server with using express and download from browser :
+Goal : trigger a download by visiting `/download?bot=BOTNAME&pack=32`
+Goal#2: directly send file to client's web browser
+
 ```js
 const XDCC = require('xdccjs').default
 
