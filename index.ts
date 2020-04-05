@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable @typescript-eslint/triple-slash-reference */
 /// <reference path="@types/irc-framework.ts"/>
 import { Client } from 'irc-framework';
@@ -8,13 +9,14 @@ import * as net from 'net'
 type packageNumber = string | number;
 
 export default class XDCC extends Client {
-    nick: string
-    chan: string
-    path: string
-    verbose: boolean
-    disconnect: boolean
-    constructor(parameters: { host: string; port: number; nick: string; chan: string; path: string; disconnect?: boolean; verbose?: boolean }) {
+    private nick: string
+    private chan: string
+    public path: false | string
+    public verbose: boolean
+    private disconnect: boolean
+    constructor(parameters: { host: string; port: number; nick: string; chan: string; path: false | string; disconnect?: boolean; verbose?: boolean }) {
         super()
+        this.path = parameters.path
         this.verbose = parameters.verbose || false
         this.disconnect = parameters.disconnect || false
         this.nick = this.nickRandomizer(parameters.nick)
@@ -27,12 +29,13 @@ export default class XDCC extends Client {
             // eslint-disable-next-line @typescript-eslint/camelcase
             auto_reconnect: false,
         })
-        this.path = path.join(path.resolve('./'), parameters.path)
-        fs.mkdirSync(this.path, { recursive: true })
+        if (typeof this.path === 'string') {
+            this.path = path.join(path.resolve('./'), this.path)
+            fs.mkdirSync(this.path, { recursive: true })
+        }
         this.live()
     }
     private live(): void {
-        // eslint-disable-next-line @typescript-eslint/no-this-alias
         const self = this
         this.on('connected', () => {
             const channel = this.channel(this.chan);
@@ -44,54 +47,93 @@ export default class XDCC extends Client {
         this.on('request', (args: { target: string; packet: packageNumber }) => {
             this.say(args.target, 'xdcc send ' + args.packet)
             if (this.verbose) { console.log(`/MSG ${args.target} xdcc send ${args.packet} `) }
-        })
+        });
         this.on('ctcp request', (resp: { [prop: string]: string }): void => {
             if (resp.message === null || typeof resp.message !== 'string') {
                 throw new TypeError('CTCP : unexpected response.')
             }
-            const fileInfo = this.parseCtcp(resp.message)
-            const file = fs.createWriteStream(fileInfo.filePath)
-            file.on('open', () => {
-                let received = 0
-                const sendBuffer = Buffer.alloc(4)
-                let slowdown: NodeJS.Timeout = setInterval(() => { throw new Error(`not receiving any data`) }, 10000)
-                const client = net.connect(fileInfo.port, fileInfo.ip, () => {
-                    self.emit('download start')
-                    if (this.verbose) { console.log(`download starting: ${fileInfo.file} `) }
-                })
-                client.on('data', (data) => {
-                    file.write(data)
-                    received += data.length
-                    sendBuffer.writeUInt32BE(received, 0)
-                    client.write(sendBuffer)
-                    if (received === data.length) {
-                        clearInterval(slowdown)
-                        slowdown = setInterval(() => {
-                            self.emit('downloading', received, fileInfo)
-                            if (this.verbose) { process.stdout.write(`downloading : ${this.formatBytes(received)} / ${this.formatBytes(fileInfo.length)}\r`) }
-                        }, 1000)
-                    } else if (received === fileInfo.length) {
-                        clearInterval(slowdown)
-                    }
-                })
-                client.on('end', () => {
-                    file.end()
-                    self.emit('downloaded', fileInfo)
-                    if (this.verbose) { console.log(`downloading done: ${file.path}`) }
-                    if (this.disconnect) { self.quit('muybueno') }
-                })
-                client.on('error', (err) => {
-                    self.emit('download error', err, fileInfo)
-                    file.end()
-                    if (this.verbose) { console.log('download error', err) }
-                })
+
+            if (this.path) {
+                this.downloadToFile(resp)
+            } else {
+                this.downloadToPipe(resp)
+            }
+
+        })
+    }
+    private downloadToPipe(resp: { [prop: string]: string }): void {
+        const self = this
+        const fileInfo = this.parseCtcp(resp.message)
+        let received = 0
+        const sendBuffer = Buffer.alloc(4)
+        let slowdown: NodeJS.Timeout = setInterval(() => { throw new Error(`not receiving any data`) }, 10000)
+        const client = net.connect(fileInfo.port, fileInfo.ip, () => {
+            self.emit('download start')
+            if (this.verbose) { console.log(`download starting: ${fileInfo.file} `) }
+        })
+        self.emit('pipe', client, fileInfo)
+        client.on('data', (data) => {
+            self.emit('data', data, fileInfo.length)
+            received += data.length
+            sendBuffer.writeUInt32BE(received, 0)
+            client.write(sendBuffer)
+            if (received === data.length) {
+                clearInterval(slowdown)
+                slowdown = setInterval(() => {
+                    self.emit('downloading', received, fileInfo)
+                    if (this.verbose) { process.stdout.write(`downloading : ${this.formatBytes(received)} / ${this.formatBytes(fileInfo.length)}\r`) }
+                }, 1000)
+            } else if (received === fileInfo.length) {
+                clearInterval(slowdown)
+            }
+        })
+
+    }
+    private downloadToFile(resp: { [prop: string]: string }): void {
+        const self = this
+        const fileInfo = this.parseCtcp(resp.message)
+        const file = fs.createWriteStream(fileInfo.filePath)
+        file.on('open', () => {
+            let received = 0
+            const sendBuffer = Buffer.alloc(4)
+            let slowdown: NodeJS.Timeout = setInterval(() => { throw new Error(`not receiving any data`) }, 10000)
+            const client = net.connect(fileInfo.port, fileInfo.ip, () => {
+                self.emit('download start')
+                if (this.verbose) { console.log(`download starting: ${fileInfo.file} `) }
+            })
+            client.on('data', (data) => {
+                file.write(data)
+                received += data.length
+                sendBuffer.writeUInt32BE(received, 0)
+                client.write(sendBuffer)
+                if (received === data.length) {
+                    clearInterval(slowdown)
+                    slowdown = setInterval(() => {
+                        self.emit('downloading', received, fileInfo)
+                        if (this.verbose) { process.stdout.write(`downloading : ${this.formatBytes(received)} / ${this.formatBytes(fileInfo.length)}\r`) }
+                    }, 1000)
+                } else if (received === fileInfo.length) {
+                    clearInterval(slowdown)
+                }
+            })
+            client.on('end', () => {
+                file.end()
+                self.emit('downloaded', fileInfo)
+                if (this.verbose) { console.log(`downloading done: ${file.path}`) }
+                if (this.disconnect) { self.quit('muybueno') }
+            })
+            client.on('error', (err) => {
+                self.emit('download error', err, fileInfo)
+                file.end()
+                if (this.verbose) { console.log('download error', err) }
             })
         })
     }
-    public send(target: string, packet: packageNumber): void {
+    public download(target: string, packet: packageNumber): void {
         packet = this.HashTag(packet)
         this.emit('request', { target, packet })
     }
+
     private nickRandomizer(nick: string): string {
         if (nick.length > 6) {
             nick = nick.substr(0, 6)
