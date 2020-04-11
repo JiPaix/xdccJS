@@ -134,9 +134,10 @@ export default class XDCC extends Client {
         const fileInfo = this.parseCtcp(resp.message);
         if (fs.existsSync(fileInfo.filePath)) {
             if (fs.statSync(fileInfo.filePath).size === fileInfo.length) {
+                this.say(resp.nick, 'XDCC CANCEL')
                 self.emit('downloaded', fileInfo);
                 if (this.verbose) { console.log(`You already have this: ${fileInfo.filePath}`); }
-                return
+                return;
             } else {
                 fs.unlinkSync(fileInfo.filePath);
             }
