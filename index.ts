@@ -132,6 +132,15 @@ export default class XDCC extends Client {
     private downloadToFile(resp: { [prop: string]: string }): void {
         const self = this;
         const fileInfo = this.parseCtcp(resp.message);
+        if (fs.existsSync(fileInfo.filePath)) {
+            if (fs.statSync(fileInfo.filePath).size === fileInfo.length) {
+                self.emit('downloaded', fileInfo);
+                if (this.verbose) { console.log(`You already have this: ${fileInfo.filePath}`); }
+                return
+            } else {
+                fs.unlinkSync(fileInfo.filePath);
+            }
+        }
         const file = fs.createWriteStream(fileInfo.filePath);
         file.on('open', () => {
             let received = 0;
