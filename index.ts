@@ -2,65 +2,64 @@
 /* eslint-disable @typescript-eslint/triple-slash-reference */
 /// <reference path="@types/irc-framework.ts"/>
 import { Client } from 'irc-framework';
-import * as fs from 'fs'
-import * as path from 'path'
-import * as net from 'net'
+import * as fs from 'fs';
+import * as path from 'path';
+import * as net from 'net';
 
 type packageNumber = string | number;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type constructor = { host: string; port: number; nick: string; chan: string | string[]; path: false | string; disconnect?: any; verbose?: boolean; randomizeNick?: boolean }
 export default class XDCC extends Client {
-    private nick: string
-    private chan: string[]
-    private path: false | string
-    public verbose: boolean
+    private nick: string;
+    private chan: string[];
+    private path: false | string;
+    public verbose: boolean;
 
     constructor(parameters: constructor) {
         super()
         if (typeof parameters.host !== 'string') {
-            throw TypeError(`unexpected type of 'host': a string was expected but got '${typeof parameters.host}'`)
+            throw TypeError(`unexpected type of 'host': a string was expected but got '${typeof parameters.host}'`);
         }
         if (typeof parameters.port !== 'number') {
-            throw TypeError(`unexpected type of 'port': a number was expected but got '${typeof parameters.port}'`)
+            throw TypeError(`unexpected type of 'port': a number was expected but got '${typeof parameters.port}'`);
         }
         if (typeof parameters.nick !== 'string') {
-            throw TypeError(`unexpected type of 'nick': a string was expected but got '${typeof parameters.port}'`)
+            throw TypeError(`unexpected type of 'nick': a string was expected but got '${typeof parameters.port}'`);
         }
         if (typeof parameters.path === 'string' || parameters.path == false) {
             if (typeof parameters.path === 'string') {
-                this.path = path.join(path.resolve('./'), parameters.path)
-                fs.mkdirSync(this.path, { recursive: true })
+                this.path = path.join(path.resolve('./'), parameters.path);
+                fs.mkdirSync(this.path, { recursive: true });
             } else {
                 this.path = false
             }
         } else {
-            throw TypeError(`unexpected type of 'path': a string or false was expected but got '${typeof parameters.path}'`)
+            throw TypeError(`unexpected type of 'path': a string or false was expected but got '${typeof parameters.path}'`);
         }
         if (typeof parameters.verbose == "boolean" || typeof parameters.verbose == "undefined") {
-            this.verbose = parameters.verbose || false
+            this.verbose = parameters.verbose || false;
         } else {
-            throw TypeError(`unexpected type of 'verbose': a boolean was expected but got '${typeof parameters.verbose}'`)
+            throw TypeError(`unexpected type of 'verbose': a boolean was expected but got '${typeof parameters.verbose}'`);
         }
         if (typeof parameters.disconnect !== "undefined") {
-            console.log('disconnect option is deprecated and will be ignored')
+            console.log('disconnect option is deprecated and will be ignored');
         }
         if (typeof parameters.randomizeNick == "boolean" || typeof parameters.randomizeNick == "undefined") {
             if (parameters.randomizeNick === false) {
-                this.nick = parameters.nick
+                this.nick = parameters.nick;
             } else {
-                this.nick = this.nickRandomizer(parameters.nick)
+                this.nick = this.nickRandomizer(parameters.nick);
             }
         } else {
-            throw TypeError(`unexpected type of 'randomizeNick': a boolean was expected but got '${typeof parameters.randomizeNick}'`)
+            throw TypeError(`unexpected type of 'randomizeNick': a boolean was expected but got '${typeof parameters.randomizeNick}'`);
         }
         if (typeof parameters.chan === 'string') {
-            this.chan = [this.checkHashtag(parameters.chan, true)]
+            this.chan = [this.checkHashtag(parameters.chan, true)];
         } else if (Array.isArray(parameters.chan)) {
-            this.chan = parameters.chan
+            this.chan = parameters.chan;
         } else {
-            throw TypeError(`unexpected type of 'chan': a boolean was expected but got '${typeof parameters.chan}'`)
+            throw TypeError(`unexpected type of 'chan': a boolean was expected but got '${typeof parameters.chan}'`);
         }
-
         this.connect({
             host: parameters.host,
             port: parameters.port,
@@ -72,151 +71,151 @@ export default class XDCC extends Client {
             ping_interval: 30,
             // eslint-disable-next-line @typescript-eslint/camelcase
             ping_timeout: 120,
-        })
-        this.live()
+        });
+        this.live();
     }
 
     private live(): void {
-        const self = this
+        const self = this;
         this.on('connected', () => {
             for (let index = 0; index < this.chan.length; index++) {
-                const channel = this.channel(this.checkHashtag(this.chan[index], true))
+                const channel = this.channel(this.checkHashtag(this.chan[index], true));
                 channel.join();
             }
-            self.emit('xdcc-ready')
-            if (this.verbose) { console.log(`connected and joined ${this.chan}`) }
+            self.emit('xdcc-ready');
+            if (this.verbose) { console.log(`connected and joined ${this.chan}`); }
         });
         this.on('request', (args: { target: string; packet: packageNumber }) => {
-            this.say(args.target, 'xdcc send ' + args.packet)
-            if (this.verbose) { console.log(`/MSG ${args.target} xdcc send ${args.packet} `) }
+            this.say(args.target, 'xdcc send ' + args.packet);
+            if (this.verbose) { console.log(`/MSG ${args.target} xdcc send ${args.packet} `); }
         });
         this.on('ctcp request', (resp: { [prop: string]: string }): void => {
             if (resp.message === null || typeof resp.message !== 'string') {
-                throw new TypeError('CTCP : unexpected response.')
+                throw new TypeError('CTCP : unexpected response.');
             }
             if (this.path) {
-                this.downloadToFile(resp)
+                this.downloadToFile(resp);
             } else {
-                this.downloadToPipe(resp)
+                this.downloadToPipe(resp);
             }
         })
     }
 
     private downloadToPipe(resp: { [prop: string]: string }): void {
-        const self = this
-        const fileInfo = this.parseCtcp(resp.message)
-        let received = 0
-        const sendBuffer = Buffer.alloc(4)
-        let slowdown: NodeJS.Timeout = setInterval(() => { throw new Error(`not receiving any data`) }, 10000)
+        const self = this;
+        const fileInfo = this.parseCtcp(resp.message);
+        let received = 0;
+        const sendBuffer = Buffer.alloc(4);
+        let slowdown: NodeJS.Timeout = setInterval(() => { throw new Error(`not receiving any data`); }, 10000);
         const client = net.connect(fileInfo.port, fileInfo.ip, () => {
-            self.emit('download start')
-            if (this.verbose) { console.log(`download starting: ${fileInfo.file} `) }
+            self.emit('download start');
+            if (this.verbose) { console.log(`download starting: ${fileInfo.file}; `) }
         })
-        self.emit('pipe', client, fileInfo)
+        self.emit('pipe', client, fileInfo);
         client.on('data', (data) => {
-            self.emit('data', data, fileInfo.length)
-            received += data.length
-            sendBuffer.writeUInt32BE(received, 0)
-            client.write(sendBuffer)
+            self.emit('data', data, fileInfo.length);
+            received += data.length;
+            sendBuffer.writeUInt32BE(received, 0);
+            client.write(sendBuffer);
             if (received === data.length) {
-                clearInterval(slowdown)
+                clearInterval(slowdown);
                 slowdown = setInterval(() => {
-                    self.emit('downloading', received, fileInfo)
-                    if (this.verbose) { process.stdout.write(`downloading : ${this.formatBytes(received)} / ${this.formatBytes(fileInfo.length)}\r`) }
-                }, 1000)
+                    self.emit('downloading', received, fileInfo);
+                    if (this.verbose) { process.stdout.write(`downloading : ${this.formatBytes(received)} / ${this.formatBytes(fileInfo.length)}\r`); }
+                }, 1000);
             } else if (received === fileInfo.length) {
-                clearInterval(slowdown)
+                clearInterval(slowdown);
             }
         })
 
     }
     private downloadToFile(resp: { [prop: string]: string }): void {
-        const self = this
-        const fileInfo = this.parseCtcp(resp.message)
-        const file = fs.createWriteStream(fileInfo.filePath)
+        const self = this;
+        const fileInfo = this.parseCtcp(resp.message);
+        const file = fs.createWriteStream(fileInfo.filePath);
         file.on('open', () => {
-            let received = 0
-            const sendBuffer = Buffer.alloc(4)
-            let slowdown: NodeJS.Timeout = setInterval(() => { throw new Error(`not receiving any data`) }, 10000)
+            let received = 0;
+            const sendBuffer = Buffer.alloc(4);
+            let slowdown: NodeJS.Timeout = setInterval(() => { throw new Error(`not receiving any data`) }, 10000);
             const client = net.connect(fileInfo.port, fileInfo.ip, () => {
-                self.emit('download start')
-                if (this.verbose) { console.log(`download starting: ${fileInfo.file} `) }
+                self.emit('download start');
+                if (this.verbose) { console.log(`download starting: ${fileInfo.file} `); }
             })
             client.on('data', (data) => {
-                file.write(data)
-                received += data.length
-                sendBuffer.writeUInt32BE(received, 0)
-                client.write(sendBuffer)
+                file.write(data);
+                received += data.length;
+                sendBuffer.writeUInt32BE(received, 0);
+                client.write(sendBuffer);
                 if (received === data.length) {
-                    clearInterval(slowdown)
+                    clearInterval(slowdown);
                     slowdown = setInterval(() => {
                         self.emit('downloading', received, fileInfo)
-                        if (this.verbose) { process.stdout.write(`downloading : ${this.formatBytes(received)} / ${this.formatBytes(fileInfo.length)}\r`) }
-                    }, 1000)
+                        if (this.verbose) { process.stdout.write(`downloading : ${this.formatBytes(received)} / ${this.formatBytes(fileInfo.length)}\r`); }
+                    }, 1000);
                 } else if (received === fileInfo.length) {
-                    clearInterval(slowdown)
+                    clearInterval(slowdown);
                 }
             })
             client.on('end', () => {
-                file.end()
-                self.emit('downloaded', fileInfo)
-                if (this.verbose) { console.log(`downloading done: ${file.path}`) }
+                file.end();
+                self.emit('downloaded', fileInfo);
+                if (this.verbose) { console.log(`downloading done: ${file.path}`); }
             })
             client.on('error', (err) => {
-                self.emit('download error', err, fileInfo)
-                file.end()
-                if (this.verbose) { console.log(`download error : ${err}`) }
+                self.emit('download error', err, fileInfo);
+                file.end();
+                if (this.verbose) { console.log(`download error : ${err}`); }
             })
         })
     }
     public download(target: string, packet: packageNumber): void {
-        packet = this.checkHashtag(packet, false)
-        this.emit('request', { target, packet })
+        packet = this.checkHashtag(packet, false);
+        this.emit('request', { target, packet });
     }
 
     private nickRandomizer(nick: string): string {
         if (nick.length > 6) {
-            nick = nick.substr(0, 6)
+            nick = nick.substr(0, 6);
         }
-        return nick + Math.floor(Math.random() * 999) + 1
+        return nick + Math.floor(Math.random() * 999) + 1;
     }
     private formatBytes(bytes: number, decimals = 2): string {
-        if (bytes === 0) return '0 Bytes'
-        const k = 1024
-        const dm = decimals < 0 ? 0 : decimals
-        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-        const i = Math.floor(Math.log(bytes) / Math.log(k))
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
     }
     private checkHashtag(value: packageNumber, isChannel: boolean): string {
         if (isChannel) {
             if (typeof value === 'string') {
                 if (value.charAt(0) === '#') {
-                    return value
+                    return value;
                 } else {
-                    return `#${value}`
+                    return `#${value}`;
                 }
             } else if (typeof value === 'number') {
-                return value.toString()
+                return value.toString();
             } else {
-                throw TypeError(`unexpected type of 'chan': a string|number was expected but got '${typeof value}'`)
+                throw TypeError(`unexpected type of 'chan': a string|number was expected but got '${typeof value}'`);
             }
         } else {
             if (typeof value === 'number') {
                 if (value % 1 === 0) {
-                    return `#${value.toString()}`
+                    return `#${value.toString()}`;
                 } else {
-                    throw TypeError(`unexpected 'package': number must be an integer'`)
+                    throw TypeError(`unexpected 'package': number must be an integer'`);
                 }
             } else if (typeof value === 'string') {
-                const isPack = RegExp(/^\d+-\d+$|^#\d+-\d+$|^\d+$|^#\d+$/gm).test(value)
+                const isPack = RegExp(/^\d+-\d+$|^#\d+-\d+$|^\d+$|^#\d+$/gm).test(value);
                 if (isPack) {
                     return value
                 } else {
-                    throw new TypeError(`unexpected 'package': string must be '100' or '#100' or '100-102' or '#102-102'`)
+                    throw new TypeError(`unexpected 'package': string must be '100' or '#100' or '100-102' or '#102-102'`);
                 }
             } else {
-                throw new TypeError(`unexpected type of 'package': a string|number was expected but got ${typeof value}`)
+                throw new TypeError(`unexpected type of 'package': a string|number was expected but got ${typeof value}`);
             }
         }
     }
@@ -229,13 +228,13 @@ export default class XDCC extends Client {
     }
     private parseCtcp(text: string): { file: string; filePath: string; ip: string; port: number; length: number } {
         const parts = text.match(/(?:[^\s"]+|"[^"]*")+/g);
-        if (!parts) { throw new TypeError(`CTCP : received unexpected msg : ${text}`) }
+        if (!parts) { throw new TypeError(`CTCP : received unexpected msg : ${text}`); }
         if (
             parts.some((index) => {
-                index === null
+                index === null;
             })
         ) {
-            throw new TypeError(`CTCP : received unexpected msg : ${text}`)
+            throw new TypeError(`CTCP : received unexpected msg : ${text}`);
         }
         return {
             file: parts[2].replace(/"/g, ''),
