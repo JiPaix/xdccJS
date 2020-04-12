@@ -3,7 +3,7 @@
  * Goal#2   : directly send file to client's web browser
  */
 
-const XDCC = require('xdccjs')
+const XDCC = require('xdccjs').default
 
 let opts = {
     host: 'irc.server.net',

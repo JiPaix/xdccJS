@@ -19,7 +19,7 @@
 #### Initialize xdccJS :
 With `require`
 ```js
-const XDCC = require('xdccjs')
+const XDCC = require('xdccjs').default
 ```
 Or using `import`
 ```js
