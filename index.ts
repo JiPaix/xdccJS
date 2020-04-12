@@ -6,16 +6,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as net from 'net';
 
-type packageNumber = string | number;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type constructor = { host: string; port: number; nick: string; chan: string | string[]; path: false | string; disconnect?: any; verbose?: boolean; randomizeNick?: boolean }
 export default class XDCC extends Client {
     private nick: string;
     private chan: string[];
     private path: false | string;
     public verbose: boolean;
 
-    constructor(parameters: constructor) {
+    constructor(parameters: { host: string; port: number; nick: string; chan: string | string[]; path: false | string; verbose?: boolean; randomizeNick?: boolean }) {
         super()
         if (typeof parameters.host !== 'string') {
             throw TypeError(`unexpected type of 'host': a string was expected but got '${typeof parameters.host}'`);
@@ -24,7 +21,7 @@ export default class XDCC extends Client {
             throw TypeError(`unexpected type of 'port': a number was expected but got '${typeof parameters.port}'`);
         }
         if (typeof parameters.nick !== 'string') {
-            throw TypeError(`unexpected type of 'nick': a string was expected but got '${typeof parameters.port}'`);
+            throw TypeError(`unexpected type of 'nick': a string was expected but got '${typeof parameters.nick}'`);
         }
         if (typeof parameters.path === 'string' || parameters.path == false) {
             if (typeof parameters.path === 'string') {
@@ -36,15 +33,12 @@ export default class XDCC extends Client {
         } else {
             throw TypeError(`unexpected type of 'path': a string or false was expected but got '${typeof parameters.path}'`);
         }
-        if (typeof parameters.verbose == "boolean" || typeof parameters.verbose == "undefined") {
+        if (typeof parameters.verbose == 'boolean' || typeof parameters.verbose == 'undefined') {
             this.verbose = parameters.verbose || false;
         } else {
             throw TypeError(`unexpected type of 'verbose': a boolean was expected but got '${typeof parameters.verbose}'`);
         }
-        if (typeof parameters.disconnect !== "undefined") {
-            console.log('disconnect option is deprecated and will be ignored');
-        }
-        if (typeof parameters.randomizeNick == "boolean" || typeof parameters.randomizeNick == "undefined") {
+        if (typeof parameters.randomizeNick === 'boolean' || typeof parameters.randomizeNick === 'undefined') {
             if (parameters.randomizeNick === false) {
                 this.nick = parameters.nick;
             } else {
@@ -85,13 +79,30 @@ export default class XDCC extends Client {
             self.emit('xdcc-ready');
             if (this.verbose) { console.log(`connected and joined ${this.chan}`); }
         });
-        this.on('request', (args: { target: string; packet: packageNumber }) => {
-            this.say(args.target, 'xdcc send ' + args.packet);
-            if (this.verbose) { console.log(`/MSG ${args.target} xdcc send ${args.packet} `); }
+        this.on('request', (args: { target: string; packet: string | number }) => {
+            this.say(args.target, `xdcc send ${args.packet}`);
+            if (this.verbose) { console.log(`/MSG ${args.target} xdcc send ${args.packet}`); }
         });
+        this.on('request batch', (args: { target: string; packet: number[] }) => {
+            if (!this.path) { throw new Error(`downloadBatch() can't be used in pipe mode.`); }
+            let i = 0
+            if (i < args.packet.length) {
+                this.say(args.target, `xdcc send ${args.packet[i]}`);
+                if (this.verbose) { console.log(`/MSG ${args.target} xdcc send ${args.packet[i]}`); }
+                i++
+            }
+            this.on('downloaded', () => {
+                if (i < args.packet.length) {
+                    this.say(args.target, `xdcc send ${args.packet[i]}`);
+                    if (this.verbose) { console.log(`/MSG ${args.target} xdcc send ${args.packet[i]}`); }
+                    i++
+                }
+            })
+
+        })
         this.on('ctcp request', (resp: { [prop: string]: string }): void => {
-            if (resp.message === null || typeof resp.message !== 'string') {
-                throw new TypeError('CTCP : unexpected response.');
+            if (typeof resp.message !== 'string') {
+                throw new TypeError(`CTCP MSG: ${resp.message}`);
             }
             if (this.path) {
                 this.downloadToFile(resp);
@@ -108,10 +119,10 @@ export default class XDCC extends Client {
         const sendBuffer = Buffer.alloc(4);
         let slowdown: NodeJS.Timeout = setInterval(() => { throw new Error(`not receiving any data`); }, 10000);
         const client = net.connect(fileInfo.port, fileInfo.ip, () => {
-            self.emit('download start');
+            self.emit('download-start');
             if (this.verbose) { console.log(`download starting: ${fileInfo.file}; `) }
         })
-        self.emit('pipe', client, fileInfo);
+        self.emit('download-pipe', client, fileInfo);
         client.on('data', (data) => {
             self.emit('data', data, fileInfo.length);
             received += data.length;
@@ -127,8 +138,8 @@ export default class XDCC extends Client {
                 clearInterval(slowdown);
             }
         })
-
     }
+
     private downloadToFile(resp: { [prop: string]: string }): void {
         const self = this;
         const fileInfo = this.parseCtcp(resp.message);
@@ -148,7 +159,7 @@ export default class XDCC extends Client {
             const sendBuffer = Buffer.alloc(4);
             let slowdown: NodeJS.Timeout = setInterval(() => { throw new Error(`not receiving any data`) }, 10000);
             const client = net.connect(fileInfo.port, fileInfo.ip, () => {
-                self.emit('download start');
+                self.emit('download-start');
                 if (this.verbose) { console.log(`download starting: ${fileInfo.file} `); }
             })
             client.on('data', (data) => {
@@ -172,15 +183,33 @@ export default class XDCC extends Client {
                 if (this.verbose) { console.log(`downloading done: ${file.path}`); }
             })
             client.on('error', (err) => {
-                self.emit('download error', err, fileInfo);
+                self.emit('download-error', err, fileInfo);
                 file.end();
                 if (this.verbose) { console.log(`download error : ${err}`); }
             })
         })
     }
-    public download(target: string, packet: packageNumber): void {
+
+    public download(target: string, packet: string | number): void {
         packet = this.checkHashtag(packet, false);
         this.emit('request', { target, packet });
+    }
+
+    public downloadBatch(target: string, packets: string): void {
+        const packet = packets.split(',')
+        const range: number[] = []
+        packet.map(s => {
+            const minmax = s.split('-')
+            if (s.includes('-')) {
+                for (let i = +minmax[0]; i <= +minmax[1]; i++) {
+                    range.push(i)
+                }
+            } else {
+                range.push(parseInt(s))
+            }
+        })
+        if (this.verbose) { console.log(`Batch download of packets : ${packets}`) }
+        this.emit('request batch', { target: target, packet: range })
     }
 
     private nickRandomizer(nick: string): string {
@@ -189,6 +218,7 @@ export default class XDCC extends Client {
         }
         return nick + Math.floor(Math.random() * 999) + 1;
     }
+
     private formatBytes(bytes: number, decimals = 2): string {
         if (bytes === 0) return '0 Bytes';
         const k = 1024;
@@ -197,7 +227,8 @@ export default class XDCC extends Client {
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
     }
-    private checkHashtag(value: packageNumber, isChannel: boolean): string {
+
+    private checkHashtag(value: string | number, isChannel: boolean): string {
         if (isChannel) {
             if (typeof value === 'string') {
                 if (value.charAt(0) === '#') {
@@ -229,6 +260,7 @@ export default class XDCC extends Client {
             }
         }
     }
+
     private uint32ToIP(n: number): string {
         const byte1 = n & 255
             , byte2 = ((n >> 8) & 255)
@@ -236,6 +268,7 @@ export default class XDCC extends Client {
             , byte4 = ((n >> 24) & 255);
         return byte4 + "." + byte3 + "." + byte2 + "." + byte1;
     }
+
     private parseCtcp(text: string): { file: string; filePath: string; ip: string; port: number; length: number } {
         const parts = text.match(/(?:[^\s"]+|"[^"]*")+/g);
         if (!parts) { throw new TypeError(`CTCP : received unexpected msg : ${text}`); }
@@ -255,4 +288,3 @@ export default class XDCC extends Client {
         };
     }
 }
-

@@ -1,15 +1,15 @@
 {
   "name": "xdccjs",
-  "version": "2.2.0",
-  "description": "IRC library to download from XDCC bots.",
+  "version": "2.3.0",
+  "description": "library to download from XDCC bots on IRC.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "/dist"
   ],
   "scripts": {
-    "build": "rimraf dist && tsc",
-    "prepublishOnly": "rimraf dist && tsc"
+    "build": "rimraf dist && node_modules/typescript/bin/tsc",
+    "prepublishOnly": "rimraf dist && node_modules/typescript/bin/tsc"
   },
   "repository": {
     "type": "git",
