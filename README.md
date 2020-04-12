@@ -1,6 +1,8 @@
-<h1 align="center">xdccJS</h1>
+<h1 align="center">xdccJS<br><img src="https://www.codefactor.io/repository/github/jipaix/xdccjs/badge"/> <img src="https://travis-ci.com/JiPaix/xdccJS.svg?branch=master"/> <img src='https://img.shields.io/npm/dt/xdccjs'/> <img src='https://img.shields.io/discord/221622868688109569'/></h1>
 <h5 align="center">Easy to use IRC library to download from XDCC bots</h5>
+
 <h4 align="center"><a href="#quick-start">Quick Start</a> | <a href="https://jipaix.github.io/xdccJS/XDCC.html">API</a> | <a href="https://github.com/JiPaix/xdccJS/tree/master/examples/">Advanced Examples</a></h4>
+
 
 ## Features
 <p>🍹<b>Nice and easy : </b>It will save you tons of time, i started this project after wasting so much time through the years using desktop clients. Now i can do any type of automation, once your set (and it could take less than 5 minutes) you won't even need to monitor releases and channels
