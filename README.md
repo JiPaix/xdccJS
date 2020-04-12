@@ -5,7 +5,7 @@
 ## Features
 <p>🍹<b>Nice and easy : </b>It will save you tons of time, i started this project after wasting so much time through the years using desktop clients. Now i can do any type of automation, once your set (and it could take less than 5 minutes) you won't even need to monitor releases and channels
 </p>
-<p>🤸<b>Flexible : </b>You might want to use xdccJS for different type of projects, instead of saving files on your hard drive you could send them elsewhere. Take look at this <a href="#advanced-exemple">advanced exemple</a> where i setup an http server that send files "from" XDCC directly to clients.
+<p>🤸<b>Flexible : </b>You might want to use xdccJS for different type of projects, instead of saving files on your hard drive you could send them elsewhere. Take look at this <a href="#advanced-example">advanced example</a> where i setup an http server that send files "from" XDCC directly to clients.
  </p>
 <p>🚀<b>Doesn't brew coffe (yet) :</b> xdccJS isn't just a downloader, it's also a complete IRC client. Thanks to <a href="https://github.com/kiwiirc/irc-framework">irc-framework</a> you can use their awesome <a href="ttps://github.com/kiwiirc/irc-framework/tree/master/docs">API</a> from within xdccJS without any additional installation 
 </p>
