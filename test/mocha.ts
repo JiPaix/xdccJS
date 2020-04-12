@@ -50,6 +50,7 @@ describe('initialize', () => {
     it('downloadBatch()', function (done) {
         start.on('request batch', (res) => {
             if (res.target === 'JiPaix' && [2, 3, 4, 5, 9].every((val, i, arr) => val === res.packet[i])) {
+                start.quit()
                 done()
             }
         })
