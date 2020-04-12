@@ -4,4 +4,4 @@ downloads
 dist
 test.ts
 test.js
-docs
+.jsdoc
