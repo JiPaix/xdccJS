@@ -1,70 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>JSDoc: Home</title>
 
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
-    <!--[if lt IE 9]>
+<head>
+  <meta charset="utf-8">
+  <title>JSDoc: Home</title>
+  <script src="scripts/prettify/prettify.js"></script>
+  <script src="scripts/prettify/lang-css.js"></script>
+  <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+  <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+  <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
 </head>
 
 <body>
-
-<div id="main">
-
+  <div id="main">
     <h1 class="page-title">Home</h1>
-
-    
-
-
-
-    
-
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
+    <h3></h3>
     <section>
-        <article><h1 align="center">xdccJS</h1>
-<h5 align="center">Easy to use IRC library to download from XDCC bots</h5>
-<h4 align="center"><a href="#quick-start">Quick Start</a> | <a href="https://jipaix.github.io/xdccJS/XDCC.html">API</a> | <a href="https://github.com/JiPaix/xdccJS/tree/master/examples/">Advanced Examples</a></h4>
-<h2>Features</h2>
-<p>🍹<b>Nice and easy : </b>It will save you tons of time, i started this project after wasting so much time through the years using desktop clients. Now i can do any type of automation, once your set (and it could take less than 5 minutes) you won't even need to monitor releases and channels
-</p>
-<p>🤸<b>Flexible : </b>You might want to use xdccJS for different type of projects, instead of saving files on your hard drive you could send them elsewhere. Take look at this <a href="#advanced-exemple">advanced exemple</a> where i setup an http server that send files "from" XDCC directly to clients.
- </p>
-<p>🚀<b>Doesn't brew coffe (yet) :</b> xdccJS isn't just a downloader, it's also a complete IRC client. Thanks to <a href="https://github.com/kiwiirc/irc-framework">irc-framework</a> you can use their awesome <a href="ttps://github.com/kiwiirc/irc-framework/tree/master/docs">API</a> from within xdccJS without any additional installation 
-</p>
-<h2>Installation</h2>
-<p><a href="https://nodei.co/npm/xdccjs/"><img src="https://nodei.co/npm/xdccjs.png?mini=true" alt="NPM"></a></p>
-<h2>Quick start</h2>
-<h4>Initialize xdccJS :</h4>
-<p>With <code>require</code></p>
-<pre class="prettyprint source lang-js"><code>const XDCC = require('xdccjs')
+      <article>
+        <h1 align="center">xdccJS</h1>
+        <h5 align="center">Easy to use IRC library to download from XDCC bots</h5>
+        <h4 align="center"><a href="#quick-start">Quick Start</a> | <a
+            href="https://jipaix.github.io/xdccJS/XDCC.html">API</a> | <a
+            href="https://github.com/JiPaix/xdccJS/tree/master/examples/">Advanced Examples</a></h4>
+        <h2>Features</h2>
+        <p>🍹<b>Nice and easy : </b>It will save you tons of time, i started this project after wasting so much time
+          through the years using desktop clients. Now i can do any type of automation, once your set (and it could take
+          less than 5 minutes) you won't even need to monitor releases and channels</p>
+        <p>🤸<b>Flexible : </b>You might want to use xdccJS for different type of projects, instead of saving files on
+          your hard drive you could send them elsewhere. Take look at this <a href="#advanced-exemple">advanced
+            exemple</a> where i setup an http server that send files "from" XDCC directly to clients.</p>
+        <p>🚀<b>Doesn't brew coffe (yet) :</b> xdccJS isn't just a downloader, it's also a complete IRC client. Thanks
+          to <a href="https://github.com/kiwiirc/irc-framework">irc-framework</a> you can use their awesome <a
+            href="ttps://github.com/kiwiirc/irc-framework/tree/master/docs">API</a> from within xdccJS without any
+          additional installation</p>
+        <h2>Installation</h2>
+        <p><a href="https://nodei.co/npm/xdccjs/"><img src="https://nodei.co/npm/xdccjs.png?mini=true" alt="NPM"></a>
+        </p>
+        <h2>Quick start</h2>
+        <h4>Initialize xdccJS :</h4>
+        <p>With <code>require</code></p>
+        <pre class="prettyprint source lang-js"><code>const XDCC = require('xdccjs')
 </code></pre>
-<p>Or using <code>import</code></p>
-<pre class="prettyprint source lang-js"><code>import XDCC from 'xdccjs'
+        <p>Or using <code>import</code></p>
+        <pre class="prettyprint source lang-js"><code>import XDCC from 'xdccjs'
 </code></pre>
-<h4>Start a connection :</h4>
-<pre class="prettyprint source lang-js"><code>let opts = {
+        <h4>Start a connection :</h4>
+        <pre class="prettyprint source lang-js"><code>let opts = {
   host: 'irc.server.net',
   nick: 'ItsMeJiPaix',
   chan: '#friendly',
@@ -76,31 +59,37 @@
 
 const xdccJS = new  XDCC(opts)
 </code></pre>
-<h4>Download :</h4>
-<pre class="prettyprint source lang-js"><code>xdccJS.on('xdcc-ready', () => {
+        <h4>Download :</h4>
+        <pre class="prettyprint source lang-js"><code>xdccJS.on('xdcc-ready', () => {
   xdccJS.download(&quot;xdcc-bot-nickname&quot;, 23)
   //=> /MSG xdcc-bot-nickname xdcc send #23
-})</code></pre></article>
+})</code></pre>
+      </article>
     </section>
-
-
-
-
-
-
-</div>
-
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="XDCC.html">XDCC</a></li></ul><h3>Events</h3><ul><li><a href="global.html#event:download-error">download-error</a></li><li><a href="global.html#event:download-pipe">download-pipe</a></li><li><a href="global.html#event:download-start">download-start</a></li><li><a href="global.html#event:downloaded">downloaded</a></li><li><a href="global.html#event:downloading">downloading</a></li><li><a href="global.html#event:xdcc-ready">xdcc-ready</a></li></ul><h3><a href="global.html">Global</a></h3>
-</nav>
-
-<br class="clear">
-
-<footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sun Apr 12 2020 19:45:30 GMT+0200 (Central European Summer Time)
-</footer>
-
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
+  </div>
+  <nav>
+    <h2><a href="index.html">Home</a></h2>
+    <h3>Classes</h3>
+    <ul>
+      <li><a href="XDCC.html">XDCC</a></li>
+    </ul>
+    <h3>Events</h3>
+    <ul>
+      <li><a href="global.html#event:download-error">download-error</a></li>
+      <li><a href="global.html#event:download-pipe">download-pipe</a></li>
+      <li><a href="global.html#event:download-start">download-start</a></li>
+      <li><a href="global.html#event:downloaded">downloaded</a></li>
+      <li><a href="global.html#event:downloading">downloading</a></li>
+      <li><a href="global.html#event:xdcc-ready">xdcc-ready</a></li>
+    </ul>
+    <h3><a href="global.html">Global</a></h3>
+  </nav><br class="clear">
+  <footer>Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sun Apr 12 2020
+    19:45:30 GMT+0200 (Central European Summer Time)</footer>
+  <script>
+    prettyPrint()
+  </script>
+  <script src="scripts/linenumber.js"></script>
 </body>
+
 </html>

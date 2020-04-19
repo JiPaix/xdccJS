@@ -1,581 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <title>JSDoc: Class: XDCC</title>
-
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+    <!--[if lt IE 9]> <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
     <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
     <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
 </head>
 
 <body>
-
-<div id="main">
-
-    <h1 class="page-title">Class: XDCC</h1>
-
-    
-
-
-
-
-<section>
-
-<header>
-    
-        <h2><span class="attribs"><span class="type-signature"></span></span>XDCC<span class="signature">(parameters)</span><span class="type-signature"></span></h2>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-
-    
-
-    
-    <h4 class="name" id="XDCC"><span class="type-signature"></span>new XDCC<span class="signature">(parameters)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Connect to IRC.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>parameters</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="global.html#Constructor">Constructor</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Object containing parameters</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<h5>Fires:</h5>
-<ul>
-    <li><a href="global.html#event:xdcc-ready">event:xdcc-ready</a></li>
-</ul>
-
-
-
-<h5>Listens to Events:</h5>
-<ul>
-    <li><a href="global.html#event:xdcc-ready">event:xdcc-ready</a></li>
-
-    <li><a href="global.html#event:download-start">event:download-start</a></li>
-
-    <li><a href="global.html#event:downloading">event:downloading</a></li>
-
-    <li><a href="global.html#event:downloaded">event:downloaded</a></li>
-
-    <li><a href="global.html#event:download-error">event:download-error</a></li>
-
-    <li><a href="global.html#event:download-pipe">event:download-pipe</a></li>
-</ul>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
+    <div id="main">
+        <h1 class="page-title">Class: XDCC</h1>
+        <section>
+            <header>
+                <h2><span class="attribs"><span class="type-signature"></span></span>XDCC<span
+                        class="signature">(parameters)</span><span class="type-signature"></span></h2>
+            </header>
+            <article>
+                <div class="container-overview">
+                    <h4 class="name" id="XDCC"><span class="type-signature"></span>new XDCC<span
+                            class="signature">(parameters)</span><span class="type-signature"></span></h4>
+                    <div class="description"> Connect to IRC.</div>
+                    <h5>Parameters:</h5>
+                    <table class="params">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th class="last">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="name"><code>parameters</code></td>
+                                <td class="type"> <span class="param-type"><a
+                                            href="global.html#Constructor">Constructor</a></span> </td>
+                                <td class="description last">Object containing parameters</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <dl class="details"> </dl>
+                    <h5>Fires:</h5>
+                    <ul>
+                        <li><a href="global.html#event:xdcc-ready">event:xdcc-ready</a></li>
+                    </ul>
+                    <h5>Listens to Events:</h5>
+                    <ul>
+                        <li><a href="global.html#event:xdcc-ready">event:xdcc-ready</a></li>
+                        <li><a href="global.html#event:download-start">event:download-start</a></li>
+                        <li><a href="global.html#event:downloading">event:downloading</a></li>
+                        <li><a href="global.html#event:downloaded">event:downloaded</a></li>
+                        <li><a href="global.html#event:download-error">event:download-error</a></li>
+                        <li><a href="global.html#event:download-pipe">event:download-pipe</a></li>
+                    </ul>
+                </div>
+                <h3 class="subsection-title">Methods</h3>
+                <h4 class="name" id="download"><span class="type-signature"></span>download<span
+                        class="signature">(target, packet)</span><span class="type-signature"></span></h4>
+                <div class="description"> Download a pack from a bot.</div>
+                <h5>Parameters:</h5>
+                <table class="params">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th class="last">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="name"><code>target</code></td>
+                            <td class="type"> <span class="param-type">string</span> </td>
+                            <td class="description last">Bot's nickname</td>
+                        </tr>
+                        <tr>
+                            <td class="name"><code>packet</code></td>
+                            <td class="type"> <span class="param-type">string</span>|<span
+                                    class="param-type">number</span> </td>
+                            <td class="description last">Pack number</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <dl class="details"> </dl>
+                <h5>Fires:</h5>
+                <ul>
+                    <li><a href="global.html#event:download-start">event:download-start</a></li>
+                    <li><a href="global.html#event:downloading">event:downloading</a></li>
+                    <li><a href="global.html#event:downloaded">event:downloaded</a></li>
+                    <li><a href="global.html#event:download-error">event:download-error</a></li>
+                    <li><a href="global.html#event:download-pipe">event:download-pipe</a></li>
+                </ul>
+                <h4 class="name" id="downloadBatch"><span class="type-signature"></span>downloadBatch<span
+                        class="signature">(target, packets)</span><span class="type-signature"></span></h4>
+                <div class="description"> Download batch of packs from a bot</div>
+                <h5>Parameters:</h5>
+                <table class="params">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th class="last">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="name"><code>target</code></td>
+                            <td class="type"> <span class="param-type">string</span> </td>
+                            <td class="description last">Bot's nickname</td>
+                        </tr>
+                        <tr>
+                            <td class="name"><code>packets</code></td>
+                            <td class="type"> <span class="param-type">string</span> </td>
+                            <td class="description last">Packs number, eg: `1-4, 6, 20-25`</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <dl class="details"> </dl>
+                <h5>Fires:</h5>
+                <ul>
+                    <li><a href="global.html#event:download-start">event:download-start</a></li>
+                    <li><a href="global.html#event:downloading">event:downloading</a></li>
+                    <li><a href="global.html#event:downloaded">event:downloaded</a></li>
+                    <li><a href="global.html#event:download-error">event:download-error</a></li>
+                </ul>
+                <h5>Example</h5>
+                <pre class="prettyprint"><code>xdccJS.downloadBatch('XDCCBOT', '1-10, 25')</code></pre>
+            </article>
+        </section>
     </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="download"><span class="type-signature"></span>download<span class="signature">(target, packet)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Download a pack from a bot.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>target</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Bot's nickname</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>packet</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-|
-
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Pack number</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<h5>Fires:</h5>
-<ul>
-    <li><a href="global.html#event:download-start">event:download-start</a></li>
-
-    <li><a href="global.html#event:downloading">event:downloading</a></li>
-
-    <li><a href="global.html#event:downloaded">event:downloaded</a></li>
-
-    <li><a href="global.html#event:download-error">event:download-error</a></li>
-
-    <li><a href="global.html#event:download-pipe">event:download-pipe</a></li>
-</ul>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="downloadBatch"><span class="type-signature"></span>downloadBatch<span class="signature">(target, packets)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Download batch of packs from a bot
-can't be used if option <a href="global.html#Constructor">path</a> is set to false
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>target</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Bot's nickname</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>packets</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Packs number, eg: `1-4, 6, 20-25`</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<h5>Fires:</h5>
-<ul>
-    <li><a href="global.html#event:download-start">event:download-start</a></li>
-
-    <li><a href="global.html#event:downloading">event:downloading</a></li>
-
-    <li><a href="global.html#event:downloaded">event:downloaded</a></li>
-
-    <li><a href="global.html#event:download-error">event:download-error</a></li>
-</ul>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>xdccJS.downloadBatch('XDCCBOT', '1-10, 25')</code></pre>
-
-
-
-        
-    
-
-    
-
-    
-</article>
-
-</section>
-
-
-
-
-</div>
-
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="XDCC.html">XDCC</a></li></ul><h3>Events</h3><ul><li><a href="global.html#event:download-error">download-error</a></li><li><a href="global.html#event:download-pipe">download-pipe</a></li><li><a href="global.html#event:download-start">download-start</a></li><li><a href="global.html#event:downloaded">downloaded</a></li><li><a href="global.html#event:downloading">downloading</a></li><li><a href="global.html#event:xdcc-ready">xdcc-ready</a></li></ul><h3><a href="global.html">Global</a></h3>
-</nav>
-
-<br class="clear">
-
-<footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sun Apr 12 2020 19:45:30 GMT+0200 (Central European Summer Time)
-</footer>
-
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
+    <nav>
+        <h2><a href="index.html">Home</a></h2>
+        <h3>Classes</h3>
+        <ul>
+            <li><a href="XDCC.html">XDCC</a></li>
+        </ul>
+        <h3>Events</h3>
+        <ul>
+            <li><a href="global.html#event:download-error">download-error</a></li>
+            <li><a href="global.html#event:download-pipe">download-pipe</a></li>
+            <li><a href="global.html#event:download-start">download-start</a></li>
+            <li><a href="global.html#event:downloaded">downloaded</a></li>
+            <li><a href="global.html#event:downloading">downloading</a></li>
+            <li><a href="global.html#event:xdcc-ready">xdcc-ready</a></li>
+        </ul>
+        <h3><a href="global.html">Global</a></h3>
+    </nav><br class="clear">
+    <footer> Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sun Apr 12 2020
+        19:45:30 GMT+0200 (Central European Summer Time)</footer>
+    <script>
+        prettyPrint();
+    </script>
+    <script src="scripts/linenumber.js"> </script>
 </body>
+
 </html>
