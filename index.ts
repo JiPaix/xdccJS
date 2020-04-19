@@ -25,7 +25,10 @@ export default class XDCC extends Client {
         }
         if (typeof parameters.path === 'string' || parameters.path == false) {
             if (typeof parameters.path === 'string') {
-                this.path = path.join(path.resolve('./'), parameters.path);
+                this.path = path.normalize(parameters.path)
+                if (!path.isAbsolute(this.path)) {
+                    this.path = path.join(path.resolve('./'), parameters.path);
+                }
                 fs.mkdirSync(this.path, { recursive: true });
             } else {
                 this.path = false
