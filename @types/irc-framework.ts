@@ -1,4 +1,5 @@
 /* eslint-disable */
+/// <reference path="websocket.ts"/>
 declare module 'irc-framework' {
     import { EventEmitter } from 'eventemitter3';
     import * as DuplexStream from 'stream';
