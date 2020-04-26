@@ -10,7 +10,7 @@ export default class XDCC extends Client
 {
     private nick: string
     private chan: string[]
-    private path: false | string
+    public path: false | string
     public verbose: boolean
 
     constructor ( parameters: { host: string; port: number; nick: string; chan: string | string[]; path: false | string; verbose?: boolean; randomizeNick?: boolean } )
