@@ -233,16 +233,11 @@ export default class XDCC extends Client
         client.on( 'error', ( e ) =>
         {
             this.emit( 'pipe-err', e, fileInfo )
+            this.say( resp.nick, 'XDCC CANCEL' )
         } )
-        client.on( 'close', ( e ) =>
+        client.on( 'end', () =>
         {
-            if ( e )
-            {
-                this.emit( 'pipe-err', e, fileInfo )
-            } else
-            {
-                this.emit( 'pipe-downloaded', fileInfo )
-            }
+            this.emit( 'pipe-downloaded', fileInfo )
         } )
     }
 
@@ -308,6 +303,7 @@ export default class XDCC extends Client
             {
                 self.emit( 'download-err', err, fileInfo )
                 file.end()
+                this.say( resp.nick, 'XDCC CANCEL' )
                 if ( this.verbose ) { console.log( `download error : ${ err }` ) }
             } )
         } )
