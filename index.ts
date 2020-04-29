@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/member-delimiter-style */
 /* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable @typescript-eslint/triple-slash-reference */
 /// <reference path="@types/irc-framework.ts"/>
@@ -6,14 +7,61 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as net from 'net'
 
+/**
+ * XDCC
+ * @noInheritDoc
+ */
 export default class XDCC extends Client
 {
     private nick: string
     private chan: string[]
+    /**
+     * Download path (absolute or relative) <br/>
+     * default value inherited from {@link constructor}'s parameter {@link Params.path} 
+     * @see {@link download}
+     * @example 
+     * ```js
+     * // setting path when instantiating :
+     * param.path = '/home/user/downloads'
+     * const xdccJS = new XDCC(param)
+     * ```
+     * @example
+     * ```js
+     * // same with relative path
+     * param.path = 'downloads' //=> /your/project/path/downloads
+     * const xdccJS = new XDCC(param)
+     * ```
+     * @example
+     * ```js
+     * param.path = 'downloads'
+     * const xdccJS = new XDCC(param)
+     * 
+     * // ... later in your code
+     *  xdccJS.path = '/another/path'
+     * ```
+     */
     public path: false | string
-    public verbose: boolean
+    private verbose: boolean
 
-    constructor ( parameters: { host: string; port: number; nick: string; chan: string | string[]; path: false | string; verbose?: boolean; randomizeNick?: boolean } )
+    /** 
+     * Initiate IRC connection
+     * @remark {@link Params.path} sets {@link XDCC.path} property
+     * @example
+     * ```javascript
+     * let opts = {
+     *  host: 'irc.server.net',
+     *  nick: 'JiPaix',
+     *  chan: ['#itsMe', '#JiPaix' ]
+     *  path: 'downloads',
+     *  verbose: true,
+     *  randomizeNick: true
+     * }
+     * 
+     * const xdccJS = new XDCC(opts)
+     * ```
+     * @fires {@link xdcc-ready}
+     */
+    constructor ( parameters: Params )
     {
         super()
         if ( typeof parameters.host !== 'string' )
@@ -109,7 +157,7 @@ export default class XDCC extends Client
             this.say( args.target, `xdcc send ${ args.packet }` )
             if ( this.verbose ) { console.log( `/MSG ${ args.target } xdcc send ${ args.packet }` ) }
         } )
-        this.on( 'request batch', ( args: { target: string; packet: number[] } ) =>
+        this.on( 'request-batch', ( args: { target: string; packet: number[] } ) =>
         {
             if ( !this.path ) { throw new Error( `downloadBatch() can't be used in pipe mode.` ) }
             let i = 0
@@ -152,16 +200,20 @@ export default class XDCC extends Client
         const fileInfo = this.parseCtcp( resp.message )
         let received = 0
         const sendBuffer = Buffer.alloc( 4 )
-        let slowdown: NodeJS.Timeout = setInterval( () => { throw new Error( `not receiving any data` ) }, 10000 )
+        let slowdown: NodeJS.Timeout = setInterval( () =>
+        {
+            this.emit( 'pipe-err', Error( `not receiving any data` ), fileInfo )
+            this.say( resp.nick, 'XDCC CANCEL' )
+        }, 10000 )
         const client = net.connect( fileInfo.port, fileInfo.ip, () =>
         {
-            self.emit( 'download-start' )
+            self.emit( 'download-start', fileInfo )
             if ( this.verbose ) { console.log( `download starting: ${ fileInfo.file }; ` ) }
         } )
-        self.emit( 'download-pipe', client, fileInfo )
+        self.emit( 'pipe-start', fileInfo )
         client.on( 'data', ( data ) =>
         {
-            self.emit( 'data', data, fileInfo.length )
+            self.emit( 'pipe-data', data, fileInfo.length )
             received += data.length
             sendBuffer.writeUInt32BE( received, 0 )
             client.write( sendBuffer )
@@ -178,12 +230,27 @@ export default class XDCC extends Client
                 clearInterval( slowdown )
             }
         } )
+        client.on( 'error', ( e ) =>
+        {
+            this.emit( 'pipe-err', e, fileInfo )
+        } )
+        client.on( 'close', ( e ) =>
+        {
+            if ( e )
+            {
+                this.emit( 'pipe-err', e, fileInfo )
+            } else
+            {
+                this.emit( 'pipe-downloaded', fileInfo )
+            }
+        } )
     }
 
     private downloadToFile ( resp: { [ prop: string ]: string } ): void
     {
         const self = this
         const fileInfo = this.parseCtcp( resp.message )
+        if ( typeof fileInfo.filePath === 'undefined' || fileInfo.filePath === null ) { throw Error( 'filePath must be defined' ) }
         if ( fs.existsSync( fileInfo.filePath ) )
         {
             if ( fs.statSync( fileInfo.filePath ).size === fileInfo.length )
@@ -202,10 +269,14 @@ export default class XDCC extends Client
         {
             let received = 0
             const sendBuffer = Buffer.alloc( 4 )
-            let slowdown: NodeJS.Timeout = setInterval( () => { throw new Error( `not receiving any data` ) }, 10000 )
+            let slowdown: NodeJS.Timeout = setInterval( () =>
+            {
+                this.emit( 'download-err', Error( `not receiving any data` ), fileInfo )
+                this.say( resp.nick, 'XDCC CANCEL' )
+            }, 10000 )
             const client = net.connect( fileInfo.port, fileInfo.ip, () =>
             {
-                self.emit( 'download-start' )
+                self.emit( 'download-start', fileInfo )
                 if ( this.verbose ) { console.log( `download starting: ${ fileInfo.file } ` ) }
             } )
             client.on( 'data', ( data ) =>
@@ -235,19 +306,43 @@ export default class XDCC extends Client
             } )
             client.on( 'error', ( err ) =>
             {
-                self.emit( 'download-error', err, fileInfo )
+                self.emit( 'download-err', err, fileInfo )
                 file.end()
                 if ( this.verbose ) { console.log( `download error : ${ err }` ) }
             } )
         } )
     }
-
+    /**
+     * Method used to download a single packet.<br/><br/>
+     * @param target Bot's nickname
+     * @param packet Packet
+     * @remark Fires either download or pipe events depending on {@link path}'s value
+     * @fires {@link download-err| Download Events}
+     * @fires {@link pipe-data| Pipe Events}
+     * @see {@link path}
+     * @example
+     * ```javascript
+     * xdccJS.download('XDCC|Bot', 152)
+     * ```
+     */
     public download ( target: string, packet: string | number ): void
     {
         packet = this.checkHashtag( packet, false )
         this.emit( 'request', { target, packet } )
     }
-
+    /**
+     * Method used to download multiple packets
+     * @param target Bot's nickname
+     * @param packets Packets
+     * @remark Fires either download or pipe events depending on {@link path}'s value
+     * @fires {@link download-err| Download Events}
+     * @fires {@link pipe-data| Pipe Events}
+     * @see {@link path}
+     * @example
+     * ```javascript
+     * xdccJS.download('XDCC|Bot', '1-10, 25-27, 30')
+     * ```
+     */
     public downloadBatch ( target: string, packets: string ): void
     {
         const packet = packets.split( ',' )
@@ -267,7 +362,7 @@ export default class XDCC extends Client
             }
         } )
         if ( this.verbose ) { console.log( `Batch download of packets : ${ packets }` ) }
-        this.emit( 'request batch', { target: target, packet: range } )
+        this.emit( 'request-batch', { target: target, packet: range } )
     }
 
     private nickRandomizer ( nick: string ): string
@@ -346,7 +441,7 @@ export default class XDCC extends Client
         return byte4 + "." + byte3 + "." + byte2 + "." + byte1
     }
 
-    private parseCtcp ( text: string ): { file: string; filePath: string; ip: string; port: number; length: number }
+    private parseCtcp ( text: string ): FileInfo
     {
         const parts = text.match( /(?:[^\s"]+|"[^"]*")+/g )
         if ( !parts ) { throw new TypeError( `CTCP : received unexpected msg : ${ text }` ) }
@@ -367,4 +462,164 @@ export default class XDCC extends Client
             length: parseInt( parts[ 5 ], 10 )
         }
     }
+    /**
+     * Event triggered when xdccJS is ready to download
+     * @event xdcc-ready
+     * @example
+     * ```js
+     * xdccJS.on('xdcc-ready', () => {
+     *  xdccJS.download('XDCC|BOT', 23)
+     * })
+     * ```
+     */
+    static EVENT_XDCC_READY: () => void
+    /**
+    * Event triggered when a download starts.
+    * @category Download
+    * @event download-start
+    * @example
+    * ```js
+    * xdccJS.on('download-start', (f) => {
+    *   console.log(`Starting download of ${f.file}`)
+    * })
+    * ```
+    */
+    static EVENT_XDCC_START: ( f: FileInfo ) => void
+    /**
+     * Event triggered when chunks of data are being received
+     * @category Download
+     * @event downloading
+     * @example
+     * ```js
+     * xdccJS.on('downloading', (r, f) => {
+     *   console.log(`${f.file} - ${r}/${FileInfo.length} Bytes`)
+     * })
+     */
+    static EVENT_XDCC_WHILE: ( r: received, f: FileInfo ) => void
+    /**
+    * Event triggered when a download fails.
+    * @category Download
+    * @event download-err
+    * @example
+    * ```js
+    * xdccJS.on('download-err', (e, f) => {
+    *   console.log(`failed to download ${f.file}`)
+    *   console.log(e)
+    * })
+    * ```
+    */
+    static EVENT_XDCC_ERR: ( e: Error, f: FileInfo ) => void
+    /**
+    * Event triggered when a download is completed.
+    * @category Download
+    * @event downloaded
+    * @example
+    * ```js
+    * xdccJS.on('downloaded', (f) => {
+    *   console.log(`Download completed: ${f.filePath}`)
+    * })
+    * ```
+    */
+    static EVENT_XDCC_DONE: ( f: FileInfo ) => void
+    /**
+    * Event triggered when a pipable download starts. callback returns {@link FileInfo}
+    * @category Pipe
+    * @event pipe-start
+    * @example
+    * ```js
+    * xdccJS.on('pipe-start', (f) => {
+    *   console.log(`File length  : ${f.length}`)
+    * })
+    * ```
+    */
+    static EVENT_PIPE_START: ( f: FileInfo ) => void
+    /**
+    * Event triggered when receiving data from a piped download.
+    * @category Pipe
+    * @event pipe-data
+    * @example
+    * ```js
+    * let stream = fs.createWriteStream( 'MyFile.mp4' )
+    * xdccJS.on('pipe-data', (chunk, r) => {
+    *   stream.write(chunk)
+    *   console.log(`Downloaded ${stream.length} out of ${r}`)
+    * })
+    * ```
+    */
+    static EVENT_PIPE_DATA: ( chunk: Buffer, r: received ) => void
+    /**
+    * Event triggered when a piped download has failed. Callback returns Error and {@link FileInfo}
+    * @category Pipe
+    * @event pipe-err
+    * @example
+    * ```js
+    * let file = fs.createWriteStream( 'MyFile.mp4' )
+    * xdccJS.on('pipe-err', (e, f) => {
+    *   file.end()
+    *   console.log(`failed to download : ${f.file}`)
+    *   console.log(e)
+    * })
+    * ```
+    */
+    static EVENT_PIPE_ERR: ( e: Error, f: FileInfo ) => void
+    /**
+    * Event triggered when a pipable download is done. Callback returns {@link FileInfo}
+    * @category Pipe
+    * @event pipe-downloaded
+    * @example
+    * ```js
+    * let file = fs.createWriteStream( 'MyFile.mp4' )
+    * xdccJS.on('pipe-downloaded', (e, f) => {
+    *   file.end()
+    * })
+    * ```
+    */
+    static EVENT_PIPE_DONE: ( f: FileInfo ) => void
 }
+
+
+/**
+ * Parameters for {@link XDCC.constructor}
+ * @asMemberOf XDCC
+ */
+declare interface Params
+{
+    /** IRC server hostname */
+    host: string
+    /** IRC server PORT */
+    port: number
+    /** Nickname to use on IRC */
+    nick: string
+    /** Channel(s) to join */
+    chan: string | string[]
+    /** Download path */
+    path: false | string
+    /** Display download progress in console */
+    verbose?: boolean
+    /** Add Random number to nickname */
+    randomizeNick?: boolean
+}
+
+
+/**
+ * File informations
+ * @asMemberOf XDCC
+ */
+declare interface FileInfo
+{
+    /** Filename */
+    file: string
+    /** Filename with absolute path */
+    filePath?: string
+    /** Transfert IP */
+    ip: string
+    /** Transfert PORT  */
+    port: number
+    /** File length in bytes */
+    length: number
+}
+
+/**
+ * Accumulated lenght of data received
+ */
+declare type received = number

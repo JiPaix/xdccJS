@@ -1,0 +1,14 @@
+{
+    "out": "prout",
+    "name": "xdccJS",
+    "inputFiles": ["./index.ts"],
+    "exclude": "**/@types/*,**/test/*",
+    "mode": "file",
+    "excludePrivate": true,
+    "excludeProtected": true,
+    "excludeExternals": true,
+    "readme": "none",
+    "TOC": "XDCC",
+    "plugins": ["@wcardinal/typedoc-plugin-named-event", "typedoc-plugin-no-inherit", "typedoc-plugin-as-member-of"],
+    "theme": "minimal"
+}
