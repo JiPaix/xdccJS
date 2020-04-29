@@ -440,7 +440,7 @@ export default class XDCC extends Client
     private parseCtcp ( text: string ): FileInfo
     {
         const parts = text.match( /(?:[^\s"]+|"[^"]*")+/g )
-        if ( typeof parts === null || !parts ) { throw new TypeError( `CTCP : received unexpected msg : ${ text }` ) }
+        if ( parts === null || !parts ) { throw new TypeError( `CTCP : received unexpected msg : ${ text }` ) }
         if (
             parts.some( ( val ) =>
             {
