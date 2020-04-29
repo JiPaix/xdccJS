@@ -343,7 +343,7 @@ export default class XDCC extends Client
     {
         const packet = packets.split( ',' )
         const range: number[] = []
-        packet.map( s =>
+        for ( const s of packet )
         {
             const minmax = s.split( '-' )
             if ( s.includes( '-' ) )
@@ -356,7 +356,7 @@ export default class XDCC extends Client
             {
                 range.push( parseInt( s ) )
             }
-        } )
+        }
         if ( this.verbose ) { console.log( `Batch download of packets : ${ packets }` ) }
         this.emit( 'request-batch', { target: target, packet: range } )
     }
@@ -440,11 +440,11 @@ export default class XDCC extends Client
     private parseCtcp ( text: string ): FileInfo
     {
         const parts = text.match( /(?:[^\s"]+|"[^"]*")+/g )
-        if ( !parts ) { throw new TypeError( `CTCP : received unexpected msg : ${ text }` ) }
+        if ( typeof parts === null || !parts ) { throw new TypeError( `CTCP : received unexpected msg : ${ text }` ) }
         if (
-            parts.some( ( index ) =>
+            parts.some( ( val ) =>
             {
-                index === null
+                return val === null
             } )
         )
         {
