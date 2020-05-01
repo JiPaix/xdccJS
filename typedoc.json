@@ -1,5 +1,5 @@
 {
-    "out": "prout",
+    "out": "docs",
     "name": "xdccJS",
     "inputFiles": ["./index.ts"],
     "exclude": "**/@types/*,**/test/*",

@@ -337,26 +337,47 @@ export default class XDCC extends Client
      * @example
      * ```javascript
      * xdccJS.download('XDCC|Bot', '1-10, 25-27, 30')
+     * // accepts array of numbers too, (strings are converted to number)
+     * xdccJS.download('XDCC|Bot', [1, 2, 3, '24', 32, 33, 35])
      * ```
      */
-    public downloadBatch ( target: string, packets: string ): void
+    public downloadBatch ( target: string, packets: string | number[] | string[] ): void
     {
-        const packet = packets.split( ',' )
         const range: number[] = []
-        for ( const s of packet )
+        if ( typeof packets === 'string' )
         {
-            const minmax = s.split( '-' )
-            if ( s.includes( '-' ) )
+            const packet = packets.split( ',' )
+            for ( const s of packet )
             {
-                for ( let i = +minmax[ 0 ]; i <= +minmax[ 1 ]; i++ )
+                const minmax = s.split( '-' )
+                if ( s.includes( '-' ) )
                 {
-                    range.push( i )
+                    for ( let i = +minmax[ 0 ]; i <= +minmax[ 1 ]; i++ )
+                    {
+                        range.push( i )
+                    }
+                } else
+                {
+                    range.push( parseInt( s ) )
                 }
-            } else
+            }
+        } else
+        {
+            if ( Array.isArray( packets ) )
             {
-                range.push( parseInt( s ) )
+                for ( const pack of packets )
+                {
+                    if ( typeof pack === 'number' )
+                    {
+                        range.push( pack )
+                    } else
+                    {
+                        range.push( parseInt( pack ) )
+                    }
+                }
             }
         }
+
         if ( this.verbose ) { console.log( `Batch download of packets : ${ packets }` ) }
         this.emit( 'request-batch', { target: target, packet: range } )
     }
