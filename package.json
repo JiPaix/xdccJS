@@ -10,7 +10,9 @@
   "scripts": {
     "test": "mocha -r ts-node/register test/mocha.ts",
     "build": "rimraf dist && node_modules/typescript/bin/tsc",
-    "prepublishOnly": "rimraf dist && node_modules/typescript/bin/tsc"
+    "prepublishOnly": "rimraf dist && node_modules/typescript/bin/tsc",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -57,6 +59,8 @@
     "@types/node": "^13.9.5",
     "eventemitter3": "^4.0.0",
     "events": "^3.1.0",
-    "irc-framework": "^4.7.0"
-  }
+    "irc-framework": "^4.7.0",
+    "snyk": "^1.316.1"
+  },
+  "snyk": true
 }
