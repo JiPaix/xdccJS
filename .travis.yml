@@ -2,8 +2,10 @@ os: linux
 dist: xenial
 language: node_js
 node_js: 10
+before_install:
+  - npm install -g snyk
 install:
-  - npm install --quiet
+  - npm install
 script:
     - npm run build
     - npm run test
@@ -11,7 +13,7 @@ deploy:
   provider: npm
   email: $NPM_EMAIL
   api_token: $NPM_AUTH_TOKEN
-  cleanup: false
+  skip_cleanup: true
   on:
     branch: master
     tags: true
