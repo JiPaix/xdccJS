@@ -22,12 +22,13 @@ import XDCC from 'xdccjs'
 ```js
 let opts = {
   host: 'irc.server.net',
-  nick: 'ItsMeJiPaix',
-  chan: '#friendly',
-  path: 'downloads',
   port: 6660,
-  verbose: true,
-  randomizeNick: true,
+  nick: 'ItsMeJiPaix',
+  chan: ['#candy', '#fruits'],
+  path: 'downloads',
+  verbose: true, // optional
+  randomizeNick: true, // optional
+  passivePort: [5000, 5001, 5002] // optional
 }
 
 const xdccJS = new  XDCC(opts)
