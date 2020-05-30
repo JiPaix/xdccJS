@@ -70,42 +70,54 @@ export default class XDCC extends Client {
 	 * @fires {@link xdcc-ready}
 	 */
 	constructor(parameters: Params) {
-        super()
-        this._is('host', parameters.host, 'string')
-        this._is('port', parameters.port, 'number')
-        this._is('nick', parameters.nick, 'string')
-        if(this._is('randomizeNick', parameters.randomizeNick, 'boolean', false)) {
-            this.nick = this.nickRandomizer(parameters.nick)
-        } else {
-            this.nick = parameters.nick
-        }
-        this.verbose = this._is('verbose', parameters.verbose, 'boolean', false)
-        parameters.passivePort = this._is('passivePort', parameters.passivePort, 'object', [parameters.passivePort])
-        if (Array.isArray(parameters.passivePort)) {
-            if (!parameters.passivePort.some(isNaN)) {
-                this.passivePort = parameters.passivePort
-            } else {
-                throw TypeError(
-                    `unexpected type of 'passivePort': an array of numbers was expected`
-                )
-            }
-        } else {
-            throw TypeError(
-                `unexpected type of 'passivePort': an array of numbers was expected but got '${typeof parameters.passivePort}'`
-            )
-        }
-        parameters.path = this._is('path', parameters.path, 'string', false)
-        if (typeof parameters.path === 'string') {
-            this.path = path.normalize(parameters.path)
-            if (!path.isAbsolute(this.path)) {
-                this.path = path.join(path.resolve('./'), parameters.path)
-            }
-            if (!fs.existsSync(this.path)) {
-                fs.mkdirSync(this.path, { recursive: true })
-            }
-        } else {
-            this.path = false
-        }
+		super()
+		this._is('host', parameters.host, 'string')
+		this._is('port', parameters.port, 'number')
+		this._is('nick', parameters.nick, 'string')
+		if (
+			this._is(
+				'randomizeNick',
+				parameters.randomizeNick,
+				'boolean',
+				false
+			)
+		) {
+			this.nick = this.nickRandomizer(parameters.nick)
+		} else {
+			this.nick = parameters.nick
+		}
+		this.verbose = this._is('verbose', parameters.verbose, 'boolean', false)
+		parameters.passivePort = this._is(
+			'passivePort',
+			parameters.passivePort,
+			'object',
+			[parameters.passivePort]
+		)
+		if (Array.isArray(parameters.passivePort)) {
+			if (!parameters.passivePort.some(isNaN)) {
+				this.passivePort = parameters.passivePort
+			} else {
+				throw TypeError(
+					`unexpected type of 'passivePort': an array of numbers was expected`
+				)
+			}
+		} else {
+			throw TypeError(
+				`unexpected type of 'passivePort': an array of numbers was expected but got '${typeof parameters.passivePort}'`
+			)
+		}
+		parameters.path = this._is('path', parameters.path, 'string', false)
+		if (typeof parameters.path === 'string') {
+			this.path = path.normalize(parameters.path)
+			if (!path.isAbsolute(this.path)) {
+				this.path = path.join(path.resolve('./'), parameters.path)
+			}
+			if (!fs.existsSync(this.path)) {
+				fs.mkdirSync(this.path, { recursive: true })
+			}
+		} else {
+			this.path = false
+		}
 
 		if (typeof parameters.chan === 'string') {
 			this.chan = [this.checkHashtag(parameters.chan, true)]
@@ -132,18 +144,20 @@ export default class XDCC extends Client {
 			ping_timeout: 120,
 		})
 		this.live()
-    }
-    private _is(name: string, variable: any, type: string, def?:any) {
-        if(typeof variable !== type) {
-            if(typeof def === 'undefined') {
-                throw TypeError(`unexpected type of '${name}': a ${type} was expected but got '${typeof variable}'`)
-            } else {
-                return def
-            }
-        } else {
-            return variable
-        }
-    }
+	}
+	private _is(name: string, variable: any, type: string, def?: any): any {
+		if (typeof variable !== type) {
+			if (typeof def === 'undefined') {
+				throw TypeError(
+					`unexpected type of '${name}': a ${type} was expected but got '${typeof variable}'`
+				)
+			} else {
+				return def
+			}
+		} else {
+			return variable
+		}
+	}
 	private getRemIP(cb: { (ip: number): void }): void {
 		const options = {
 			host: 'ipv4bot.whatismyipaddress.com',
@@ -163,7 +177,7 @@ export default class XDCC extends Client {
 			})
 		})
 		return
-    }
+	}
 
 	private live(): void {
 		const self = this
@@ -239,8 +253,8 @@ export default class XDCC extends Client {
 		const available = this.passivePort.filter(
 			(port) => !this.portInUse.includes(port)
 		)
-        const pick = available[Math.floor(Math.random() * available.length)]
-        let timeout: NodeJS.Timeout
+		const pick = available[Math.floor(Math.random() * available.length)]
+		let timeout: NodeJS.Timeout
 		if (fileInfo.port === 0) {
 			const server = net.createServer((client) => {
 				timeout = setTimeout(() => {
