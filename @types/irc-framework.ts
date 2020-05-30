@@ -86,7 +86,7 @@ declare module 'irc-framework' {
 
         setTopic(channel: string, newTopic: string): void;
 
-        ctcpRequest(target: string, type: string /* , ...params: Array<any> */): void;
+        ctcpRequest(target: string, type: string, ...params: Array<any>): void;
 
         ctcpResponse(target: string, type: string /* , params: Array<any> */): void;
 
