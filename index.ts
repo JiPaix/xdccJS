@@ -89,6 +89,7 @@ export default class XDCC extends Client {
 		if (typeof parameters.passivePort !== 'undefined') {
             if(Array.isArray(parameters.passivePort)) {
                 if(!parameters.passivePort.some(isNaN)) {
+                    this.passivePort = parameters.passivePort
                 } else {
                     throw TypeError(`unexpected type of 'passivePort': an array of numbers was expected`)
                 }
@@ -342,10 +343,11 @@ export default class XDCC extends Client {
 			}
 		}
 		let timeout = setTimeout(() => {
-			this.say(resp.nick, 'XDCC CANCEL')
-			this.emit('download-err', 'CONNTIMEOUT: not receiving data')
+            this.say(resp.nick, 'XDCC CANCEL')
+            const err = new Error('CONNTIMEOUT: timeout no initial connection')
+			this.emit('download-err', err, fileInfo)
 			if (this.verbose) {
-				console.log('CONNTIMEOUT: timeout no initial connection')
+				console.log(err)
 			}
 		}, 10000)
 		const file = fs.createWriteStream(fileInfo.filePath)
@@ -381,10 +383,11 @@ export default class XDCC extends Client {
 			client.write(sendBuffer)
 			self.emit('downloading', received, fileInfo)
 			timeout = setTimeout(() => {
+                const err = new Error('CONNTIMEOUT: not receiving data')
 				this.say(nick, 'XDCC CANCEL')
-				this.emit('download-err', 'timeout: not receiving data')
+				this.emit('download-err', err, fileInfo)
 				if (this.verbose) {
-					console.log('CONNTIMEOUT: not receiving data')
+					console.log(err)
 				}
 			}, 2000)
 			if (this.verbose) {
@@ -423,7 +426,6 @@ export default class XDCC extends Client {
 		const self = this
 		let received = 0
         const sendBuffer = Buffer.alloc(4)
-        
 		const server = net.createServer((client) => {
 			client.on('data', (data) => {
 				clearTimeout(timeout)
@@ -433,10 +435,11 @@ export default class XDCC extends Client {
 				client.write(sendBuffer)
 				self.emit('downloading', received, fileInfo)
 				timeout = setTimeout(() => {
+                    const err = new Error('CONNTIMEOUT: not receiving data')
 					this.say(nick, 'XDCC CANCEL')
-					this.emit('download-err', 'timeout: not receiving data')
+					this.emit('download-err', err, fileInfo)
 					if (this.verbose) {
-						console.log('CONNTIMEOUT: not receiving data')
+						console.log(err)
 					}
 				}, 2000)
 				if (this.verbose) {
@@ -466,27 +469,48 @@ export default class XDCC extends Client {
 					this.say(nick, 'XDCC CANCEL')
 					self.emit('download-err', err, fileInfo)
 					if (this.verbose) {
-						console.log(`download error : ${err}`)
+						console.log(err)
 					}
 				})
 			})
 		})
 		server.on('listening', () => {
-            let currentPort = server.address()
-            if(currentPort && typeof currentPort !== 'string') {
+
                 this.raw(
                     `PRIVMSG ${nick} ${String.fromCharCode(1)}DCC SEND ${
                         fileInfo.file
-                    } ${this.ip} ${server.address()} ${fileInfo.length} ${
+                    } ${this.ip} ${pick} ${fileInfo.length} ${
                         fileInfo.token
                     }${String.fromCharCode(1)}`
                 )             
-            }
+
         })
-        const available = this.passivePort.filter(port => this.portInUse.includes(port))
+        const available = this.passivePort.filter(port => !this.portInUse.includes(port))
         const pick = available[Math.floor(Math.random() * available.length)]
-        this.portInUse.push(pick)
-        server.listen(pick, '0.0.0.0')
+        if(pick) {
+            this.portInUse.push(pick)
+            server.listen(pick, '0.0.0.0')
+        } else {
+            this.say(nick, 'XDCC CANCEL')
+            const err = new Error('All passive ports are currently used')
+            self.emit('download-err', err, fileInfo)
+            if (this.verbose) {
+                console.log(err)
+            }      
+        }
+
+        server.on('error', (err) => {
+            clearTimeout(timeout)
+            file.end()
+            server.close(() => {
+                this.portInUse = this.portInUse.filter(p => p !== pick)
+                this.say(nick, 'XDCC CANCEL')
+                self.emit('download-err', err, fileInfo)
+                if (this.verbose) {
+                    console.log(err)
+                }
+            })
+        })
 	}
 	/**
 	 * Method used to download a single packet.<br/><br/>
