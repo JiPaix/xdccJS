@@ -145,6 +145,7 @@ export default class XDCC extends Client {
 		})
 		this.live()
 	}
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	private _is(name: string, variable: any, type: string, def?: any): any {
 		if (typeof variable !== type) {
 			if (typeof def === 'undefined') {
