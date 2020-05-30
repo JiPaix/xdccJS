@@ -262,23 +262,22 @@ export default class XDCC extends Client {
 		const available = this.passivePort.filter(
 			(port) => !this.portInUse.includes(port)
 		)
-		const pick = available[Math.floor(Math.random() * available.length)]
+        const pick = available[Math.floor(Math.random() * available.length)]
+        let timeout: NodeJS.Timeout
 		if (fileInfo.port === 0) {
-			let timeout = setTimeout(() => {
-				this.emit(
-					'pipe-err',
-					new Error('CONNTIMEOUT: No initial connection'),
-					fileInfo
-				)
-				if (server) {
+			const server = net.createServer((client) => {
+				timeout = setTimeout(() => {
 					server.close(() => {
 						this.portInUse = this.portInUse.filter(
 							(p) => p !== pick
 						)
+						this.emit(
+							'pipe-err',
+							new Error('CONNTIMEOUT: No initial connection'),
+							fileInfo
+						)
 					})
-				}
-			}, 10000)
-			const server = net.createServer((client) => {
+				}, 10000)
 				this.emit('pipe-start', fileInfo)
 				client.on('data', (data) => {
 					clearTimeout(timeout)
@@ -501,7 +500,7 @@ export default class XDCC extends Client {
 				fs.unlinkSync(fileInfo.filePath)
 			}
 		}
-		let timeout = setTimeout(() => {
+		const timeout = setTimeout(() => {
 			this.say(resp.nick, 'XDCC CANCEL')
 			const err = new Error('CONNTIMEOUT: No initial connection')
 			this.emit('download-err', err, fileInfo)
