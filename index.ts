@@ -259,6 +259,10 @@ export default class XDCC extends Client {
 		const fileInfo = this.parseCtcp(resp.message)
 		let received = 0
 		const sendBuffer = Buffer.alloc(4)
+		const available = this.passivePort.filter(
+			(port) => !this.portInUse.includes(port)
+		)
+		const pick = available[Math.floor(Math.random() * available.length)]
 		if (fileInfo.port === 0) {
 			let timeout = setTimeout(() => {
 				this.emit(
@@ -333,10 +337,6 @@ export default class XDCC extends Client {
 					}${String.fromCharCode(1)}`
 				)
 			})
-			const available = this.passivePort.filter(
-				(port) => !this.portInUse.includes(port)
-			)
-			const pick = available[Math.floor(Math.random() * available.length)]
 			if (pick) {
 				this.portInUse.push(pick)
 				server.listen(pick, '0.0.0.0')
@@ -585,6 +585,10 @@ export default class XDCC extends Client {
 		const self = this
 		let received = 0
 		const sendBuffer = Buffer.alloc(4)
+		const available = this.passivePort.filter(
+			(port) => !this.portInUse.includes(port)
+		)
+		const pick = available[Math.floor(Math.random() * available.length)]
 		const server = net.createServer((client) => {
 			this.emit('download-start', fileInfo)
 			client.on('data', (data) => {
@@ -648,10 +652,6 @@ export default class XDCC extends Client {
 				}${String.fromCharCode(1)}`
 			)
 		})
-		const available = this.passivePort.filter(
-			(port) => !this.portInUse.includes(port)
-		)
-		const pick = available[Math.floor(Math.random() * available.length)]
 		if (pick) {
 			this.portInUse.push(pick)
 			server.listen(pick, '0.0.0.0')
