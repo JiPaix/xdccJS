@@ -37,7 +37,9 @@
   "homepage": "https://github.com/JiPaix/xdccJS#readme",
   "devDependencies": {
     "@types/chai": "^4.2.11",
+    "@types/ip": "^1.1.0",
     "@types/mocha": "^7.0.2",
+    "@types/node": "^13.13.9",
     "@typescript-eslint/eslint-plugin": "^2.26.0",
     "@typescript-eslint/parser": "^2.26.0",
     "@wcardinal/typedoc-plugin-named-event": "^1.0.0",
@@ -55,10 +57,9 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@types/eventemitter3": "^2.0.2",
-    "@types/node": "^13.9.5",
     "eventemitter3": "^4.0.0",
     "events": "^3.1.0",
+    "ip": "^1.1.5",
     "irc-framework": "^4.7.0",
     "snyk": "^1.316.1"
   },

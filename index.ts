@@ -6,7 +6,8 @@ import { Client } from 'irc-framework'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as net from 'net'
-
+import * as http from 'http'
+import ip from 'ip'
 /**
  * XDCC
  * @noInheritDoc
@@ -42,7 +43,12 @@ export default class XDCC extends Client
      */
     public path: false | string
     private verbose: boolean
-
+    /**
+     * Port to use for passive DCCs <br/>
+     * default value : `6277`
+     */
+    public passiveDCC: number
+    private ip!: number
     /** 
      * Initiate IRC connection
      * @remark {@link Params.path} sets {@link XDCC.path} property
@@ -54,7 +60,8 @@ export default class XDCC extends Client
      *  chan: ['#itsMe', '#JiPaix' ]
      *  path: 'downloads',
      *  verbose: true,
-     *  randomizeNick: true
+     *  randomizeNick: true,
+     *  passiveDCC : 6277
      * }
      * 
      * const xdccJS = new XDCC(opts)
@@ -76,6 +83,13 @@ export default class XDCC extends Client
         {
             throw TypeError( `unexpected type of 'nick': a string was expected but got '${ typeof parameters.nick }'` )
         }
+        if ( typeof parameters.passiveDCC !== 'number' )
+        {
+            this.passiveDCC = 6277
+        } else
+        {
+            this.passiveDCC = parameters.passiveDCC
+        }
         if ( typeof parameters.path === 'string' || parameters.path == false )
         {
             if ( typeof parameters.path === 'string' )
@@ -85,7 +99,10 @@ export default class XDCC extends Client
                 {
                     this.path = path.join( path.resolve( './' ), parameters.path )
                 }
-                fs.mkdirSync( this.path, { recursive: true } )
+                if ( !fs.existsSync( this.path ) )
+                {
+                    fs.mkdirSync( this.path, { recursive: true } )
+                }
             } else
             {
                 this.path = false
@@ -124,6 +141,10 @@ export default class XDCC extends Client
         {
             throw TypeError( `unexpected type of 'chan': a boolean was expected but got '${ typeof parameters.chan }'` )
         }
+        this.getRemIP( ( ip: number ) =>
+        {
+            this.ip = ip
+        } )
         this.connect( {
             host: parameters.host,
             port: parameters.port,
@@ -138,7 +159,30 @@ export default class XDCC extends Client
         } )
         this.live()
     }
-
+    private getRemIP ( cb: { ( ip: number ): void } ): void
+    {
+        const options = {
+            host: 'ipv4bot.whatismyipaddress.com',
+            port: 80,
+            path: '/'
+        }
+        http.get( options, ( res ) =>
+        {
+            let data = ''
+            res.on( "data", ( chunk ) =>
+            {
+                data = data + chunk
+            } )
+            res.on( 'end', () =>
+            {
+                const b = Buffer.from( data ).toString()
+                const d = b.split( '.' )
+                const res = ( ( ( ( ( ( +d[ 0 ] ) * 256 ) + ( +d[ 1 ] ) ) * 256 ) + ( +d[ 2 ] ) ) * 256 ) + ( +d[ 3 ] )
+                cb( res )
+            } )
+        } )
+        return
+    }
     private live (): void
     {
         const self = this
@@ -196,6 +240,8 @@ export default class XDCC extends Client
 
     private downloadToPipe ( resp: { [ prop: string ]: string } ): void
     {
+        let client!: net.Socket
+        let server: net.Server | false = false
         const self = this
         const fileInfo = this.parseCtcp( resp.message )
         let received = 0
@@ -205,11 +251,26 @@ export default class XDCC extends Client
             this.emit( 'pipe-err', Error( `not receiving any data` ), fileInfo )
             this.say( resp.nick, 'XDCC CANCEL' )
         }, 10000 )
-        const client = net.connect( fileInfo.port, fileInfo.ip, () =>
+        if ( fileInfo.port === 0 && isNaN( fileInfo.token ) )
         {
-            self.emit( 'download-start', fileInfo )
-            if ( this.verbose ) { console.log( `download starting: ${ fileInfo.file }; ` ) }
-        } )
+            server = net.createServer( c =>
+            {
+                client = c
+            } ).listen( this.passiveDCC, () =>
+            {
+                self.emit( 'download-start', fileInfo )
+                if ( this.verbose ) { console.log( `download starting: ${ fileInfo.file }; ` ) }
+                this.ctcpRequest( 'jipaix', `DCC SEND "${ fileInfo.file }" ${ this.ip } ${ this.passiveDCC } ${ fileInfo.length } ${ fileInfo.token }` )
+            } )
+
+        } else
+        {
+            client = net.connect( fileInfo.port, fileInfo.ip, () =>
+            {
+                self.emit( 'download-start', fileInfo )
+                if ( this.verbose ) { console.log( `download starting: ${ fileInfo.file }; ` ) }
+            } )
+        }
         self.emit( 'pipe-start', fileInfo )
         client.on( 'data', ( data ) =>
         {
@@ -234,10 +295,18 @@ export default class XDCC extends Client
         {
             this.emit( 'pipe-err', e, fileInfo )
             this.say( resp.nick, 'XDCC CANCEL' )
+            if ( server )
+            {
+                server.close()
+            }
         } )
         client.on( 'end', () =>
         {
             this.emit( 'pipe-downloaded', fileInfo )
+            if ( server )
+            {
+                server.close()
+            }
         } )
     }
 
@@ -245,6 +314,7 @@ export default class XDCC extends Client
     {
         const self = this
         const fileInfo = this.parseCtcp( resp.message )
+        console.log( fileInfo )
         if ( typeof fileInfo.filePath === 'undefined' || fileInfo.filePath === null ) { throw Error( 'filePath must be defined' ) }
         if ( fs.existsSync( fileInfo.filePath ) )
         {
@@ -264,18 +334,71 @@ export default class XDCC extends Client
         {
             let received = 0
             const sendBuffer = Buffer.alloc( 4 )
-            let slowdown: NodeJS.Timeout = setInterval( () =>
+            let slowdown: NodeJS.Timeout = setTimeout( () =>
             {
                 this.emit( 'download-err', Error( `not receiving any data` ), fileInfo )
                 this.say( resp.nick, 'XDCC CANCEL' )
             }, 10000 )
-            const client = net.connect( fileInfo.port, fileInfo.ip, () =>
+            if ( fileInfo.port === 0 )
             {
-                self.emit( 'download-start', fileInfo )
-                if ( this.verbose ) { console.log( `download starting: ${ fileInfo.file } ` ) }
-            } )
+                this.passiveToFile( file, fileInfo, slowdown, resp.nick )
+            } else
+            {
+                const client = net.connect( fileInfo.port, fileInfo.ip, () =>
+                {
+                    self.emit( 'download-start', fileInfo )
+                    if ( this.verbose ) { console.log( `download starting: ${ fileInfo.file } ` ) }
+                } )
+                client.on( 'data', ( data ) =>
+                {
+                    file.write( data )
+                    received += data.length
+                    sendBuffer.writeUInt32BE( received, 0 )
+                    client.write( sendBuffer )
+                    if ( received === data.length )
+                    {
+                        clearInterval( slowdown )
+                        slowdown = setInterval( () =>
+                        {
+                            self.emit( 'downloading', received, fileInfo )
+                            if ( this.verbose ) { process.stdout.write( `downloading : ${ this.formatBytes( received ) } / ${ this.formatBytes( fileInfo.length ) }\r` ) }
+                        }, 1000 )
+                    } else if ( received === fileInfo.length )
+                    {
+                        clearInterval( slowdown )
+                    }
+                } )
+                client.on( 'end', () =>
+                {
+                    file.end()
+                    self.emit( 'downloaded', fileInfo )
+                    if ( this.verbose ) { console.log( `downloading done: ${ file.path }` ) }
+                } )
+                client.on( 'error', ( err ) =>
+                {
+                    self.emit( 'download-err', err, fileInfo )
+                    file.end()
+                    this.say( resp.nick, 'XDCC CANCEL' )
+                    if ( this.verbose ) { console.log( `download error : ${ err }` ) }
+                } )
+            }
+
+        } )
+    }
+    private passiveToFile ( file: fs.WriteStream, fileInfo: FileInfo, slowdown: NodeJS.Timeout, nick: string ): void
+    {
+        console.log( 'passive DCC' )
+        const self = this
+        let received = 0
+        const sendBuffer = Buffer.alloc( 4 )
+        const server = net.createServer()
+        server.listen( this.passiveDCC )
+        server.on( 'connection', client =>
+        {
+            console.log( 'CONNECTED: ' + client.remoteAddress + ':' + client.remotePort )
             client.on( 'data', ( data ) =>
             {
+                console.log( 'data!' )
                 file.write( data )
                 received += data.length
                 sendBuffer.writeUInt32BE( received, 0 )
@@ -297,15 +420,26 @@ export default class XDCC extends Client
             {
                 file.end()
                 self.emit( 'downloaded', fileInfo )
+                server.close()
                 if ( this.verbose ) { console.log( `downloading done: ${ file.path }` ) }
             } )
             client.on( 'error', ( err ) =>
             {
                 self.emit( 'download-err', err, fileInfo )
                 file.end()
-                this.say( resp.nick, 'XDCC CANCEL' )
+                if ( server )
+                {
+                    server.close()
+                }
+                this.say( nick, 'XDCC CANCEL' )
                 if ( this.verbose ) { console.log( `download error : ${ err }` ) }
             } )
+        } )
+        server.on( 'listening', () =>
+        {
+            console.log( `PRIVMSG ${ nick } :DCC SEND ${ fileInfo.file } ${ this.ip } ${ this.passiveDCC } ${ fileInfo.length } ${ fileInfo.token }` )
+            this.ctcpRequest(nick, 'DCC SEND', `${ fileInfo.file } ${ this.ip } ${ this.passiveDCC } ${ fileInfo.length } ${ fileInfo.token }`)
+            // this.raw( `PRIVMSG ${ nick } DCC SEND ${ fileInfo.file } ${ this.ip } ${ this.passiveDCC } ${ fileInfo.length } ${ fileInfo.token }` )
         } )
     }
     /**
@@ -476,7 +610,8 @@ export default class XDCC extends Client
             filePath: path.normalize( this.path + '/' + parts[ 2 ].replace( /"/g, '' ) ),
             ip: this.uint32ToIP( parseInt( parts[ 3 ], 10 ) ),
             port: parseInt( parts[ 4 ], 10 ),
-            length: parseInt( parts[ 5 ], 10 )
+            length: parseInt( parts[ 5 ], 10 ),
+            token: parseInt( parts[ 6 ], 10 )
         }
     }
     /**
@@ -615,6 +750,8 @@ declare interface Params
     verbose?: boolean
     /** Add Random number to nickname */
     randomizeNick?: boolean
+    /** Accessible port for passive DCC */
+    passiveDCC?: number
 }
 
 
@@ -634,6 +771,8 @@ declare interface FileInfo
     port: number
     /** File length in bytes */
     length: number
+    /** Token (passive DCC) */
+    token: number
 }
 
 /**
