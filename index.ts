@@ -7,7 +7,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as net from 'net'
 import * as http from 'http'
-import ip from 'ip'
+
 /**
  * XDCC
  * @noInheritDoc
@@ -43,10 +43,12 @@ export default class XDCC extends Client {
 	public path: false | string
 	private verbose: boolean
 	/**
-	 * Port to use for passive DCCs <br/>
-	 * default value : `6277`
+	 * Array of port(s) to use for passive DCCs <br/>
+     * number of port determine how many passive dcc you can run in parallel. <br/>
+	 * default value : `[5001]`
 	 */
-	public passiveDCC: number
+    private passivePort: number[] = [5001]
+    private portInUse: number[] = []
 	private ip!: number
 	/**
 	 * Initiate IRC connection
@@ -60,7 +62,7 @@ export default class XDCC extends Client {
 	 *  path: 'downloads',
 	 *  verbose: true,
 	 *  randomizeNick: true,
-	 *  passiveDCC : 6277
+	 *  passivePort : [5001, 5002, 5003]
 	 * }
 	 *
 	 * const xdccJS = new XDCC(opts)
@@ -84,10 +86,15 @@ export default class XDCC extends Client {
 				`unexpected type of 'nick': a string was expected but got '${typeof parameters.nick}'`
 			)
 		}
-		if (typeof parameters.passiveDCC !== 'number') {
-			this.passiveDCC = 6277
-		} else {
-			this.passiveDCC = parameters.passiveDCC
+		if (typeof parameters.passivePort !== 'undefined') {
+            if(Array.isArray(parameters.passivePort)) {
+                if(!parameters.passivePort.some(isNaN)) {
+                } else {
+                    throw TypeError(`unexpected type of 'passivePort': an array of numbers was expected`)
+                }
+            } else {
+                throw TypeError(`unexpected type of 'passivePort': an array of numbers was expected but got '${typeof parameters.passivePort}'`)
+            }		
 		}
 		if (typeof parameters.path === 'string' || parameters.path == false) {
 			if (typeof parameters.path === 'string') {
@@ -258,14 +265,14 @@ export default class XDCC extends Client {
 				.createServer((c) => {
 					client = c
 				})
-				.listen(this.passiveDCC, () => {
+				.listen(this.passivePort, () => {
 					self.emit('download-start', fileInfo)
 					if (this.verbose) {
 						console.log(`download starting: ${fileInfo.file}; `)
 					}
 					this.ctcpRequest(
 						'jipaix',
-						`DCC SEND "${fileInfo.file}" ${this.ip} ${this.passiveDCC} ${fileInfo.length} ${fileInfo.token}`
+						`DCC SEND "${fileInfo.file}" ${this.ip} ${this.passivePort} ${fileInfo.length} ${fileInfo.token}`
 					)
 				})
 		} else {
@@ -415,7 +422,8 @@ export default class XDCC extends Client {
 	): void {
 		const self = this
 		let received = 0
-		const sendBuffer = Buffer.alloc(4)
+        const sendBuffer = Buffer.alloc(4)
+        
 		const server = net.createServer((client) => {
 			client.on('data', (data) => {
 				clearTimeout(timeout)
@@ -443,6 +451,7 @@ export default class XDCC extends Client {
 				file.end()
 				clearTimeout(timeout)
 				server.close(() => {
+                    this.portInUse = this.portInUse.filter(p => p !== pick)
 					self.emit('downloaded', fileInfo)
 					if (this.verbose) {
 						console.log(`downloading done: ${file.path}`)
@@ -453,6 +462,7 @@ export default class XDCC extends Client {
 				clearTimeout(timeout)
 				file.end()
 				server.close(() => {
+                    this.portInUse = this.portInUse.filter(p => p !== pick)
 					this.say(nick, 'XDCC CANCEL')
 					self.emit('download-err', err, fileInfo)
 					if (this.verbose) {
@@ -461,17 +471,22 @@ export default class XDCC extends Client {
 				})
 			})
 		})
-		server.listen(this.passiveDCC, '0.0.0.0')
-
 		server.on('listening', () => {
-			this.raw(
-				`PRIVMSG ${nick} ${String.fromCharCode(1)}DCC SEND ${
-					fileInfo.file
-				} ${this.ip} ${this.passiveDCC} ${fileInfo.length} ${
-					fileInfo.token
-				}${String.fromCharCode(1)}`
-			)
-		})
+            let currentPort = server.address()
+            if(currentPort && typeof currentPort !== 'string') {
+                this.raw(
+                    `PRIVMSG ${nick} ${String.fromCharCode(1)}DCC SEND ${
+                        fileInfo.file
+                    } ${this.ip} ${server.address()} ${fileInfo.length} ${
+                        fileInfo.token
+                    }${String.fromCharCode(1)}`
+                )             
+            }
+        })
+        const available = this.passivePort.filter(port => this.portInUse.includes(port))
+        const pick = available[Math.floor(Math.random() * available.length)]
+        this.portInUse.push(pick)
+        server.listen(pick, '0.0.0.0')
 	}
 	/**
 	 * Method used to download a single packet.<br/><br/>
@@ -764,8 +779,8 @@ declare interface Params {
 	verbose?: boolean
 	/** Add Random number to nickname */
 	randomizeNick?: boolean
-	/** Accessible port for passive DCC */
-	passiveDCC?: number
+	/** Port(s) for passive DCC */
+	passivePort?: number[]
 }
 
 /**
@@ -788,6 +803,7 @@ declare interface FileInfo {
 }
 
 /**
- * Accumulated lenght of data received
+ * Accumulated lenght of data received*
+ * @asMemberOf XDCC
  */
 declare type received = number
