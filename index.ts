@@ -70,78 +70,43 @@ export default class XDCC extends Client {
 	 * @fires {@link xdcc-ready}
 	 */
 	constructor(parameters: Params) {
-		super()
-		if (typeof parameters.host !== 'string') {
-			throw TypeError(
-				`unexpected type of 'host': a string was expected but got '${typeof parameters.host}'`
-			)
-		}
-		if (typeof parameters.port !== 'number') {
-			throw TypeError(
-				`unexpected type of 'port': a number was expected but got '${typeof parameters.port}'`
-			)
-		}
-		if (typeof parameters.nick !== 'string') {
-			throw TypeError(
-				`unexpected type of 'nick': a string was expected but got '${typeof parameters.nick}'`
-			)
-		}
-		if (typeof parameters.passivePort !== 'undefined') {
-			if (Array.isArray(parameters.passivePort)) {
-				if (!parameters.passivePort.some(isNaN)) {
-					this.passivePort = parameters.passivePort
-				} else {
-					throw TypeError(
-						`unexpected type of 'passivePort': an array of numbers was expected`
-					)
-				}
-			} else {
-				throw TypeError(
-					`unexpected type of 'passivePort': an array of numbers was expected but got '${typeof parameters.passivePort}'`
-				)
-			}
-		}
-		if (typeof parameters.path === 'string' || parameters.path == false) {
-			if (typeof parameters.path === 'string') {
-				this.path = path.normalize(parameters.path)
-				if (!path.isAbsolute(this.path)) {
-					this.path = path.join(path.resolve('./'), parameters.path)
-				}
-				if (!fs.existsSync(this.path)) {
-					fs.mkdirSync(this.path, { recursive: true })
-				}
-			} else {
-				this.path = false
-			}
-		} else {
-			throw TypeError(
-				`unexpected type of 'path': a string or false was expected but got '${typeof parameters.path}'`
-			)
-		}
-		if (
-			typeof parameters.verbose == 'boolean' ||
-			typeof parameters.verbose == 'undefined'
-		) {
-			this.verbose = parameters.verbose || false
-		} else {
-			throw TypeError(
-				`unexpected type of 'verbose': a boolean was expected but got '${typeof parameters.verbose}'`
-			)
-		}
-		if (
-			typeof parameters.randomizeNick === 'boolean' ||
-			typeof parameters.randomizeNick === 'undefined'
-		) {
-			if (parameters.randomizeNick === false) {
-				this.nick = parameters.nick
-			} else {
-				this.nick = this.nickRandomizer(parameters.nick)
-			}
-		} else {
-			throw TypeError(
-				`unexpected type of 'randomizeNick': a boolean was expected but got '${typeof parameters.randomizeNick}'`
-			)
-		}
+        super()
+        this._is('host', parameters.host, 'string')
+        this._is('port', parameters.port, 'number')
+        this._is('nick', parameters.nick, 'string')
+        if(this._is('randomizeNick', parameters.randomizeNick, 'boolean', false)) {
+            this.nick = this.nickRandomizer(parameters.nick)
+        } else {
+            this.nick = parameters.nick
+        }
+        this.verbose = this._is('verbose', parameters.verbose, 'boolean', false)
+        parameters.passivePort = this._is('passivePort', parameters.passivePort, 'object', [parameters.passivePort])
+        if (Array.isArray(parameters.passivePort)) {
+            if (!parameters.passivePort.some(isNaN)) {
+                this.passivePort = parameters.passivePort
+            } else {
+                throw TypeError(
+                    `unexpected type of 'passivePort': an array of numbers was expected`
+                )
+            }
+        } else {
+            throw TypeError(
+                `unexpected type of 'passivePort': an array of numbers was expected but got '${typeof parameters.passivePort}'`
+            )
+        }
+        parameters.path = this._is('path', parameters.path, 'string', false)
+        if (typeof parameters.path === 'string') {
+            this.path = path.normalize(parameters.path)
+            if (!path.isAbsolute(this.path)) {
+                this.path = path.join(path.resolve('./'), parameters.path)
+            }
+            if (!fs.existsSync(this.path)) {
+                fs.mkdirSync(this.path, { recursive: true })
+            }
+        } else {
+            this.path = false
+        }
+
 		if (typeof parameters.chan === 'string') {
 			this.chan = [this.checkHashtag(parameters.chan, true)]
 		} else if (Array.isArray(parameters.chan)) {
@@ -167,7 +132,18 @@ export default class XDCC extends Client {
 			ping_timeout: 120,
 		})
 		this.live()
-	}
+    }
+    private _is(name: string, variable: any, type: string, def?:any) {
+        if(typeof variable !== type) {
+            if(typeof def === 'undefined') {
+                throw TypeError(`unexpected type of '${name}': a ${type} was expected but got '${typeof variable}'`)
+            } else {
+                return def
+            }
+        } else {
+            return variable
+        }
+    }
 	private getRemIP(cb: { (ip: number): void }): void {
 		const options = {
 			host: 'ipv4bot.whatismyipaddress.com',
@@ -187,7 +163,8 @@ export default class XDCC extends Client {
 			})
 		})
 		return
-	}
+    }
+
 	private live(): void {
 		const self = this
 		this.on('connected', () => {
@@ -409,74 +386,6 @@ export default class XDCC extends Client {
 				}
 			})
 		}
-		// let client!: net.Socket
-		// let server: net.Server | false = false
-		// const self = this
-		// const fileInfo = this.parseCtcp(resp.message)
-		// let received = 0
-		// const sendBuffer = Buffer.alloc(4)
-		// let slowdown: NodeJS.Timeout = setInterval(() => {
-		// 	this.emit('pipe-err', Error(`not receiving any data`), fileInfo)
-		// 	this.say(resp.nick, 'XDCC CANCEL')
-		// }, 10000)
-		// if (fileInfo.port === 0 && isNaN(fileInfo.token)) {
-		// 	server = net
-		// 		.createServer((c) => {
-		// 			client = c
-		// 		})
-		// 		.listen(this.passivePort, () => {
-		// 			self.emit('download-start', fileInfo)
-		// 			if (this.verbose) {
-		// 				console.log(`download starting: ${fileInfo.file}; `)
-		// 			}
-		// 			this.ctcpRequest(
-		// 				'jipaix',
-		// 				`DCC SEND "${fileInfo.file}" ${this.ip} ${this.passivePort} ${fileInfo.length} ${fileInfo.token}`
-		// 			)
-		// 		})
-		// } else {
-		// 	client = net.connect(fileInfo.port, fileInfo.ip, () => {
-		// 		self.emit('download-start', fileInfo)
-		// 		if (this.verbose) {
-		// 			console.log(`download starting: ${fileInfo.file}; `)
-		// 		}
-		// 	})
-		// }
-		// self.emit('pipe-start', fileInfo)
-		// client.on('data', (data) => {
-		// 	self.emit('pipe-data', data, fileInfo.length)
-		// 	received += data.length
-		// 	sendBuffer.writeUInt32BE(received, 0)
-		// 	client.write(sendBuffer)
-		// 	if (received === data.length) {
-		// 		clearInterval(slowdown)
-		// 		slowdown = setInterval(() => {
-		// 			self.emit('downloading', received, fileInfo)
-		// 			if (this.verbose) {
-		// 				process.stdout.write(
-		// 					`downloading : ${this.formatBytes(
-		// 						received
-		// 					)} / ${this.formatBytes(fileInfo.length)}\r`
-		// 				)
-		// 			}
-		// 		}, 1000)
-		// 	} else if (received === fileInfo.length) {
-		// 		clearInterval(slowdown)
-		// 	}
-		// })
-		// client.on('error', (e) => {
-		// 	this.emit('pipe-err', e, fileInfo)
-		// 	this.say(resp.nick, 'XDCC CANCEL')
-		// 	if (server) {
-		// 		server.close()
-		// 	}
-		// })
-		// client.on('end', () => {
-		// 	this.emit('pipe-downloaded', fileInfo)
-		// 	if (server) {
-		// 		server.close()
-		// 	}
-		// })
 	}
 
 	private downloadToFile(resp: { [prop: string]: string }): void {
@@ -967,7 +876,7 @@ declare interface Params {
 	/** Add Random number to nickname */
 	randomizeNick?: boolean
 	/** Port(s) for passive DCC */
-	passivePort?: number[]
+	passivePort?: number[] | number
 }
 
 /**
