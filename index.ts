@@ -44,11 +44,11 @@ export default class XDCC extends Client {
 	private verbose: boolean
 	/**
 	 * Array of port(s) to use for passive DCCs <br/>
-     * number of port determine how many passive dcc you can run in parallel. <br/>
+	 * number of port determine how many passive dcc you can run in parallel. <br/>
 	 * default value : `[5001]`
 	 */
-    private passivePort: number[] = [5001]
-    private portInUse: number[] = []
+	private passivePort: number[] = [5001]
+	private portInUse: number[] = []
 	private ip!: number
 	/**
 	 * Initiate IRC connection
@@ -87,15 +87,19 @@ export default class XDCC extends Client {
 			)
 		}
 		if (typeof parameters.passivePort !== 'undefined') {
-            if(Array.isArray(parameters.passivePort)) {
-                if(!parameters.passivePort.some(isNaN)) {
-                    this.passivePort = parameters.passivePort
-                } else {
-                    throw TypeError(`unexpected type of 'passivePort': an array of numbers was expected`)
-                }
-            } else {
-                throw TypeError(`unexpected type of 'passivePort': an array of numbers was expected but got '${typeof parameters.passivePort}'`)
-            }		
+			if (Array.isArray(parameters.passivePort)) {
+				if (!parameters.passivePort.some(isNaN)) {
+					this.passivePort = parameters.passivePort
+				} else {
+					throw TypeError(
+						`unexpected type of 'passivePort': an array of numbers was expected`
+					)
+				}
+			} else {
+				throw TypeError(
+					`unexpected type of 'passivePort': an array of numbers was expected but got '${typeof parameters.passivePort}'`
+				)
+			}
 		}
 		if (typeof parameters.path === 'string' || parameters.path == false) {
 			if (typeof parameters.path === 'string') {
@@ -251,74 +255,229 @@ export default class XDCC extends Client {
 	}
 
 	private downloadToPipe(resp: { [prop: string]: string }): void {
-		let client!: net.Socket
-		let server: net.Server | false = false
 		const self = this
 		const fileInfo = this.parseCtcp(resp.message)
 		let received = 0
 		const sendBuffer = Buffer.alloc(4)
-		let slowdown: NodeJS.Timeout = setInterval(() => {
-			this.emit('pipe-err', Error(`not receiving any data`), fileInfo)
-			this.say(resp.nick, 'XDCC CANCEL')
-		}, 10000)
-		if (fileInfo.port === 0 && isNaN(fileInfo.token)) {
-			server = net
-				.createServer((c) => {
-					client = c
+		if (fileInfo.port === 0) {
+			let timeout = setTimeout(() => {
+				this.emit(
+					'pipe-err',
+					new Error('CONNTIMEOUT: No initial connection'),
+					fileInfo
+				)
+				if (server) {
+					server.close(() => {
+						this.portInUse = this.portInUse.filter(
+							(p) => p !== pick
+						)
+					})
+				}
+			}, 10000)
+			const server = net.createServer((client) => {
+				this.emit('pipe-start', fileInfo)
+				client.on('data', (data) => {
+					clearTimeout(timeout)
+					received += data.length
+					sendBuffer.writeUInt32BE(received, 0)
+					client.write(sendBuffer)
+					self.emit('pipe-data', data, received)
+					timeout = setTimeout(() => {
+						server.close(() => {
+							this.portInUse = this.portInUse.filter(
+								(p) => p !== pick
+							)
+							const err = new Error(
+								'CONNTIMEOUT: not receiving data'
+							)
+							this.say(resp.nick, 'XDCC CANCEL')
+							this.emit('download-err', err, fileInfo)
+							if (this.verbose) {
+								console.log(err)
+							}
+						})
+					}, 2000)
 				})
-				.listen(this.passivePort, () => {
-					self.emit('download-start', fileInfo)
-					if (this.verbose) {
-						console.log(`download starting: ${fileInfo.file}; `)
-					}
-					this.ctcpRequest(
-						'jipaix',
-						`DCC SEND "${fileInfo.file}" ${this.ip} ${this.passivePort} ${fileInfo.length} ${fileInfo.token}`
+				client.on('end', () => {
+					clearTimeout(timeout)
+					server.close(() => {
+						this.portInUse = this.portInUse.filter(
+							(p) => p !== pick
+						)
+						self.emit('pipe-downloaded', fileInfo)
+						if (this.verbose) {
+							console.log(`pipe download done`)
+						}
+					})
+				})
+				client.on('error', (err) => {
+					clearTimeout(timeout)
+					server.close(() => {
+						this.portInUse = this.portInUse.filter(
+							(p) => p !== pick
+						)
+						this.say(resp.nick, 'XDCC CANCEL')
+						self.emit('pipe-err', err, fileInfo)
+						if (this.verbose) {
+							console.log(err)
+						}
+					})
+				})
+			})
+			server.on('listening', () => {
+				this.raw(
+					`PRIVMSG ${resp.nick} ${String.fromCharCode(1)}DCC SEND ${
+						fileInfo.file
+					} ${this.ip} ${pick} ${fileInfo.length} ${
+						fileInfo.token
+					}${String.fromCharCode(1)}`
+				)
+			})
+			const available = this.passivePort.filter(
+				(port) => !this.portInUse.includes(port)
+			)
+			const pick = available[Math.floor(Math.random() * available.length)]
+			if (pick) {
+				this.portInUse.push(pick)
+				server.listen(pick, '0.0.0.0')
+			} else {
+				server.close(() => {
+					this.portInUse = this.portInUse.filter((p) => p !== pick)
+					this.say(resp.nick, 'XDCC CANCEL')
+					const err = new Error(
+						'All passive ports are currently used'
 					)
+					self.emit('pipe-err', err, fileInfo)
+					if (this.verbose) {
+						console.log(err)
+					}
 				})
+			}
+			server.on('error', (err) => {
+				clearTimeout(timeout)
+				server.close(() => {
+					this.portInUse = this.portInUse.filter((p) => p !== pick)
+					this.say(resp.nick, 'XDCC CANCEL')
+					self.emit('pipe-err', err, fileInfo)
+					if (this.verbose) {
+						console.log(err)
+					}
+				})
+			})
 		} else {
-			client = net.connect(fileInfo.port, fileInfo.ip, () => {
-				self.emit('download-start', fileInfo)
+			let timeout = setTimeout(() => {
+				this.emit(
+					'download-err',
+					new Error('CONNTIMEOUT: No initial connection'),
+					fileInfo
+				)
+			}, 10000)
+			const client = net.connect(fileInfo.port, fileInfo.ip)
+			client.on('connect', () => {
+				self.emit('pipe-start')
 				if (this.verbose) {
-					console.log(`download starting: ${fileInfo.file}; `)
+					console.log(`piping started: ${fileInfo.file}`)
+				}
+			})
+			client.on('data', (data) => {
+				clearTimeout(timeout)
+				received += data.length
+				sendBuffer.writeUInt32BE(received, 0)
+				client.write(sendBuffer)
+				self.emit('pipe-data', data, received)
+				timeout = setTimeout(() => {
+					const err = new Error('CONNTIMEOUT: not receiving data')
+					this.say(resp.nick, 'XDCC CANCEL')
+					this.emit('download-err', err, fileInfo)
+					if (this.verbose) {
+						console.log(err)
+					}
+				}, 2000)
+			})
+			client.on('end', () => {
+				clearTimeout(timeout)
+				self.emit('pipe-downloaded', fileInfo)
+				if (this.verbose) {
+					console.log(`pipe download done`)
+				}
+			})
+			client.on('error', (err) => {
+				clearTimeout(timeout)
+				this.say(resp.nick, 'XDCC CANCEL')
+				self.emit('pipe-err', err, fileInfo)
+				if (this.verbose) {
+					console.log(err)
 				}
 			})
 		}
-		self.emit('pipe-start', fileInfo)
-		client.on('data', (data) => {
-			self.emit('pipe-data', data, fileInfo.length)
-			received += data.length
-			sendBuffer.writeUInt32BE(received, 0)
-			client.write(sendBuffer)
-			if (received === data.length) {
-				clearInterval(slowdown)
-				slowdown = setInterval(() => {
-					self.emit('downloading', received, fileInfo)
-					if (this.verbose) {
-						process.stdout.write(
-							`downloading : ${this.formatBytes(
-								received
-							)} / ${this.formatBytes(fileInfo.length)}\r`
-						)
-					}
-				}, 1000)
-			} else if (received === fileInfo.length) {
-				clearInterval(slowdown)
-			}
-		})
-		client.on('error', (e) => {
-			this.emit('pipe-err', e, fileInfo)
-			this.say(resp.nick, 'XDCC CANCEL')
-			if (server) {
-				server.close()
-			}
-		})
-		client.on('end', () => {
-			this.emit('pipe-downloaded', fileInfo)
-			if (server) {
-				server.close()
-			}
-		})
+		// let client!: net.Socket
+		// let server: net.Server | false = false
+		// const self = this
+		// const fileInfo = this.parseCtcp(resp.message)
+		// let received = 0
+		// const sendBuffer = Buffer.alloc(4)
+		// let slowdown: NodeJS.Timeout = setInterval(() => {
+		// 	this.emit('pipe-err', Error(`not receiving any data`), fileInfo)
+		// 	this.say(resp.nick, 'XDCC CANCEL')
+		// }, 10000)
+		// if (fileInfo.port === 0 && isNaN(fileInfo.token)) {
+		// 	server = net
+		// 		.createServer((c) => {
+		// 			client = c
+		// 		})
+		// 		.listen(this.passivePort, () => {
+		// 			self.emit('download-start', fileInfo)
+		// 			if (this.verbose) {
+		// 				console.log(`download starting: ${fileInfo.file}; `)
+		// 			}
+		// 			this.ctcpRequest(
+		// 				'jipaix',
+		// 				`DCC SEND "${fileInfo.file}" ${this.ip} ${this.passivePort} ${fileInfo.length} ${fileInfo.token}`
+		// 			)
+		// 		})
+		// } else {
+		// 	client = net.connect(fileInfo.port, fileInfo.ip, () => {
+		// 		self.emit('download-start', fileInfo)
+		// 		if (this.verbose) {
+		// 			console.log(`download starting: ${fileInfo.file}; `)
+		// 		}
+		// 	})
+		// }
+		// self.emit('pipe-start', fileInfo)
+		// client.on('data', (data) => {
+		// 	self.emit('pipe-data', data, fileInfo.length)
+		// 	received += data.length
+		// 	sendBuffer.writeUInt32BE(received, 0)
+		// 	client.write(sendBuffer)
+		// 	if (received === data.length) {
+		// 		clearInterval(slowdown)
+		// 		slowdown = setInterval(() => {
+		// 			self.emit('downloading', received, fileInfo)
+		// 			if (this.verbose) {
+		// 				process.stdout.write(
+		// 					`downloading : ${this.formatBytes(
+		// 						received
+		// 					)} / ${this.formatBytes(fileInfo.length)}\r`
+		// 				)
+		// 			}
+		// 		}, 1000)
+		// 	} else if (received === fileInfo.length) {
+		// 		clearInterval(slowdown)
+		// 	}
+		// })
+		// client.on('error', (e) => {
+		// 	this.emit('pipe-err', e, fileInfo)
+		// 	this.say(resp.nick, 'XDCC CANCEL')
+		// 	if (server) {
+		// 		server.close()
+		// 	}
+		// })
+		// client.on('end', () => {
+		// 	this.emit('pipe-downloaded', fileInfo)
+		// 	if (server) {
+		// 		server.close()
+		// 	}
+		// })
 	}
 
 	private downloadToFile(resp: { [prop: string]: string }): void {
@@ -343,8 +502,8 @@ export default class XDCC extends Client {
 			}
 		}
 		let timeout = setTimeout(() => {
-            this.say(resp.nick, 'XDCC CANCEL')
-            const err = new Error('CONNTIMEOUT: timeout no initial connection')
+			this.say(resp.nick, 'XDCC CANCEL')
+			const err = new Error('CONNTIMEOUT: No initial connection')
 			this.emit('download-err', err, fileInfo)
 			if (this.verbose) {
 				console.log(err)
@@ -383,7 +542,7 @@ export default class XDCC extends Client {
 			client.write(sendBuffer)
 			self.emit('downloading', received, fileInfo)
 			timeout = setTimeout(() => {
-                const err = new Error('CONNTIMEOUT: not receiving data')
+				const err = new Error('CONNTIMEOUT: not receiving data')
 				this.say(nick, 'XDCC CANCEL')
 				this.emit('download-err', err, fileInfo)
 				if (this.verbose) {
@@ -425,8 +584,9 @@ export default class XDCC extends Client {
 	): void {
 		const self = this
 		let received = 0
-        const sendBuffer = Buffer.alloc(4)
+		const sendBuffer = Buffer.alloc(4)
 		const server = net.createServer((client) => {
+			this.emit('download-start', fileInfo)
 			client.on('data', (data) => {
 				clearTimeout(timeout)
 				file.write(data)
@@ -435,12 +595,17 @@ export default class XDCC extends Client {
 				client.write(sendBuffer)
 				self.emit('downloading', received, fileInfo)
 				timeout = setTimeout(() => {
-                    const err = new Error('CONNTIMEOUT: not receiving data')
-					this.say(nick, 'XDCC CANCEL')
-					this.emit('download-err', err, fileInfo)
-					if (this.verbose) {
-						console.log(err)
-					}
+					server.close(() => {
+						this.portInUse = this.portInUse.filter(
+							(p) => p !== pick
+						)
+						const err = new Error('CONNTIMEOUT: not receiving data')
+						this.say(nick, 'XDCC CANCEL')
+						this.emit('download-err', err, fileInfo)
+						if (this.verbose) {
+							console.log(err)
+						}
+					})
 				}, 2000)
 				if (this.verbose) {
 					process.stdout.write(
@@ -454,7 +619,7 @@ export default class XDCC extends Client {
 				file.end()
 				clearTimeout(timeout)
 				server.close(() => {
-                    this.portInUse = this.portInUse.filter(p => p !== pick)
+					this.portInUse = this.portInUse.filter((p) => p !== pick)
 					self.emit('downloaded', fileInfo)
 					if (this.verbose) {
 						console.log(`downloading done: ${file.path}`)
@@ -465,7 +630,7 @@ export default class XDCC extends Client {
 				clearTimeout(timeout)
 				file.end()
 				server.close(() => {
-                    this.portInUse = this.portInUse.filter(p => p !== pick)
+					this.portInUse = this.portInUse.filter((p) => p !== pick)
 					this.say(nick, 'XDCC CANCEL')
 					self.emit('download-err', err, fileInfo)
 					if (this.verbose) {
@@ -475,42 +640,41 @@ export default class XDCC extends Client {
 			})
 		})
 		server.on('listening', () => {
-
-                this.raw(
-                    `PRIVMSG ${nick} ${String.fromCharCode(1)}DCC SEND ${
-                        fileInfo.file
-                    } ${this.ip} ${pick} ${fileInfo.length} ${
-                        fileInfo.token
-                    }${String.fromCharCode(1)}`
-                )             
-
-        })
-        const available = this.passivePort.filter(port => !this.portInUse.includes(port))
-        const pick = available[Math.floor(Math.random() * available.length)]
-        if(pick) {
-            this.portInUse.push(pick)
-            server.listen(pick, '0.0.0.0')
-        } else {
-            this.say(nick, 'XDCC CANCEL')
-            const err = new Error('All passive ports are currently used')
-            self.emit('download-err', err, fileInfo)
-            if (this.verbose) {
-                console.log(err)
-            }      
-        }
-
-        server.on('error', (err) => {
-            clearTimeout(timeout)
-            file.end()
-            server.close(() => {
-                this.portInUse = this.portInUse.filter(p => p !== pick)
-                this.say(nick, 'XDCC CANCEL')
-                self.emit('download-err', err, fileInfo)
-                if (this.verbose) {
-                    console.log(err)
-                }
-            })
-        })
+			this.raw(
+				`PRIVMSG ${nick} ${String.fromCharCode(1)}DCC SEND ${
+					fileInfo.file
+				} ${this.ip} ${pick} ${fileInfo.length} ${
+					fileInfo.token
+				}${String.fromCharCode(1)}`
+			)
+		})
+		const available = this.passivePort.filter(
+			(port) => !this.portInUse.includes(port)
+		)
+		const pick = available[Math.floor(Math.random() * available.length)]
+		if (pick) {
+			this.portInUse.push(pick)
+			server.listen(pick, '0.0.0.0')
+		} else {
+			this.say(nick, 'XDCC CANCEL')
+			const err = new Error('All passive ports are currently used')
+			self.emit('download-err', err, fileInfo)
+			if (this.verbose) {
+				console.log(err)
+			}
+		}
+		server.on('error', (err) => {
+			clearTimeout(timeout)
+			file.end()
+			server.close(() => {
+				this.portInUse = this.portInUse.filter((p) => p !== pick)
+				this.say(nick, 'XDCC CANCEL')
+				self.emit('download-err', err, fileInfo)
+				if (this.verbose) {
+					console.log(err)
+				}
+			})
+		})
 	}
 	/**
 	 * Method used to download a single packet.<br/><br/>
