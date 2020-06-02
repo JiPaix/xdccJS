@@ -1,18 +1,19 @@
 /**
- * Goal     : trigger a download by visiting `/download?bot=BOTNAME&pack=32`<br>
+ * Goal     : trigger a download by visiting `http://localhost:3000/download?bot=BOTNAME&pack=32`
  * Goal#2   : directly send file to client's web browser
  */
 
 const XDCC = require('xdccjs').default
 
 let opts = {
-    host: 'irc.server.net',
-    nick: 'JiPaix',
-    chan: '#friendly',
-    path: 'dl',
-    port: 6660,
-    verbose: false,
-    disconnect: false // HAS to be false so we can directly serve files to client without saving them on disk
+  host: 'irc.server.net',
+  port: 6660,
+  nick: 'ItsMeJiPaix',
+  chan: ['#candy', '#fruits'],
+  path: 'downloads',
+  verbose: true, // optional
+  randomizeNick: true, // optional
+  passivePort: [5000, 5001, 5002] // optional
 }
 
 const xdccJS = new XDCC(opts)
@@ -30,13 +31,13 @@ xdccJS.on('xdcc-ready', () => {
         // starts download using url parameters
         xdccJS.download(req.query.bot, req.query.pack)
         // download respond with a downoad-pipe event
-        xdccJS.on('download-pipe', (stream, fileInfo) => {
+        xdccJS.on('pipe-data', (stream) => {
             res.set('Content-Disposition', `attachment;filename=${fileInfo.file}`); // set the filename and avoid browser directly playing the file.
             res.set('Content-Length', fileInfo.length) // set the size so browsers know completion% 
             res.set('Content-Type', 'application/octet-stream')
-            stream.on('data', (data) => {
-                // send every bytes received from DCC to the client
-                res.write(data)
+            stream.on('data', (chunk) => {
+                // send every chunk received from XDCC directly to the client
+                res.write(chunk)
             })
             stream.on('end', () => {
                 // tell the client download is complete
