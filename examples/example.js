@@ -32,7 +32,7 @@ xdccJS.on('xdcc-ready', () => {
     xdccJS.on('downloaded', (info) => {
         console.log('file download at: ' + info.filePath)
         //=> File downloaded at: /path/to/file.mp4
-    )}
+    })
     
     xdccJS.on('download-err', (err, info) => {
         console.log('failed to download: '+info.file) //=> failed to download: file.mp4
