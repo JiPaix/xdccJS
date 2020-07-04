@@ -1,6 +1,6 @@
 {
   "name": "xdccjs",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "XDCC downloader: connect to IRC and download files from XDCC bots",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -9,8 +9,8 @@
   ],
   "scripts": {
     "test": "mocha -r ts-node/register test/mocha.ts",
-    "build": "rimraf dist && node_modules/typescript/bin/tsc",
-    "prepublishOnly": "rimraf dist && node_modules/typescript/bin/tsc",
+    "build": "rimraf dist && node node_modules/typescript/bin/tsc",
+    "prepublishOnly": "rimraf dist && node node_modules/typescript/bin/tsc",
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect"
   },
@@ -27,7 +27,9 @@
     "typescript",
     "downloader",
     "download",
-    "bot"
+    "bot",
+    "client",
+    "passive"
   ],
   "author": "JiPaix",
   "license": "MIT",
