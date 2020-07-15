@@ -7,7 +7,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as net from 'net'
 import * as http from 'http'
-
+import * as ProgressBar from 'progress'
 /**
  * XDCC
  * @noInheritDoc
@@ -249,6 +249,7 @@ export default class XDCC extends Client {
 	private downloadToPipe(resp: { [prop: string]: string }): void {
 		const self = this
 		const fileInfo = this.parseCtcp(resp.message)
+		const bar = this.setupProgressBar(fileInfo.length)
 		let received = 0
 		const sendBuffer = Buffer.alloc(4)
 		const available = this.passivePort.filter(
@@ -277,6 +278,9 @@ export default class XDCC extends Client {
 					sendBuffer.writeUInt32BE(received, 0)
 					client.write(sendBuffer)
 					self.emit('pipe-data', data, received)
+					if(this.verbose) {
+						bar.tick(data.length)
+					}
 					timeout = setTimeout(() => {
 						server.close(() => {
 							this.portInUse = this.portInUse.filter(
@@ -288,7 +292,7 @@ export default class XDCC extends Client {
 							this.say(resp.nick, 'XDCC CANCEL')
 							this.emit('download-err', err, fileInfo)
 							if (this.verbose) {
-								console.log(err)
+								bar.interrupt(err.message)
 							}
 						})
 					}, 2000)
@@ -314,7 +318,7 @@ export default class XDCC extends Client {
 						this.say(resp.nick, 'XDCC CANCEL')
 						self.emit('pipe-err', err, fileInfo)
 						if (this.verbose) {
-							console.log(err)
+							bar.interrupt(err.message)
 						}
 					})
 				})
@@ -340,7 +344,7 @@ export default class XDCC extends Client {
 					)
 					self.emit('pipe-err', err, fileInfo)
 					if (this.verbose) {
-						console.log(err)
+						bar.interrupt(err.message)
 					}
 				})
 			}
@@ -351,17 +355,21 @@ export default class XDCC extends Client {
 					this.say(resp.nick, 'XDCC CANCEL')
 					self.emit('pipe-err', err, fileInfo)
 					if (this.verbose) {
-						console.log(err)
+						bar.interrupt(err.message)
 					}
 				})
 			})
 		} else {
 			let timeout = setTimeout(() => {
+				const err  =  new Error('CONNTIMEOUT: No initial connection')
 				this.emit(
 					'download-err',
-					new Error('CONNTIMEOUT: No initial connection'),
+					err,
 					fileInfo
 				)
+				if(this.verbose) {
+					bar.interrupt(err.message)
+				}
 			}, 10000)
 			const client = net.connect(fileInfo.port, fileInfo.ip)
 			client.on('connect', () => {
@@ -376,12 +384,13 @@ export default class XDCC extends Client {
 				sendBuffer.writeUInt32BE(received, 0)
 				client.write(sendBuffer)
 				self.emit('pipe-data', data, received)
+				bar.tick(length)
 				timeout = setTimeout(() => {
 					const err = new Error('CONNTIMEOUT: not receiving data')
 					this.say(resp.nick, 'XDCC CANCEL')
 					this.emit('download-err', err, fileInfo)
 					if (this.verbose) {
-						console.log(err)
+						bar.interrupt(err.message)
 					}
 				}, 2000)
 			})
@@ -441,12 +450,21 @@ export default class XDCC extends Client {
 			}
 		})
 	}
+	private setupProgressBar(len: number): ProgressBar {
+		return new ProgressBar('  downloading [:bar] :rate/bps :percent :etas', {
+			complete: '=',
+			incomplete: ' ',
+			width: 20,
+			total: len
+		})
+	}
 	private activeToFile(
 		file: fs.WriteStream,
 		fileInfo: FileInfo,
 		timeout: NodeJS.Timeout,
 		nick: string
 	): void {
+		const bar = this.setupProgressBar(fileInfo.length)
 		const self = this
 		let received = 0
 		const sendBuffer = Buffer.alloc(4)
@@ -469,15 +487,11 @@ export default class XDCC extends Client {
 				this.say(nick, 'XDCC CANCEL')
 				this.emit('download-err', err, fileInfo)
 				if (this.verbose) {
-					console.log(err)
+					bar.interrupt(err.message)
 				}
 			}, 2000)
 			if (this.verbose) {
-				process.stdout.write(
-					`downloading : ${this.formatBytes(
-						received
-					)} / ${this.formatBytes(fileInfo.length)}\r`
-				)
+				bar.tick(data.length)
 			}
 		})
 		client.on('end', () => {
@@ -494,7 +508,7 @@ export default class XDCC extends Client {
 			this.say(nick, 'XDCC CANCEL')
 			self.emit('download-err', err, fileInfo)
 			if (this.verbose) {
-				console.log(`download error : ${err}`)
+				bar.interrupt(err.message)
 			}
 		})
 	}
@@ -505,6 +519,7 @@ export default class XDCC extends Client {
 		timeout: NodeJS.Timeout,
 		nick: string
 	): void {
+		const bar = this.setupProgressBar(fileInfo.length)
 		const self = this
 		let received = 0
 		const sendBuffer = Buffer.alloc(4)
@@ -530,16 +545,12 @@ export default class XDCC extends Client {
 						this.say(nick, 'XDCC CANCEL')
 						this.emit('download-err', err, fileInfo)
 						if (this.verbose) {
-							console.log(err)
+							bar.interrupt(err.message)
 						}
 					})
 				}, 2000)
 				if (this.verbose) {
-					process.stdout.write(
-						`downloading : ${this.formatBytes(
-							received
-						)} / ${this.formatBytes(fileInfo.length)}\r`
-					)
+					bar.tick(data.length)
 				}
 			})
 			client.on('end', () => {
@@ -560,8 +571,8 @@ export default class XDCC extends Client {
 					this.portInUse = this.portInUse.filter((p) => p !== pick)
 					this.say(nick, 'XDCC CANCEL')
 					self.emit('download-err', err, fileInfo)
-					if (this.verbose) {
-						console.log(err)
+					if (this.verbose) { 
+						bar.interrupt(err.message)
 					}
 				})
 			})

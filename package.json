@@ -1,6 +1,6 @@
 {
   "name": "xdccjs",
-  "version": "2.5.2",
+  "version": "2.5.3",
   "description": "XDCC downloader: connect to IRC and download files from XDCC bots",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -60,8 +60,10 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
+    "@types/progress": "^2.0.3",
     "eventemitter3": "^4.0.0",
-    "irc-framework": "^4.7.0"
+    "irc-framework": "^4.7.0",
+    "progress": "^2.0.3"
   },
   "snyk": true
 }
