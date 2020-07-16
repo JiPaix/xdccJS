@@ -637,9 +637,9 @@ export default class XDCC extends Client {
 	 * @see {@link path}
 	 * @example
 	 * ```javascript
-	 * xdccJS.download('XDCC|Bot', '1-10, 25-27, 30')
+	 * xdccJS.downloadBatch('XDCC|Bot', '1-10, 25-27, 30')
 	 * // accepts array of numbers too, (strings are converted to number)
-	 * xdccJS.download('XDCC|Bot', [1, 2, 3, '24', 32, 33, 35])
+	 * xdccJS.downloadBatch('XDCC|Bot', [1, 2, 3, '24', 32, 33, 35])
 	 * ```
 	 */
 	public downloadBatch(
