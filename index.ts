@@ -384,7 +384,7 @@ export default class XDCC extends Client {
 				sendBuffer.writeUInt32BE(received, 0)
 				client.write(sendBuffer)
 				self.emit('pipe-data', data, received)
-				bar.tick(length)
+				bar.tick(data.length)
 				timeout = setTimeout(() => {
 					const err = new Error('CONNTIMEOUT: not receiving data')
 					this.say(resp.nick, 'XDCC CANCEL')
