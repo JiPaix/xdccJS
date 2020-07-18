@@ -50,6 +50,7 @@ export default class XDCC extends Client {
 	private passivePort: number[] = [5001]
 	private portInUse: number[] = []
 	private ip!: number
+	private timeouts!: NodeJS.Timeout
 	/**
 	 * Initiate IRC connection
 	 * @remark {@link Params.path} sets {@link XDCC.path} property
@@ -91,21 +92,8 @@ export default class XDCC extends Client {
 			'passivePort',
 			parameters.passivePort,
 			'object',
-			[parameters.passivePort]
+			[5001]
 		)
-		if (Array.isArray(parameters.passivePort)) {
-			if (!parameters.passivePort.some(isNaN)) {
-				this.passivePort = parameters.passivePort
-			} else {
-				throw TypeError(
-					`unexpected type of 'passivePort': an array of numbers was expected`
-				)
-			}
-		} else {
-			throw TypeError(
-				`unexpected type of 'passivePort': an array of numbers was expected but got '${typeof parameters.passivePort}'`
-			)
-		}
 		parameters.path = this._is('path', parameters.path, 'string', false)
 		if (typeof parameters.path === 'string') {
 			this.path = path.normalize(parameters.path)
@@ -113,19 +101,20 @@ export default class XDCC extends Client {
 				this.path = path.join(path.resolve('./'), parameters.path)
 			}
 			if (!fs.existsSync(this.path)) {
-				fs.mkdirSync(this.path, { recursive: true })
+				fs.mkdirSync(this.path, {
+					recursive: true,
+				})
 			}
 		} else {
 			this.path = false
 		}
-
 		if (typeof parameters.chan === 'string') {
 			this.chan = [this.checkHashtag(parameters.chan, true)]
 		} else if (Array.isArray(parameters.chan)) {
 			this.chan = parameters.chan
 		} else {
 			throw TypeError(
-				`unexpected type of 'chan': a boolean was expected but got '${typeof parameters.chan}'`
+				`unexpected type of 'chan': an array of strings was expected'`
 			)
 		}
 		this.getRemIP((ip: number) => {
@@ -143,7 +132,7 @@ export default class XDCC extends Client {
 			// eslint-disable-next-line @typescript-eslint/camelcase
 			ping_timeout: 120,
 		})
-		this.live()
+		this.live(parameters.host)
 	}
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	private _is(name: string, variable: any, type: string, def?: any): any {
@@ -180,7 +169,7 @@ export default class XDCC extends Client {
 		return
 	}
 
-	private live(): void {
+	private live(ircServer: string): void {
 		const self = this
 		this.on('connected', () => {
 			for (let index = 0; index < this.chan.length; index++) {
@@ -189,18 +178,38 @@ export default class XDCC extends Client {
 				)
 				channel.join()
 			}
-			self.emit('xdcc-ready')
 			if (this.verbose) {
-				console.log(`connected and joined ${this.chan}`)
+				console.log(
+					`\x1b[1m\x1b[32m\u2713\x1b[0m connected to: \x1b[33m${ircServer}\x1b[0m`
+				)
+				console.log(
+					`\u2937`.padStart(2),
+					`\x1b[1m\x1b[32m\u2713\x1b[0m joined: ${this.chan.map(
+						(e) => `\x1b[33m#${e}\x1b[0m`
+					)}`
+				)
 			}
+			self.emit('xdcc-ready')
 		})
 		this.on(
 			'request',
 			(args: { target: string; packet: string | number }) => {
 				this.say(args.target, `xdcc send ${args.packet}`)
 				if (this.verbose) {
-					console.log(`/MSG ${args.target} xdcc send ${args.packet}`)
+					console.log(
+						`\u2937`.padStart(4),
+						`\x1b[1m\x1b[32m\u2713\x1b[0m sending command: /MSG \x1b[33m${args.target}\x1b[0m xdcc send \x1b[33m${args.packet}\x1b[0m`
+					)
 				}
+				this.timeouts = setTimeout(() => {
+					this.say(args.target, 'XDCC CANCEL')
+					if (this.verbose) {
+						console.log(
+							`\u2937`.padStart(6),
+							`\x1b[1m\x1b[31m\u0058\x1b[0m timeout: No response from \x1b[33m${args.target}\x1b[0m`
+						)
+					}
+				}, 10000)
 			}
 		)
 		this.on(
@@ -216,7 +225,8 @@ export default class XDCC extends Client {
 					this.say(args.target, `xdcc send ${args.packet[i]}`)
 					if (this.verbose) {
 						console.log(
-							`/MSG ${args.target} xdcc send ${args.packet[i]}`
+							`\u2937`.padStart(4),
+							`\x1b[1m\x1b[32m\u2713\x1b[0m sending command: /MSG \x1b[33m${args.target}\x1b[0m xdcc send \x1b[33m${args.packet[i]}\x1b[0m`
 						)
 					}
 					i++
@@ -226,7 +236,8 @@ export default class XDCC extends Client {
 						this.say(args.target, `xdcc send ${args.packet[i]}`)
 						if (this.verbose) {
 							console.log(
-								`/MSG ${args.target} xdcc send ${args.packet[i]}`
+								`\u2937`.padStart(4),
+								`\x1b[1m\x1b[32m\u2713\x1b[0m sending command: /MSG \x1b[33m${args.target}\x1b[0m xdcc send \x1b[33m${args.packet[i]}\x1b[0m`
 							)
 						}
 						i++
@@ -249,7 +260,6 @@ export default class XDCC extends Client {
 	private downloadToPipe(resp: { [prop: string]: string }): void {
 		const self = this
 		const fileInfo = this.parseCtcp(resp.message)
-		const bar = this.setupProgressBar(fileInfo.length)
 		let received = 0
 		const sendBuffer = Buffer.alloc(4)
 		const available = this.passivePort.filter(
@@ -257,6 +267,8 @@ export default class XDCC extends Client {
 		)
 		const pick = available[Math.floor(Math.random() * available.length)]
 		let timeout: NodeJS.Timeout
+		const bar = this.setupProgressBar(fileInfo.length)
+		clearTimeout(this.timeouts)
 		if (fileInfo.port === 0) {
 			const server = net.createServer((client) => {
 				timeout = setTimeout(() => {
@@ -278,7 +290,7 @@ export default class XDCC extends Client {
 					sendBuffer.writeUInt32BE(received, 0)
 					client.write(sendBuffer)
 					self.emit('pipe-data', data, received)
-					if(this.verbose) {
+					if (this.verbose) {
 						bar.tick(data.length)
 					}
 					timeout = setTimeout(() => {
@@ -361,21 +373,38 @@ export default class XDCC extends Client {
 			})
 		} else {
 			let timeout = setTimeout(() => {
-				const err  =  new Error('CONNTIMEOUT: No initial connection')
-				this.emit(
-					'download-err',
-					err,
-					fileInfo
-				)
-				if(this.verbose) {
-					bar.interrupt(err.message)
+				const err = new Error('CONNTIMEOUT: No initial connection')
+				this.emit('download-err', err, fileInfo)
+				if (this.verbose) {
+					console.log(
+						`\u2937`.padStart(6),
+						`\x1b[1m\x1b[31m\u0058\x1b[0m couldn't connect to: \x1b[33m${fileInfo.ip}:${fileInfo.port}\x1b[0m`
+					)
 				}
 			}, 10000)
 			const client = net.connect(fileInfo.port, fileInfo.ip)
 			client.on('connect', () => {
-				self.emit('pipe-start')
+				self.emit('pipe-start', fileInfo)
+				clearTimeout(timeout)
+				timeout = setTimeout(() => {
+					const err = new Error(
+						'connection timeout: no receiving data '
+					)
+					this.say(resp.nick, 'XDCC CANCEL')
+					this.emit('download-err', err, fileInfo)
+					if (this.verbose) {
+						bar.interrupt(
+							`\u2937`.padStart(8) +
+								' \x1b[1m\x1b[31m\u0058\x1b[0m ' +
+								err.message
+						)
+					}
+				}, 2000)
 				if (this.verbose) {
-					console.log(`piping started: ${fileInfo.file}`)
+					console.log(
+						`\u2937`.padStart(6),
+						`\x1b[1m\x1b[32m\u2713\x1b[0m opening connection with bot: \x1b[33m${fileInfo.ip}:${fileInfo.port}\x1b[0m`
+					)
 				}
 			})
 			client.on('data', (data) => {
@@ -384,30 +413,37 @@ export default class XDCC extends Client {
 				sendBuffer.writeUInt32BE(received, 0)
 				client.write(sendBuffer)
 				self.emit('pipe-data', data, received)
-				bar.tick(data.length)
 				timeout = setTimeout(() => {
-					const err = new Error('CONNTIMEOUT: not receiving data')
+					const err = new Error(
+						'connection timeout: no receiving data '
+					)
 					this.say(resp.nick, 'XDCC CANCEL')
-					this.emit('download-err', err, fileInfo)
+					this.emit('pipe-err', err, fileInfo)
 					if (this.verbose) {
-						bar.interrupt(err.message)
+						bar.interrupt(
+							`\u2937`.padStart(8) +
+								' \x1b[1m\x1b[31m\u0058\x1b[0m ' +
+								err.message
+						)
 					}
 				}, 2000)
+				if (this.verbose) {
+					bar.tick(data.length)
+				}
 			})
 			client.on('end', () => {
 				clearTimeout(timeout)
 				self.emit('pipe-downloaded', fileInfo)
 				if (this.verbose) {
-					console.log(`pipe download done`)
+					console.log(
+						`\u2937`.padStart(8),
+						`\x1b[1m\x1b[32m\u2713\x1b[0m done: \x1b[36m${fileInfo.file}\x1b[0m`
+					)
 				}
 			})
 			client.on('error', (err) => {
-				clearTimeout(timeout)
 				this.say(resp.nick, 'XDCC CANCEL')
 				self.emit('pipe-err', err, fileInfo)
-				if (this.verbose) {
-					console.log(err)
-				}
 			})
 		}
 	}
@@ -423,11 +459,15 @@ export default class XDCC extends Client {
 		}
 		if (fs.existsSync(fileInfo.filePath)) {
 			if (fs.statSync(fileInfo.filePath).size === fileInfo.length) {
+				clearTimeout(this.timeouts)
 				this.say(resp.nick, 'XDCC CANCEL')
-				self.emit('downloaded', fileInfo)
 				if (this.verbose) {
-					console.log(`You already have this: ${fileInfo.filePath}`)
+					console.log(
+						`\u2937`.padStart(8),
+						`\x1b[1m\x1b[32m\u2713\x1b[0m done: \x1b[36m${fileInfo.filePath}\x1b[0m`
+					)
 				}
+				self.emit('downloaded', fileInfo)
 				return
 			} else {
 				fs.unlinkSync(fileInfo.filePath)
@@ -438,25 +478,35 @@ export default class XDCC extends Client {
 			const err = new Error('CONNTIMEOUT: No initial connection')
 			this.emit('download-err', err, fileInfo)
 			if (this.verbose) {
-				console.log(err)
+				console.log(
+					`\u2937`.padStart(6),
+					`\x1b[1m\x1b[31m\u0058\x1b[0m couldn't connect to: \x1b[33m${fileInfo.ip}:${fileInfo.port}\x1b[0m`
+				)
 			}
 		}, 10000)
 		const file = fs.createWriteStream(fileInfo.filePath)
 		file.on('ready', () => {
 			if (fileInfo.port === 0) {
+				clearTimeout(timeout)
+				clearTimeout(this.timeouts)
 				this.passiveToFile(file, fileInfo, timeout, resp.nick)
 			} else {
+				clearTimeout(this.timeouts)
 				this.activeToFile(file, fileInfo, timeout, resp.nick)
 			}
 		})
 	}
 	private setupProgressBar(len: number): ProgressBar {
-		return new ProgressBar('  downloading [:bar] :rate/bps :percent :etas', {
-			complete: '=',
-			incomplete: ' ',
-			width: 20,
-			total: len
-		})
+		return new ProgressBar(
+			`\u2937`.padStart(6) +
+				' \x1b[1m\x1b[32m\u2713\x1b[0m downloading [:bar] :rate/s :percent :etas',
+			{
+				complete: '=',
+				incomplete: ' ',
+				width: 20,
+				total: len,
+			}
+		)
 	}
 	private activeToFile(
 		file: fs.WriteStream,
@@ -471,8 +521,24 @@ export default class XDCC extends Client {
 		const client = net.connect(fileInfo.port, fileInfo.ip)
 		client.on('connect', () => {
 			self.emit('download-start', fileInfo)
+			clearTimeout(timeout)
+			timeout = setTimeout(() => {
+				const err = new Error('connection timeout: no receiving data ')
+				this.say(nick, 'XDCC CANCEL')
+				this.emit('download-err', err, fileInfo)
+				if (this.verbose) {
+					bar.interrupt(
+						`\u2937`.padStart(8) +
+							' \x1b[1m\x1b[31m\u0058\x1b[0m ' +
+							err.message
+					)
+				}
+			}, 2000)
 			if (this.verbose) {
-				console.log(`download starting: ${fileInfo.file} `)
+				console.log(
+					`\u2937`.padStart(6),
+					`\x1b[1m\x1b[32m\u2713\x1b[0m opening connection with bot: \x1b[33m${fileInfo.ip}:${fileInfo.port}\x1b[0m`
+				)
 			}
 		})
 		client.on('data', (data) => {
@@ -483,11 +549,15 @@ export default class XDCC extends Client {
 			client.write(sendBuffer)
 			self.emit('downloading', received, fileInfo)
 			timeout = setTimeout(() => {
-				const err = new Error('CONNTIMEOUT: not receiving data')
+				const err = new Error('connection timeout: no receiving data ')
 				this.say(nick, 'XDCC CANCEL')
 				this.emit('download-err', err, fileInfo)
 				if (this.verbose) {
-					bar.interrupt(err.message)
+					bar.interrupt(
+						`\u2937`.padStart(8) +
+							' \x1b[1m\x1b[31m\u0058\x1b[0m ' +
+							err.message
+					)
 				}
 			}, 2000)
 			if (this.verbose) {
@@ -497,19 +567,18 @@ export default class XDCC extends Client {
 		client.on('end', () => {
 			file.end()
 			clearTimeout(timeout)
-			self.emit('downloaded', fileInfo)
 			if (this.verbose) {
-				console.log(`downloading done: ${file.path}`)
+				console.log(
+					`\u2937`.padStart(8),
+					`\x1b[1m\x1b[32m\u2713\x1b[0m done: \x1b[36m${file.path}\x1b[0m`
+				)
 			}
+			self.emit('downloaded', fileInfo)
 		})
 		client.on('error', (err) => {
-			clearTimeout(timeout)
 			file.end()
 			this.say(nick, 'XDCC CANCEL')
 			self.emit('download-err', err, fileInfo)
-			if (this.verbose) {
-				bar.interrupt(err.message)
-			}
 		})
 	}
 
@@ -541,11 +610,17 @@ export default class XDCC extends Client {
 						this.portInUse = this.portInUse.filter(
 							(p) => p !== pick
 						)
-						const err = new Error('CONNTIMEOUT: not receiving data')
+						const err = new Error(
+							'connection timeout: no receiving data '
+						)
 						this.say(nick, 'XDCC CANCEL')
 						this.emit('download-err', err, fileInfo)
 						if (this.verbose) {
-							bar.interrupt(err.message)
+							bar.interrupt(
+								`\u2937`.padStart(8) +
+									' \x1b[1m\x1b[31m\u0058\x1b[0m ' +
+									err.message
+							)
 						}
 					})
 				}, 2000)
@@ -558,10 +633,13 @@ export default class XDCC extends Client {
 				clearTimeout(timeout)
 				server.close(() => {
 					this.portInUse = this.portInUse.filter((p) => p !== pick)
-					self.emit('downloaded', fileInfo)
 					if (this.verbose) {
-						console.log(`downloading done: ${file.path}`)
+						console.log(
+							`\u2937`.padStart(8),
+							`\x1b[1m\x1b[32m\u2713\x1b[0m done: \x1b[36m${file.path}\x1b[0m`
+						)
 					}
+					self.emit('downloaded', fileInfo)
 				})
 			})
 			client.on('error', (err) => {
@@ -571,20 +649,15 @@ export default class XDCC extends Client {
 					this.portInUse = this.portInUse.filter((p) => p !== pick)
 					this.say(nick, 'XDCC CANCEL')
 					self.emit('download-err', err, fileInfo)
-					if (this.verbose) { 
-						bar.interrupt(err.message)
+					if (this.verbose) {
+						bar.interrupt(
+							`\u2937`.padStart(8) +
+								' \x1b[1m\x1b[31m\u0058\x1b[0m ' +
+								err.message
+						)
 					}
 				})
 			})
-		})
-		server.on('listening', () => {
-			this.raw(
-				`PRIVMSG ${nick} ${String.fromCharCode(1)}DCC SEND ${
-					fileInfo.file
-				} ${this.ip} ${pick} ${fileInfo.length} ${
-					fileInfo.token
-				}${String.fromCharCode(1)}`
-			)
 		})
 		if (pick) {
 			this.portInUse.push(pick)
@@ -594,18 +667,38 @@ export default class XDCC extends Client {
 			const err = new Error('All passive ports are currently used')
 			self.emit('download-err', err, fileInfo)
 			if (this.verbose) {
-				console.log(err)
+				console.log(
+					`\u2937`.padStart(6),
+					`\x1b[1m\x1b[31m\u0058\x1b[0m all passive ports are currently used: \x1b[33m${fileInfo.ip}:${fileInfo.port}\x1b[0m`
+				)
 			}
 		}
+		server.on('listening', () => {
+			this.raw(
+				`PRIVMSG ${nick} ${String.fromCharCode(1)}DCC SEND ${
+					fileInfo.file
+				} ${this.ip} ${pick} ${fileInfo.length} ${
+					fileInfo.token
+				}${String.fromCharCode(1)}`
+			)
+			if (this.verbose) {
+				console.log(
+					`\u2937`.padStart(6),
+					`\x1b[1m\x1b[32m\u2713\x1b[0m listening for passive download at: \x1b[33m${this.ip}:${pick}\x1b[0m`
+				)
+			}
+		})
 		server.on('error', (err) => {
-			clearTimeout(timeout)
 			file.end()
 			server.close(() => {
 				this.portInUse = this.portInUse.filter((p) => p !== pick)
 				this.say(nick, 'XDCC CANCEL')
 				self.emit('download-err', err, fileInfo)
 				if (this.verbose) {
-					console.log(err)
+					console.log(
+						`\u2937`.padStart(6),
+						`\x1b[1m\x1b[31m\u0058\x1b[0m couldn't setup a passive transfert: \x1b[33m${err}\x1b[0m`
+					)
 				}
 			})
 		})
@@ -625,7 +718,10 @@ export default class XDCC extends Client {
 	 */
 	public download(target: string, packet: string | number): void {
 		packet = this.checkHashtag(packet, false)
-		this.emit('request', { target, packet })
+		this.emit('request', {
+			target,
+			packet,
+		})
 	}
 	/**
 	 * Method used to download multiple packets
@@ -672,9 +768,15 @@ export default class XDCC extends Client {
 		}
 
 		if (this.verbose) {
-			console.log(`Batch download of packets : ${packets}`)
+			console.log(
+				`\u2937`.padStart(4),
+				`\x1b[1m\x1b[36m\u2139\x1b[0m batch download of packets: \x1b[33m${packets}\x1b[0m`
+			)
 		}
-		this.emit('request-batch', { target: target, packet: range })
+		this.emit('request-batch', {
+			target: target,
+			packet: range,
+		})
 	}
 
 	private nickRandomizer(nick: string): string {
@@ -902,7 +1004,7 @@ declare interface Params {
 	/** Add Random number to nickname */
 	randomizeNick?: boolean
 	/** Port(s) for passive DCC */
-	passivePort?: number[] | number
+	passivePort?: number[]
 }
 
 /**
