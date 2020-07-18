@@ -11,7 +11,7 @@
     "xdccJS": "./dist/bin/index.js"
   },
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha.js -r ts-node/register test/mocha.ts",
+    "test": "node node_modules/mocha/bin/mocha -r ts-node/register test/mocha.ts",
     "build": "node node_modules/rimraf/bin.js dist && node node_modules/typescript/bin/tsc && cp ./bin/index.js ./dist/bin/index.js && cp -R ./patches ./dist/patches",
     "prepublishOnly": "node node_modules/rimraf/bin.js dist && node node_modules/typescript/bin/tsc",
     "snyk-protect": "node node_modules/snyk/dist/cli/index.js protect",
