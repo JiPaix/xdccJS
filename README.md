@@ -37,6 +37,44 @@ const xdccJS = new  XDCC(opts)
 
 ```js
 xdccJS.on('xdcc-ready', () => {
-  xdccJS.download("xdcc-bot-nickname", 23)
+  xdccJS.download('xdcc-bot-nickname', 23)
   //=> /MSG xdcc-bot-nickname xdcc send #23
 })
+
+xdccJS.on('downloaded', (fileInfo) => {
+  console.log(fileInfo.filePath) //=> /home/user/xdccJS/downloads/myfile.pdf
+})
+```
+#### Download Batches of files :
+
+```js
+xdccJS.on('xdcc-ready', () => {
+  // downloadBatch() accepts 'range strings' and array of numbers
+  xdccJS.downloadBatch('xdcc-bot-nickname', '1-3, 8, 55')
+  xdccJS.downloadBatch('another-bot', [1, 3, 10, 20])
+})
+
+xdccJS.on('downloaded', (fileInfo) => {
+  console.log(fileInfo.filePath) //=> /home/user/xdccJS/downloads/myfile.pdf
+})
+
+xdccJS.on('batch-complete', (info) => {
+  console.log(info) // => { target: "xdcc-bot-nickname", packet: [1, 2, 3, 8, 55] }
+})
+```
+#### Disconnect from IRC :
+
+Simply use `xdccJS.quit()` whenever you need it.
+
+After a file is downloaded:
+```js
+xdccJS.on('downloaded', (fileInfo) =>{
+  xdccJS.quit()
+})
+```
+or after a batch is completed:
+```js
+xdccJS.on('batch-complete', (fileInfo) =>{
+  xdccJS.quit()
+})
+```
