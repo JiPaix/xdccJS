@@ -58,7 +58,7 @@ export default class XDCC extends Client {
 	 * let opts = {
 	 *  host: 'irc.server.net',
 	 *  nick: 'JiPaix',
-	 *  chan: ['#itsMe', '#JiPaix' ]
+	 *  chan: ['#itsMe', '#JiPaix' ],
 	 *  path: 'downloads',
 	 *  verbose: true,
 	 *  randomizeNick: true,
