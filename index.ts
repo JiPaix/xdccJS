@@ -58,6 +58,7 @@ export default class XDCC extends Client {
 	 * ```javascript
 	 * let opts = {
 	 *  host: 'irc.server.net',
+	 *  port: 6667,
 	 *  nick: 'JiPaix',
 	 *  chan: ['#itsMe', '#JiPaix' ],
 	 *  path: 'downloads',
@@ -179,10 +180,10 @@ export default class XDCC extends Client {
 				channel.join()
 			}
 			if (this.verbose) {
-				console.log(
+				console.error(
 					`\x1b[1m\x1b[32m\u2713\x1b[0m connected to: \x1b[33m${ircServer}\x1b[0m`
 				)
-				console.log(
+				console.error(
 					`\u2937`.padStart(2),
 					`\x1b[1m\x1b[32m\u2713\x1b[0m joined: ${this.chan.map(
 						(e) => `\x1b[33m#${e}\x1b[0m`
@@ -196,7 +197,7 @@ export default class XDCC extends Client {
 			(args: { target: string; packet: string | number }) => {
 				this.say(args.target, `xdcc send ${args.packet}`)
 				if (this.verbose) {
-					console.log(
+					console.error(
 						`\u2937`.padStart(4),
 						`\x1b[1m\x1b[32m\u2713\x1b[0m sending command: /MSG \x1b[33m${args.target}\x1b[0m xdcc send \x1b[33m${args.packet}\x1b[0m`
 					)
@@ -204,7 +205,7 @@ export default class XDCC extends Client {
 				this.timeouts = setTimeout(() => {
 					this.say(args.target, 'XDCC CANCEL')
 					if (this.verbose) {
-						console.log(
+						console.error(
 							`\u2937`.padStart(6),
 							`\x1b[1m\x1b[31m\u0058\x1b[0m timeout: No response from \x1b[33m${args.target}\x1b[0m`
 						)
@@ -224,7 +225,7 @@ export default class XDCC extends Client {
 				if (i < args.packet.length) {
 					this.say(args.target, `xdcc send ${args.packet[i]}`)
 					if (this.verbose) {
-						console.log(
+						console.error(
 							`\u2937`.padStart(4),
 							`\x1b[1m\x1b[32m\u2713\x1b[0m sending command: /MSG \x1b[33m${args.target}\x1b[0m xdcc send \x1b[33m${args.packet[i]}\x1b[0m`
 						)
@@ -235,7 +236,7 @@ export default class XDCC extends Client {
 					if (i < args.packet.length) {
 						this.say(args.target, `xdcc send ${args.packet[i]}`)
 						if (this.verbose) {
-							console.log(
+							console.error(
 								`\u2937`.padStart(4),
 								`\x1b[1m\x1b[32m\u2713\x1b[0m sending command: /MSG \x1b[33m${args.target}\x1b[0m xdcc send \x1b[33m${args.packet[i]}\x1b[0m`
 							)
@@ -319,7 +320,7 @@ export default class XDCC extends Client {
 						)
 						self.emit('pipe-downloaded', fileInfo)
 						if (this.verbose) {
-							console.log(`pipe download done`)
+							console.error(`pipe download done`)
 						}
 					})
 				})
@@ -378,7 +379,7 @@ export default class XDCC extends Client {
 				const err = new Error('CONNTIMEOUT: No initial connection')
 				this.emit('download-err', err, fileInfo)
 				if (this.verbose) {
-					console.log(
+					console.error(
 						`\u2937`.padStart(6),
 						`\x1b[1m\x1b[31m\u0058\x1b[0m couldn't connect to: \x1b[33m${fileInfo.ip}:${fileInfo.port}\x1b[0m`
 					)
@@ -403,7 +404,7 @@ export default class XDCC extends Client {
 					}
 				}, 2000)
 				if (this.verbose) {
-					console.log(
+					console.error(
 						`\u2937`.padStart(6),
 						`\x1b[1m\x1b[32m\u2713\x1b[0m opening connection with bot: \x1b[33m${fileInfo.ip}:${fileInfo.port}\x1b[0m`
 					)
@@ -437,7 +438,7 @@ export default class XDCC extends Client {
 				clearTimeout(timeout)
 				self.emit('pipe-downloaded', fileInfo)
 				if (this.verbose) {
-					console.log(
+					console.error(
 						`\u2937`.padStart(8),
 						`\x1b[1m\x1b[32m\u2713\x1b[0m done: \x1b[36m${fileInfo.file}\x1b[0m`
 					)
@@ -464,7 +465,7 @@ export default class XDCC extends Client {
 				clearTimeout(this.timeouts)
 				this.say(resp.nick, 'XDCC CANCEL')
 				if (this.verbose) {
-					console.log(
+					console.error(
 						`\u2937`.padStart(8),
 						`\x1b[1m\x1b[32m\u2713\x1b[0m done: \x1b[36m${fileInfo.filePath}\x1b[0m`
 					)
@@ -480,7 +481,7 @@ export default class XDCC extends Client {
 			const err = new Error('CONNTIMEOUT: No initial connection')
 			this.emit('download-err', err, fileInfo)
 			if (this.verbose) {
-				console.log(
+				console.error(
 					`\u2937`.padStart(6),
 					`\x1b[1m\x1b[31m\u0058\x1b[0m couldn't connect to: \x1b[33m${fileInfo.ip}:${fileInfo.port}\x1b[0m`
 				)
@@ -537,7 +538,7 @@ export default class XDCC extends Client {
 				}
 			}, 2000)
 			if (this.verbose) {
-				console.log(
+				console.error(
 					`\u2937`.padStart(6),
 					`\x1b[1m\x1b[32m\u2713\x1b[0m opening connection with bot: \x1b[33m${fileInfo.ip}:${fileInfo.port}\x1b[0m`
 				)
@@ -570,7 +571,7 @@ export default class XDCC extends Client {
 			file.end()
 			clearTimeout(timeout)
 			if (this.verbose) {
-				console.log(
+				console.error(
 					`\u2937`.padStart(8),
 					`\x1b[1m\x1b[32m\u2713\x1b[0m done: \x1b[36m${file.path}\x1b[0m`
 				)
@@ -636,7 +637,7 @@ export default class XDCC extends Client {
 				server.close(() => {
 					this.portInUse = this.portInUse.filter((p) => p !== pick)
 					if (this.verbose) {
-						console.log(
+						console.error(
 							`\u2937`.padStart(8),
 							`\x1b[1m\x1b[32m\u2713\x1b[0m done: \x1b[36m${file.path}\x1b[0m`
 						)
@@ -669,7 +670,7 @@ export default class XDCC extends Client {
 			const err = new Error('All passive ports are currently used')
 			self.emit('download-err', err, fileInfo)
 			if (this.verbose) {
-				console.log(
+				console.error(
 					`\u2937`.padStart(6),
 					`\x1b[1m\x1b[31m\u0058\x1b[0m all passive ports are currently used: \x1b[33m${fileInfo.ip}:${fileInfo.port}\x1b[0m`
 				)
@@ -684,7 +685,7 @@ export default class XDCC extends Client {
 				}${String.fromCharCode(1)}`
 			)
 			if (this.verbose) {
-				console.log(
+				console.error(
 					`\u2937`.padStart(6),
 					`\x1b[1m\x1b[32m\u2713\x1b[0m listening for passive download at: \x1b[33m${this.ip}:${pick}\x1b[0m`
 				)
@@ -697,7 +698,7 @@ export default class XDCC extends Client {
 				this.say(nick, 'XDCC CANCEL')
 				self.emit('download-err', err, fileInfo)
 				if (this.verbose) {
-					console.log(
+					console.error(
 						`\u2937`.padStart(6),
 						`\x1b[1m\x1b[31m\u0058\x1b[0m couldn't setup a passive transfert: \x1b[33m${err}\x1b[0m`
 					)
@@ -771,7 +772,7 @@ export default class XDCC extends Client {
 		}
 
 		if (this.verbose) {
-			console.log(
+			console.error(
 				`\u2937`.padStart(4),
 				`\x1b[1m\x1b[36m\u2139\x1b[0m batch download of packets: \x1b[33m${packets}\x1b[0m`
 			)
@@ -890,7 +891,7 @@ export default class XDCC extends Client {
 	 * @example
 	 * ```js
 	 * xdccJS.on('download-start', (f) => {
-	 *   console.log(`Starting download of ${f.file}`)
+	 *   console.error(`Starting download of ${f.file}`)
 	 * })
 	 * ```
 	 */
@@ -902,7 +903,7 @@ export default class XDCC extends Client {
 	 * @example
 	 * ```js
 	 * xdccJS.on('downloading', (r, f) => {
-	 *   console.log(`${f.file} - ${r}/${FileInfo.length} Bytes`)
+	 *   console.error(`${f.file} - ${r}/${FileInfo.length} Bytes`)
 	 * })
 	 */
 	static EVENT_XDCC_WHILE: (r: received, f: FileInfo) => void
@@ -913,8 +914,8 @@ export default class XDCC extends Client {
 	 * @example
 	 * ```js
 	 * xdccJS.on('download-err', (e, f) => {
-	 *   console.log(`failed to download ${f.file}`)
-	 *   console.log(e)
+	 *   console.error(`failed to download ${f.file}`)
+	 *   console.error(e)
 	 * })
 	 * ```
 	 */
@@ -926,7 +927,7 @@ export default class XDCC extends Client {
 	 * @example
 	 * ```js
 	 * xdccJS.on('downloaded', (f) => {
-	 *   console.log(`Download completed: ${f.filePath}`)
+	 *   console.error(`Download completed: ${f.filePath}`)
 	 * })
 	 * ```
 	 */
@@ -941,7 +942,7 @@ export default class XDCC extends Client {
 	 * })
 	 * 
 	 * xdccJS.on('batch-complete', (batchInfo) => {
-	 * 	console.log(batchInfo) //=> { target: 'XDCC|BOT', packet: [23, 24, 25, 102, 300] }
+	 * 	console.error(batchInfo) //=> { target: 'XDCC|BOT', packet: [23, 24, 25, 102, 300] }
 	 * })
 	 * ```
 	 */
@@ -953,7 +954,7 @@ export default class XDCC extends Client {
 	 * @example
 	 * ```js
 	 * xdccJS.on('pipe-start', (f) => {
-	 *   console.log(`File length  : ${f.length}`)
+	 *   console.error(`File length  : ${f.length}`)
 	 * })
 	 * ```
 	 */
@@ -967,7 +968,7 @@ export default class XDCC extends Client {
 	 * let stream = fs.createWriteStream( 'MyFile.mp4' )
 	 * xdccJS.on('pipe-data', (chunk, r) => {
 	 *   stream.write(chunk)
-	 *   console.log(`Downloaded ${stream.length} out of ${r}`)
+	 *   console.error(`Downloaded ${stream.length} out of ${r}`)
 	 * })
 	 * ```
 	 */
@@ -981,8 +982,8 @@ export default class XDCC extends Client {
 	 * let file = fs.createWriteStream( 'MyFile.mp4' )
 	 * xdccJS.on('pipe-err', (e, f) => {
 	 *   file.end()
-	 *   console.log(`failed to download : ${f.file}`)
-	 *   console.log(e)
+	 *   console.error(`failed to download : ${f.file}`)
+	 *   console.error(e)
 	 * })
 	 * ```
 	 */
