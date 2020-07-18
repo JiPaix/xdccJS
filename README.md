@@ -10,11 +10,17 @@ It supports <a href="https://en.wikipedia.org/wiki/Direct_Client-to-Client#Passi
 
 ## xdccJS as a CLI :
 #### install xdccJS as a CLI :  
-`npm install xdccjs -g`  
+```bash
+npm install xdccjs -g
+```  
 #### start downloading :  
-`xdccJS --server irc.server.net --port 6669 --bot "XDCC-BOT|NICKNAME" --download 110 --path "/home/user/downloads"`  
+```bash
+xdccJS --server irc.server.net --port 6669 --bot "XDCC-BOT|NICKNAME" --download 110 --path "/home/user/downloads"
+```  
 Alternatively, if you want to pipe the file just ommit the `--path` option  :  
-`xdccJS --server irc.server.net --port 6669 --bot "XDCC-BOT|NICKNAME" --download 110 | ffmpeg -i pipe:0 -c:v copy -c:a copy -f flv rtmp://live/mystream `
+```bash
+xdccJS --server irc.server.net --port 6669 --bot "XDCC-BOT|NICKNAME" --download 110 | ffmpeg -i pipe:0 -c:v copy -c:a copy -f flv rtmp://live/mystream
+```
 ### Command line options :
 ```
 Options:
