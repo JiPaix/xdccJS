@@ -241,6 +241,8 @@ export default class XDCC extends Client {
 							)
 						}
 						i++
+					} else {
+						this.emit('batch-complete', args)
 					}
 				})
 			}
@@ -730,6 +732,7 @@ export default class XDCC extends Client {
 	 * @remark Fires either download or pipe events depending on {@link path}'s value
 	 * @fires {@link download-err| Download Events}
 	 * @fires {@link pipe-data| Pipe Events}
+	 * @fire {@link batch-complete}
 	 * @see {@link path}
 	 * @example
 	 * ```javascript
@@ -929,6 +932,21 @@ export default class XDCC extends Client {
 	 */
 	static EVENT_XDCC_DONE: (f: FileInfo) => void
 	/**
+	 * Event triggered when {@link downloadBatch} has completed all downloads
+	 * @event batch-complete
+	 * @example
+	 * ```js
+	 * xdccJS.on('xdcc-ready', () => {
+	 *  xdccJS.downloadBatch('XDCC|BOT', '23-25, 102, 300')
+	 * })
+	 * 
+	 * xdccJS.on('batch-complete', (batchInfo) => {
+	 * 	console.log(batchInfo) //=> { target: 'XDCC|BOT', packet: [23, 24, 25, 102, 300] }
+	 * })
+	 * ```
+	 */
+	static EVENT_XDCC_BATCH: (i: batchInfo) => void
+	/**
 	 * Event triggered when a pipable download starts. callback returns {@link FileInfo}
 	 * @category Pipe
 	 * @event pipe-start
@@ -1026,6 +1044,16 @@ declare interface FileInfo {
 	token: number
 }
 
+/**
+ * Batch information
+ * @asMemberOf XDCC
+ */
+declare interface batchInfo {
+	/** Bot username */
+	target: string
+	/** Filename with absolute path */
+	packet: number[]
+}
 /**
  * Accumulated lenght of data received*
  * @asMemberOf XDCC
