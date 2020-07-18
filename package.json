@@ -7,13 +7,16 @@
   "files": [
     "/dist"
   ],
+  "bin": {
+    "xdccJS": "./dist/bin/index.js"
+  },
   "scripts": {
-    "test": "mocha -r ts-node/register test/mocha.ts",
-    "build": "rimraf dist && node node_modules/typescript/bin/tsc",
-    "prepublishOnly": "rimraf dist && node node_modules/typescript/bin/tsc",
-    "snyk-protect": "snyk protect",
+    "test": "node node_modules/mocha/bin/mocha.js -r ts-node/register test/mocha.ts",
+    "build": "node node_modules/rimraf/bin.js dist && node node_modules/typescript/bin/tsc && cp ./bin/index.js ./dist/bin/index.js && cp -R ./patches ./dist/patches",
+    "prepublishOnly": "node node_modules/rimraf/bin.js dist && node node_modules/typescript/bin/tsc",
+    "snyk-protect": "node node_modules/snyk/dist/cli/index.js protect",
     "prepare": "npm run snyk-protect",
-    "postinstall": "patch-package"
+    "postinstall": "node node_modules/patch-package/index.js"
   },
   "repository": {
     "type": "git",
@@ -63,10 +66,11 @@
   },
   "dependencies": {
     "@types/progress": "^2.0.3",
+    "commander": "^5.1.0",
     "eventemitter3": "^4.0.0",
     "irc-framework": "^4.7.0",
-    "progress": "^2.0.3",
-    "patch-package": "^6.2.2"
+    "patch-package": "^6.2.2",
+    "progress": "^2.0.3"
   },
   "snyk": true
 }
