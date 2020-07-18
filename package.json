@@ -1,6 +1,6 @@
 {
   "name": "xdccjs",
-  "version": "2.5.5",
+  "version": "2.6.0",
   "description": "XDCC downloader: connect to IRC and download files from XDCC bots",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
