@@ -15,6 +15,7 @@ import * as ProgressBar from 'progress'
 export default class XDCC extends Client {
 	private nick: string
 	private chan: string[]
+	private resumequeue: {nick: string, ip:string, length: number}[] = []
 	/**
 	 * Download path (absolute or relative) <br/>
 	 * default value inherited from {@link constructor}'s parameter {@link Params.path}
@@ -262,74 +263,112 @@ export default class XDCC extends Client {
 
 	private downloadToPipe(resp: { [prop: string]: string }): void {
 		const self = this
-		const fileInfo = this.parseCtcp(resp.message)
-		let received = 0
-		const sendBuffer = Buffer.alloc(4)
-		const available = this.passivePort.filter(
-			(port) => !this.portInUse.includes(port)
-		)
-		const pick = available[Math.floor(Math.random() * available.length)]
-		let timeout: NodeJS.Timeout
-		const bar = this.setupProgressBar(fileInfo.length)
-		clearTimeout(this.timeouts)
-		if (fileInfo.port === 0) {
-			const server = net.createServer((client) => {
-				timeout = setTimeout(() => {
-					server.close(() => {
-						this.portInUse = this.portInUse.filter(
-							(p) => p !== pick
-						)
-						this.emit(
-							'pipe-err',
-							new Error('CONNTIMEOUT: No initial connection'),
-							fileInfo
-						)
-					})
-				}, 10000)
-				this.emit('pipe-start', fileInfo)
-				client.on('data', (data) => {
-					clearTimeout(timeout)
-					received += data.length
-					sendBuffer.writeUInt32BE(received, 0)
-					client.write(sendBuffer)
-					self.emit('pipe-data', data, received)
-					if (this.verbose) {
-						bar.tick(data.length)
-					}
+		const fileInfo = this.parseCtcp(resp.message, resp.nick)
+		if(fileInfo) {
+			let received = 0
+			const sendBuffer = Buffer.alloc(4)
+			const available = this.passivePort.filter(
+				(port) => !this.portInUse.includes(port)
+			)
+			const pick = available[Math.floor(Math.random() * available.length)]
+			let timeout: NodeJS.Timeout
+			const bar = this.setupProgressBar(fileInfo.length)
+			clearTimeout(this.timeouts)
+			if (fileInfo.port === 0) {
+				const server = net.createServer((client) => {
 					timeout = setTimeout(() => {
 						server.close(() => {
 							this.portInUse = this.portInUse.filter(
 								(p) => p !== pick
 							)
-							const err = new Error(
-								'CONNTIMEOUT: not receiving data'
+							this.emit(
+								'pipe-err',
+								new Error('CONNTIMEOUT: No initial connection'),
+								fileInfo
+							)
+						})
+					}, 10000)
+					this.emit('pipe-start', fileInfo)
+					client.on('data', (data) => {
+						clearTimeout(timeout)
+						received += data.length
+						sendBuffer.writeUInt32BE(received, 0)
+						client.write(sendBuffer)
+						self.emit('pipe-data', data, received)
+						if (this.verbose) {
+							bar.tick(data.length)
+						}
+						timeout = setTimeout(() => {
+							server.close(() => {
+								this.portInUse = this.portInUse.filter(
+									(p) => p !== pick
+								)
+								const err = new Error(
+									'CONNTIMEOUT: not receiving data'
+								)
+								this.say(resp.nick, 'XDCC CANCEL')
+								this.emit('download-err', err, fileInfo)
+								if (this.verbose) {
+									bar.interrupt(err.message)
+								}
+							})
+						}, 2000)
+					})
+					client.on('end', () => {
+						clearTimeout(timeout)
+						server.close(() => {
+							this.portInUse = this.portInUse.filter(
+								(p) => p !== pick
+							)
+							self.emit('pipe-downloaded', fileInfo)
+							if (this.verbose) {
+								console.error(`pipe download done`)
+							}
+						})
+					})
+					client.on('error', (err) => {
+						clearTimeout(timeout)
+						server.close(() => {
+							this.portInUse = this.portInUse.filter(
+								(p) => p !== pick
 							)
 							this.say(resp.nick, 'XDCC CANCEL')
-							this.emit('download-err', err, fileInfo)
+							self.emit('pipe-err', err, fileInfo)
 							if (this.verbose) {
 								bar.interrupt(err.message)
 							}
 						})
-					}, 2000)
-				})
-				client.on('end', () => {
-					clearTimeout(timeout)
-					server.close(() => {
-						this.portInUse = this.portInUse.filter(
-							(p) => p !== pick
-						)
-						self.emit('pipe-downloaded', fileInfo)
-						if (this.verbose) {
-							console.error(`pipe download done`)
-						}
 					})
 				})
-				client.on('error', (err) => {
+				server.on('listening', () => {
+					this.raw(
+						`PRIVMSG ${resp.nick} ${String.fromCharCode(1)}DCC SEND ${
+							fileInfo.file
+						} ${this.ip} ${pick} ${fileInfo.length} ${
+							fileInfo.token
+						}${String.fromCharCode(1)}`
+					)
+				})
+				if (pick) {
+					this.portInUse.push(pick)
+					server.listen(pick, '0.0.0.0')
+				} else {
+					server.close(() => {
+						this.portInUse = this.portInUse.filter((p) => p !== pick)
+						this.say(resp.nick, 'XDCC CANCEL')
+						const err = new Error(
+							'All passive ports are currently used'
+						)
+						self.emit('pipe-err', err, fileInfo)
+						if (this.verbose) {
+							bar.interrupt(err.message)
+						}
+					})
+				}
+				server.on('error', (err) => {
 					clearTimeout(timeout)
 					server.close(() => {
-						this.portInUse = this.portInUse.filter(
-							(p) => p !== pick
-						)
+						this.portInUse = this.portInUse.filter((p) => p !== pick)
 						this.say(resp.nick, 'XDCC CANCEL')
 						self.emit('pipe-err', err, fileInfo)
 						if (this.verbose) {
@@ -337,45 +376,91 @@ export default class XDCC extends Client {
 						}
 					})
 				})
-			})
-			server.on('listening', () => {
-				this.raw(
-					`PRIVMSG ${resp.nick} ${String.fromCharCode(1)}DCC SEND ${
-						fileInfo.file
-					} ${this.ip} ${pick} ${fileInfo.length} ${
-						fileInfo.token
-					}${String.fromCharCode(1)}`
-				)
-			})
-			if (pick) {
-				this.portInUse.push(pick)
-				server.listen(pick, '0.0.0.0')
 			} else {
-				server.close(() => {
-					this.portInUse = this.portInUse.filter((p) => p !== pick)
-					this.say(resp.nick, 'XDCC CANCEL')
-					const err = new Error(
-						'All passive ports are currently used'
-					)
-					self.emit('pipe-err', err, fileInfo)
+				let timeout = setTimeout(() => {
+					const err = new Error('CONNTIMEOUT: No initial connection')
+					this.emit('download-err', err, fileInfo)
 					if (this.verbose) {
-						bar.interrupt(err.message)
+						console.error(
+							`\u2937`.padStart(6),
+							`\x1b[1m\x1b[31m\u0058\x1b[0m couldn't connect to: \x1b[33m${fileInfo.ip}:${fileInfo.port}\x1b[0m`
+						)
 					}
+				}, 10000)
+				const client = net.connect(fileInfo.port, fileInfo.ip)
+				client.on('connect', () => {
+					self.emit('pipe-start', fileInfo)
+					clearTimeout(timeout)
+					timeout = setTimeout(() => {
+						const err = new Error(
+							'connection timeout: not receiving data '
+						)
+						this.say(resp.nick, 'XDCC CANCEL')
+						this.emit('download-err', err, fileInfo)
+						if (this.verbose) {
+							bar.interrupt(
+								`\u2937`.padStart(8) +
+									' \x1b[1m\x1b[31m\u0058\x1b[0m ' +
+									err.message
+							)
+						}
+					}, 2000)
+					if (this.verbose) {
+						console.error(
+							`\u2937`.padStart(6),
+							`\x1b[1m\x1b[32m\u2713\x1b[0m opening connection with bot: \x1b[33m${fileInfo.ip}:${fileInfo.port}\x1b[0m`
+						)
+					}
+				})
+				client.on('data', (data) => {
+					clearTimeout(timeout)
+					received += data.length
+					sendBuffer.writeUInt32BE(received, 0)
+					client.write(sendBuffer)
+					self.emit('pipe-data', data, received)
+					timeout = setTimeout(() => {
+						const err = new Error(
+							'connection timeout: socket hungup '
+						)
+						this.say(resp.nick, 'XDCC CANCEL')
+						this.emit('pipe-err', err, fileInfo)
+						if (this.verbose) {
+							bar.interrupt(
+								`\u2937`.padStart(8) +
+									' \x1b[1m\x1b[31m\u0058\x1b[0m ' +
+									err.message
+							)
+						}
+					}, 2000)
+					if (this.verbose) {
+						bar.tick(data.length)
+					}
+				})
+				client.on('end', () => {
+					clearTimeout(timeout)
+					self.emit('pipe-downloaded', fileInfo)
+					if (this.verbose) {
+						console.error(
+							`\u2937`.padStart(8),
+							`\x1b[1m\x1b[32m\u2713\x1b[0m done: \x1b[36m${fileInfo.file}\x1b[0m`
+						)
+					}
+				})
+				client.on('error', (err) => {
+					this.say(resp.nick, 'XDCC CANCEL')
+					self.emit('pipe-err', err, fileInfo)
 				})
 			}
-			server.on('error', (err) => {
-				clearTimeout(timeout)
-				server.close(() => {
-					this.portInUse = this.portInUse.filter((p) => p !== pick)
-					this.say(resp.nick, 'XDCC CANCEL')
-					self.emit('pipe-err', err, fileInfo)
-					if (this.verbose) {
-						bar.interrupt(err.message)
-					}
-				})
-			})
-		} else {
-			let timeout = setTimeout(() => {
+		}
+	}
+
+	private downloadToFile(resp: { [prop: string]: string }): void {
+		const self = this
+		const fileInfo = this.parseCtcp(resp.message, resp.nick)
+		if(fileInfo) {
+			let position = 0
+			const timeout = setTimeout(() => {
+				this.say(resp.nick, 'XDCC CANCEL')
 				const err = new Error('CONNTIMEOUT: No initial connection')
 				this.emit('download-err', err, fileInfo)
 				if (this.verbose) {
@@ -385,119 +470,70 @@ export default class XDCC extends Client {
 					)
 				}
 			}, 10000)
-			const client = net.connect(fileInfo.port, fileInfo.ip)
-			client.on('connect', () => {
-				self.emit('pipe-start', fileInfo)
+			if (
+				typeof fileInfo.filePath === 'undefined' ||
+				fileInfo.filePath === null
+			) {
+				throw Error('filePath must be defined')
+			}
+			if (fs.existsSync(fileInfo.filePath)) {
 				clearTimeout(timeout)
-				timeout = setTimeout(() => {
-					const err = new Error(
-						'connection timeout: no receiving data '
-					)
-					this.say(resp.nick, 'XDCC CANCEL')
-					this.emit('download-err', err, fileInfo)
-					if (this.verbose) {
-						bar.interrupt(
-							`\u2937`.padStart(8) +
-								' \x1b[1m\x1b[31m\u0058\x1b[0m ' +
-								err.message
+				clearTimeout(this.timeouts)
+				let position = fs.statSync(fileInfo.filePath).size
+				if(fileInfo.length === position) {
+					position = position - 8192
+				}
+				if(fileInfo.type === 'DCC SEND') {
+					const quotedFilename = /\s/.test(fileInfo.file) ? `"${fileInfo.file}"` : fileInfo.file
+					this.ctcpRequest(resp.nick, 'DCC RESUME', quotedFilename, fileInfo.port, position)
+					this.resumequeue.push({nick: resp.nick, ip: fileInfo.ip, length: fileInfo.length})
+					this.timeouts = setTimeout(() => {
+						this.say(resp.nick, 'XDCC CANCEL')
+						const err = new Error(`RESUMETIMEOUT: Couldn't resume transfert`)
+						this.emit('download-err', err, fileInfo)
+						if (this.verbose) {
+							console.error(
+								`\u2937`.padStart(6),
+								`\x1b[1m\x1b[31m\u0058\x1b[0m couldn't resume download of: \x1b[33m${fileInfo.file}\x1b[0m`
+							)						
+						}
+					}, 10000);
+				} else if(fileInfo.type === 'DCC ACCEPT') {
+					console.log(fileInfo)
+					if(this.verbose) {
+						console.error(
+							`\u2937`.padStart(6),
+							`\x1b[1m\x1b[32m\u2713\x1b[0m Resuming download of: \x1b[33m${fileInfo.file}\x1b[0m`
 						)
 					}
-				}, 2000)
-				if (this.verbose) {
-					console.error(
-						`\u2937`.padStart(6),
-						`\x1b[1m\x1b[32m\u2713\x1b[0m opening connection with bot: \x1b[33m${fileInfo.ip}:${fileInfo.port}\x1b[0m`
-					)
+					fileInfo.length = fileInfo.length - fileInfo.token
+					console.log('resume missing : '+fileInfo.length)
+					const file = fs.createWriteStream(fileInfo.filePath, {flags: 'r+', start: position})
+					file.on('ready', () => {
+						if (fileInfo.port === 0) {
+							clearTimeout(timeout)
+							clearTimeout(this.timeouts)
+							this.passiveToFile(file, fileInfo, timeout, resp.nick)
+						} else {
+							clearTimeout(this.timeouts)
+							this.activeToFile(file, fileInfo, timeout, resp.nick)
+						}
+					})
 				}
-			})
-			client.on('data', (data) => {
-				clearTimeout(timeout)
-				received += data.length
-				sendBuffer.writeUInt32BE(received, 0)
-				client.write(sendBuffer)
-				self.emit('pipe-data', data, received)
-				timeout = setTimeout(() => {
-					const err = new Error(
-						'connection timeout: no receiving data '
-					)
-					this.say(resp.nick, 'XDCC CANCEL')
-					this.emit('pipe-err', err, fileInfo)
-					if (this.verbose) {
-						bar.interrupt(
-							`\u2937`.padStart(8) +
-								' \x1b[1m\x1b[31m\u0058\x1b[0m ' +
-								err.message
-						)
+			} else {
+				const file = fs.createWriteStream(fileInfo.filePath)
+				file.on('ready', () => {
+					if (fileInfo.port === 0) {
+						clearTimeout(timeout)
+						clearTimeout(this.timeouts)
+						this.passiveToFile(file, fileInfo, timeout, resp.nick)
+					} else {
+						clearTimeout(this.timeouts)
+						this.activeToFile(file, fileInfo, timeout, resp.nick)
 					}
-				}, 2000)
-				if (this.verbose) {
-					bar.tick(data.length)
-				}
-			})
-			client.on('end', () => {
-				clearTimeout(timeout)
-				self.emit('pipe-downloaded', fileInfo)
-				if (this.verbose) {
-					console.error(
-						`\u2937`.padStart(8),
-						`\x1b[1m\x1b[32m\u2713\x1b[0m done: \x1b[36m${fileInfo.file}\x1b[0m`
-					)
-				}
-			})
-			client.on('error', (err) => {
-				this.say(resp.nick, 'XDCC CANCEL')
-				self.emit('pipe-err', err, fileInfo)
-			})
-		}
-	}
-
-	private downloadToFile(resp: { [prop: string]: string }): void {
-		const self = this
-		const fileInfo = this.parseCtcp(resp.message)
-		if (
-			typeof fileInfo.filePath === 'undefined' ||
-			fileInfo.filePath === null
-		) {
-			throw Error('filePath must be defined')
-		}
-		if (fs.existsSync(fileInfo.filePath)) {
-			if (fs.statSync(fileInfo.filePath).size === fileInfo.length) {
-				clearTimeout(this.timeouts)
-				this.say(resp.nick, 'XDCC CANCEL')
-				if (this.verbose) {
-					console.error(
-						`\u2937`.padStart(8),
-						`\x1b[1m\x1b[32m\u2713\x1b[0m done: \x1b[36m${fileInfo.filePath}\x1b[0m`
-					)
-				}
-				self.emit('downloaded', fileInfo)
-				return
-			} else {
-				fs.unlinkSync(fileInfo.filePath)
+				})
 			}
 		}
-		const timeout = setTimeout(() => {
-			this.say(resp.nick, 'XDCC CANCEL')
-			const err = new Error('CONNTIMEOUT: No initial connection')
-			this.emit('download-err', err, fileInfo)
-			if (this.verbose) {
-				console.error(
-					`\u2937`.padStart(6),
-					`\x1b[1m\x1b[31m\u0058\x1b[0m couldn't connect to: \x1b[33m${fileInfo.ip}:${fileInfo.port}\x1b[0m`
-				)
-			}
-		}, 10000)
-		const file = fs.createWriteStream(fileInfo.filePath)
-		file.on('ready', () => {
-			if (fileInfo.port === 0) {
-				clearTimeout(timeout)
-				clearTimeout(this.timeouts)
-				this.passiveToFile(file, fileInfo, timeout, resp.nick)
-			} else {
-				clearTimeout(this.timeouts)
-				this.activeToFile(file, fileInfo, timeout, resp.nick)
-			}
-		})
 	}
 	private setupProgressBar(len: number): ProgressBar {
 		return new ProgressBar(
@@ -526,7 +562,7 @@ export default class XDCC extends Client {
 			self.emit('download-start', fileInfo)
 			clearTimeout(timeout)
 			timeout = setTimeout(() => {
-				const err = new Error('connection timeout: no receiving data ')
+				const err = new Error('connection timeout: connected but not receiving data')
 				this.say(nick, 'XDCC CANCEL')
 				this.emit('download-err', err, fileInfo)
 				if (this.verbose) {
@@ -551,21 +587,26 @@ export default class XDCC extends Client {
 			sendBuffer.writeUInt32BE(received, 0)
 			client.write(sendBuffer)
 			self.emit('downloading', received, fileInfo)
-			timeout = setTimeout(() => {
-				const err = new Error('connection timeout: no receiving data ')
-				this.say(nick, 'XDCC CANCEL')
-				this.emit('download-err', err, fileInfo)
-				if (this.verbose) {
-					bar.interrupt(
-						`\u2937`.padStart(8) +
-							' \x1b[1m\x1b[31m\u0058\x1b[0m ' +
-							err.message
-					)
-				}
-			}, 2000)
+			if(received < fileInfo.length) {
+				timeout = setTimeout(() => {
+					const err = new Error('connection timeout: no receiving data ')
+					this.say(nick, 'XDCC CANCEL')
+					this.emit('download-err', err, fileInfo)
+					if (this.verbose) {
+						bar.interrupt(
+							`\u2937`.padStart(8) +
+								' \x1b[1m\x1b[31m\u0058\x1b[0m ' +
+								err.message
+						)
+					}
+				}, 2000)
+			}
 			if (this.verbose) {
 				bar.tick(data.length)
 			}
+		if(received === fileInfo.length) {
+			client.end()
+		}
 		})
 		client.on('end', () => {
 			file.end()
@@ -850,27 +891,38 @@ export default class XDCC extends Client {
 		return byte4 + '.' + byte3 + '.' + byte2 + '.' + byte1
 	}
 
-	private parseCtcp(text: string): FileInfo {
+	private parseCtcp(text: string, nick: string): FileInfo | void {
 		const parts = text.match(/(?:[^\s"]+|"[^"]*")+/g)
 		if (parts === null) {
 			throw new TypeError(`CTCP : received unexpected msg : ${text}`)
 		}
-		if (
-			parts.some((val) => {
-				return val === null
-			})
-		) {
-			throw new TypeError(`CTCP : received unexpected msg : ${text}`)
-		}
-		return {
-			file: parts[2].replace(/"/g, ''),
-			filePath: path.normalize(
-				this.path + '/' + parts[2].replace(/"/g, '')
-			),
-			ip: this.uint32ToIP(parseInt(parts[3], 10)),
-			port: parseInt(parts[4], 10),
-			length: parseInt(parts[5], 10),
-			token: parseInt(parts[6], 10),
+		console.log(parts)
+		if(parts[1]==='SEND') {
+			return {
+				type : `${parts[0]} ${parts[1]}`,
+				file: parts[2].replace(/"/g, ''),
+				filePath: path.normalize(
+					this.path + '/' + parts[2].replace(/"/g, '')
+				),
+				ip: this.uint32ToIP(parseInt(parts[3], 10)),
+				port: parseInt(parts[4], 10),
+				length: parseInt(parts[5], 10),
+				token: parseInt(parts[6], 10),
+			}
+		} else if (parts[1]==='ACCEPT') {
+			const resume = this.resumequeue.filter(q => q.nick == nick)
+			this.resumequeue = this.resumequeue.filter(q => q.nick !== nick)
+			return {
+				type : `${parts[0]} ${parts[1]}`,
+				file: parts[2].replace(/"/g, ''),
+				filePath: path.normalize(
+					this.path + '/' + parts[2].replace(/"/g, '')
+				),
+				ip: resume[0].ip,
+				port: parseInt(parts[3], 10),
+				length: resume[0].length,
+				token: parseInt(parts[4], 10),
+			}
 		}
 	}
 	/**
@@ -1031,6 +1083,8 @@ declare interface Params {
  * @asMemberOf XDCC
  */
 declare interface FileInfo {
+	/** Type of transfert (send or resume) */
+	type: string
 	/** Filename */
 	file: string
 	/** Filename with absolute path */
