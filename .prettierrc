@@ -1,0 +1,11 @@
+{
+  "tabWidth": 2,
+  "trailingComma": "es5",
+  "useTabs": false,
+  "singleQuote": true,
+  "semi": false,
+  "files" :["index.ts", "bin/xdccjs.ts"],
+  "bracketSpacing": true,
+  "arrowParens": "avoid",
+  "parser": "typescript"
+}
