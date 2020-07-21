@@ -9,11 +9,3 @@ install:
 script:
     - npm run build
     - npm run test
-deploy:
-  provider: npm
-  email: $NPM_EMAIL
-  api_token: $NPM_AUTH_TOKEN
-  cleanup: false
-  on:
-    branch: master
-    tags: true
