@@ -469,10 +469,10 @@ export default class XDCC extends Client {
 						)
 				}
 			}, 10000)
-			if (fs.existsSync(fileInfo.filePath!)) {
+			if (fs.existsSync(fileInfo.filePath)) {
 				clearTimeout(timeout)
 				clearTimeout(this.timeouts)
-				let position = fs.statSync(fileInfo.filePath!).size
+				let position = fs.statSync(fileInfo.filePath).size
 				if(fileInfo.length === position) {
 					position = position - 8192
 				}
@@ -494,8 +494,8 @@ export default class XDCC extends Client {
 									`\u2937`.padStart(4),
 									`${colors.bold(colors.cyan('\u2139'))} resume not supported by bot ${colors.yellow(resp.nick)} attempting to redownload ${colors.yellow(fileInfo.file)} from start`
 								)
-								fs.unlinkSync(fileInfo.filePath!)
-								const file = fs.createWriteStream(fileInfo.filePath!)
+								fs.unlinkSync(fileInfo.filePath)
+								const file = fs.createWriteStream(fileInfo.filePath)
 								file.on('ready', () => { this.passiveToFile(file, fileInfo, timeout, resp.nick)})
 							}			
 						}
@@ -508,12 +508,12 @@ export default class XDCC extends Client {
 						)
 					}
 					fileInfo.length = fileInfo.length - fileInfo.token
-					const file = fs.createWriteStream(fileInfo.filePath!, {flags: 'r+', start: position})
+					const file = fs.createWriteStream(fileInfo.filePath, {flags: 'r+', start: position})
 					file.on('ready', () => {
 						if (fileInfo.port === 0) {
 							clearTimeout(timeout)
 							clearTimeout(this.timeouts)
-							this.passiveToFile(file, fileInfo, timeout, resp.nick, true)
+							this.passiveToFile(file, fileInfo, timeout, resp.nick)
 						} else {
 							clearTimeout(this.timeouts)
 							this.activeToFile(file, fileInfo, timeout, resp.nick)
@@ -521,7 +521,7 @@ export default class XDCC extends Client {
 					})
 				}
 			} else {
-				const file = fs.createWriteStream(fileInfo.filePath!)
+				const file = fs.createWriteStream(fileInfo.filePath)
 				file.on('ready', () => {
 					if (fileInfo.port === 0) {
 						clearTimeout(timeout)
@@ -631,7 +631,6 @@ export default class XDCC extends Client {
 		fileInfo: FileInfo,
 		timeout: NodeJS.Timeout,
 		nick: string,
-		resume=false
 	): void {
 		fileInfo.position = fileInfo.position ? fileInfo.position : 0
 		const bar = this.setupProgressBar(fileInfo.length-fileInfo.position)
@@ -906,9 +905,9 @@ export default class XDCC extends Client {
 			return {
 				type : `${parts[0]} ${parts[1]}`,
 				file: parts[2].replace(/"/g, ''),
-				filePath: path.normalize(
+				filePath: this.path ? path.normalize(
 					this.path + '/' + parts[2].replace(/"/g, '')
-				),
+				) : 'pipe',
 				ip: this.uint32ToIP(parseInt(parts[3], 10)),
 				port: parseInt(parts[4], 10),
 				length: parseInt(parts[5], 10),
@@ -1094,7 +1093,7 @@ declare interface FileInfo {
 	/** Filename */
 	file: string
 	/** Filename with absolute path */
-	filePath?: string
+	filePath: string
 	/** Transfert IP */
 	ip: string
 	/** Transfert PORT  */
