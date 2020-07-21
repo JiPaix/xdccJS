@@ -538,12 +538,12 @@ export default class XDCC extends Client {
 	private setupProgressBar(len: number): ProgressBar {
 		return new ProgressBar(
 			`\u2937`.padStart(6) +
-				` ${colors.bold(colors.green('\u2713'))} downloading [:bar] :rate/s :percent :etas`,
+				` ${colors.bold(colors.green('\u2713'))} downloading [:bar] ETA: :eta @ :rate - :percent `,
 			{
 				complete: '=',
 				incomplete: ' ',
 				width: 20,
-				total: len,
+				total: len
 			}
 		)
 	}
