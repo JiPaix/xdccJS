@@ -5,8 +5,10 @@
 
 
 ## Introduction
-xdccJS can either be used as a CLI or a module, it's main usage is to download files using the <a href="https://en.wikipedia.org/wiki/XDCC">XDCC protocol</a>  
-It supports <a href="https://en.wikipedia.org/wiki/Direct_Client-to-Client#Passive_DCC">passive dcc</a>, pipes, and can handle batch downloads. It can also act as a "simple" irc client : <a href="https://github.com/kiwiirc/irc-framework">@kiwiirc/irc-framework</a> is included with xdccJS (xdccJS basically extends irc-framework), so everything you can do with irc-framework can be done with xdccJS!
+***xdccJS can either be used as a CLI or a module*** to download files using the <a href="https://en.wikipedia.org/wiki/XDCC">XDCC protocol</a>  
+It supports <a href="https://en.wikipedia.org/wiki/Direct_Client-to-Client#Passive_DCC">passive dcc</a>, download resume and can handle batch downloads or even pipes.  
+It can also act as a "simple" irc client : <a href="https://github.com/kiwiirc/irc-framework">@kiwiirc/irc-framework</a> is included with xdccJS (xdccJS basically extends it),  
+so everything you can do with irc-framework can be done with xdccJS!
 
 ## xdccJS as a CLI :
 #### install xdccJS as a CLI :  
@@ -15,11 +17,11 @@ npm install xdccjs -g
 ```  
 #### start downloading :  
 ```bash
-xdccJS --server irc.server.net --port 6669 --bot "XDCC-BOT|NICKNAME" --download 110 --path "/home/user/downloads"
+xdccJS --server irc.server.net --bot "XDCC-BOT|NICKNAME" --download 110 --path "/home/user/downloads"
 ```  
 Alternatively, if you want to pipe the file just ommit the `--path` option  :  
 ```bash
-xdccJS --server irc.server.net --port 6669 --bot "XDCC-BOT|NICKNAME" --download 110 | ffmpeg -i pipe:0 -c:v copy -c:a copy -f flv rtmp://live/mystream
+xdccJS --server irc.server.net --bot "XDCC-BOT|NICKNAME" --download 110 | ffmpeg -i pipe:0 -c:v copy -c:a copy -f flv rtmp://live/mystream
 ```
 ### Command line options :
 ```
@@ -53,20 +55,31 @@ Or using `import`
 import XDCC from 'xdccjs'
 ```
 #### Connect :
+The simpliest way to connect is :
+```js
+let opts = {
+  host: 'irc.server.net', // will use default port 6667
+  path: 'my/download/folder'
+}
+
+const xdccJS = new XDCC(opts)
+```
+But you can also define a set of options to your preference
 ```js
 let opts = {
   host: 'irc.server.net',
-  port: 6667,
+  port: 6690,
   nick: 'ItsMeJiPaix',
   chan: ['#candy', '#fruits'],
-  path: 'downloads',
-  verbose: true, // optional
-  randomizeNick: true, // optional
-  passivePort: [5000, 5001, 5002] // optional
+  path: 'my/download/folder',
+  verbose: true,
+  randomizeNick: true,
+  passivePort: [5000, 5001, 5002]
 }
 
-const xdccJS = new  XDCC(opts)
+const xdccJS = new XDCC(opts)
 ```
+List and description of all options avaliable <a href="https://jipaix.github.io/xdccJS/interfaces/params.html">here</a>
 #### Download :
 
 ```js
@@ -79,7 +92,7 @@ xdccJS.on('downloaded', (fileInfo) => {
   console.log(fileInfo.filePath) //=> /home/user/xdccJS/downloads/myfile.pdf
 })
 ```
-#### Download Batches of files :
+#### Download Batch of files :
 
 ```js
 xdccJS.on('xdcc-ready', () => {
