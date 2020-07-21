@@ -1,7 +1,7 @@
 {
   "name": "xdccjs",
-  "version": "2.7.0",
-  "description": "XDCC downloader: connect to IRC and download files from XDCC bots",
+  "version": "2.8.0",
+  "description": "download files from XDCC bots on IRC",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
@@ -34,7 +34,8 @@
     "download",
     "bot",
     "client",
-    "passive"
+    "passive",
+    "cli"
   ],
   "author": "JiPaix",
   "license": "MIT",
