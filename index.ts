@@ -8,6 +8,7 @@ import * as path from 'path'
 import * as net from 'net'
 import * as http from 'http'
 import * as ProgressBar from 'progress'
+import * as colors from 'colors/safe'
 /**
  * XDCC
  * @noInheritDoc
@@ -15,7 +16,7 @@ import * as ProgressBar from 'progress'
 export default class XDCC extends Client {
 	private nick: string
 	private chan: string[]
-	private resumequeue: {nick: string, ip:string, length: number}[] = []
+	private resumequeue: {nick: string, ip:string, length: number, token: number}[] = []
 	/**
 	 * Download path (absolute or relative) <br/>
 	 * default value inherited from {@link constructor}'s parameter {@link Params.path}
@@ -182,12 +183,12 @@ export default class XDCC extends Client {
 			}
 			if (this.verbose) {
 				console.error(
-					`\x1b[1m\x1b[32m\u2713\x1b[0m connected to: \x1b[33m${ircServer}\x1b[0m`
+					`${colors.bold(colors.green('\u2713'))} connected to: ${colors.yellow(ircServer)}`
 				)
 				console.error(
 					`\u2937`.padStart(2),
-					`\x1b[1m\x1b[32m\u2713\x1b[0m joined: ${this.chan.map(
-						(e) => `\x1b[33m#${e}\x1b[0m`
+					`${colors.bold(colors.green('\u2713'))} joined: ${this.chan.map(
+						(e) => `${colors.yellow(e)}`
 					)}`
 				)
 			}
@@ -200,7 +201,7 @@ export default class XDCC extends Client {
 				if (this.verbose) {
 					console.error(
 						`\u2937`.padStart(4),
-						`\x1b[1m\x1b[32m\u2713\x1b[0m sending command: /MSG \x1b[33m${args.target}\x1b[0m xdcc send \x1b[33m${args.packet}\x1b[0m`
+						`${colors.bold(colors.green('\u2713'))} sending command: /MSG ${colors.yellow(args.target)} xdcc send ${colors.yellow(args.packet.toString())}`
 					)
 				}
 				this.timeouts = setTimeout(() => {
@@ -208,10 +209,10 @@ export default class XDCC extends Client {
 					if (this.verbose) {
 						console.error(
 							`\u2937`.padStart(6),
-							`\x1b[1m\x1b[31m\u0058\x1b[0m timeout: No response from \x1b[33m${args.target}\x1b[0m`
+							`${colors.bold(colors.red('\u0058'))} timeout: No response from ${colors.yellow(args.target)}`
 						)
 					}
-				}, 10000)
+				}, 1000*15)
 			}
 		)
 		this.on(
@@ -228,7 +229,7 @@ export default class XDCC extends Client {
 					if (this.verbose) {
 						console.error(
 							`\u2937`.padStart(4),
-							`\x1b[1m\x1b[32m\u2713\x1b[0m sending command: /MSG \x1b[33m${args.target}\x1b[0m xdcc send \x1b[33m${args.packet[i]}\x1b[0m`
+							`${colors.bold(colors.green('\u2713'))} sending command: /MSG ${colors.yellow(args.target)} xdcc send ${colors.yellow(args.packet[i].toString())}`
 						)
 					}
 					i++
@@ -239,7 +240,7 @@ export default class XDCC extends Client {
 						if (this.verbose) {
 							console.error(
 								`\u2937`.padStart(4),
-								`\x1b[1m\x1b[32m\u2713\x1b[0m sending command: /MSG \x1b[33m${args.target}\x1b[0m xdcc send \x1b[33m${args.packet[i]}\x1b[0m`
+								`${colors.bold(colors.green('\u2713'))} sending command: /MSG ${colors.yellow(args.target)} xdcc send ${colors.yellow(args.packet[i].toString())}`
 							)
 						}
 						i++
@@ -383,7 +384,7 @@ export default class XDCC extends Client {
 					if (this.verbose) {
 						console.error(
 							`\u2937`.padStart(6),
-							`\x1b[1m\x1b[31m\u0058\x1b[0m couldn't connect to: \x1b[33m${fileInfo.ip}:${fileInfo.port}\x1b[0m`
+							`${colors.bold(colors.red('\u0058'))} couldn't connect to: ${colors.yellow(`${fileInfo.ip}:${fileInfo.port}`)}`
 						)
 					}
 				}, 10000)
@@ -393,14 +394,14 @@ export default class XDCC extends Client {
 					clearTimeout(timeout)
 					timeout = setTimeout(() => {
 						const err = new Error(
-							'connection timeout: not receiving data '
+							'timeout: not receiving data '
 						)
 						this.say(resp.nick, 'XDCC CANCEL')
 						this.emit('download-err', err, fileInfo)
 						if (this.verbose) {
 							bar.interrupt(
 								`\u2937`.padStart(8) +
-									' \x1b[1m\x1b[31m\u0058\x1b[0m ' +
+									` ${colors.bold(colors.red('\u0058'))} ` +
 									err.message
 							)
 						}
@@ -408,7 +409,7 @@ export default class XDCC extends Client {
 					if (this.verbose) {
 						console.error(
 							`\u2937`.padStart(6),
-							`\x1b[1m\x1b[32m\u2713\x1b[0m opening connection with bot: \x1b[33m${fileInfo.ip}:${fileInfo.port}\x1b[0m`
+							`${colors.bold(colors.green('\u2713'))} opening connection with bot: ${colors.yellow(`${fileInfo.ip}:${fileInfo.port}`)}`
 						)
 					}
 				})
@@ -427,8 +428,8 @@ export default class XDCC extends Client {
 						if (this.verbose) {
 							bar.interrupt(
 								`\u2937`.padStart(8) +
-									' \x1b[1m\x1b[31m\u0058\x1b[0m ' +
-									err.message
+								` ${colors.bold(colors.red('\u0058'))} ` +
+								err.message
 							)
 						}
 					}, 2000)
@@ -442,7 +443,7 @@ export default class XDCC extends Client {
 					if (this.verbose) {
 						console.error(
 							`\u2937`.padStart(8),
-							`\x1b[1m\x1b[32m\u2713\x1b[0m done: \x1b[36m${fileInfo.file}\x1b[0m`
+							`${colors.bold(colors.green('\u2713'))} done: ${colors.yellow(fileInfo.file)}`
 						)
 					}
 				})
@@ -455,10 +456,8 @@ export default class XDCC extends Client {
 	}
 
 	private downloadToFile(resp: { [prop: string]: string }): void {
-		const self = this
 		const fileInfo = this.parseCtcp(resp.message, resp.nick)
 		if(fileInfo) {
-			let position = 0
 			const timeout = setTimeout(() => {
 				this.say(resp.nick, 'XDCC CANCEL')
 				const err = new Error('CONNTIMEOUT: No initial connection')
@@ -466,27 +465,21 @@ export default class XDCC extends Client {
 				if (this.verbose) {
 					console.error(
 						`\u2937`.padStart(6),
-						`\x1b[1m\x1b[31m\u0058\x1b[0m couldn't connect to: \x1b[33m${fileInfo.ip}:${fileInfo.port}\x1b[0m`
-					)
+						`${colors.bold(colors.red('\u0058'))} couldn't connect to: ${colors.yellow(`${fileInfo.ip}:${fileInfo.port}`)}`
+						)
 				}
 			}, 10000)
-			if (
-				typeof fileInfo.filePath === 'undefined' ||
-				fileInfo.filePath === null
-			) {
-				throw Error('filePath must be defined')
-			}
-			if (fs.existsSync(fileInfo.filePath)) {
+			if (fs.existsSync(fileInfo.filePath!)) {
 				clearTimeout(timeout)
 				clearTimeout(this.timeouts)
-				let position = fs.statSync(fileInfo.filePath).size
+				let position = fs.statSync(fileInfo.filePath!).size
 				if(fileInfo.length === position) {
 					position = position - 8192
 				}
 				if(fileInfo.type === 'DCC SEND') {
 					const quotedFilename = /\s/.test(fileInfo.file) ? `"${fileInfo.file}"` : fileInfo.file
-					this.ctcpRequest(resp.nick, 'DCC RESUME', quotedFilename, fileInfo.port, position)
-					this.resumequeue.push({nick: resp.nick, ip: fileInfo.ip, length: fileInfo.length})
+					this.ctcpRequest(resp.nick, 'DCC RESUME', quotedFilename, fileInfo.port, position, fileInfo.token)						
+					this.resumequeue.push({nick: resp.nick, ip: fileInfo.ip, length: fileInfo.length, token: fileInfo.token})
 					this.timeouts = setTimeout(() => {
 						this.say(resp.nick, 'XDCC CANCEL')
 						const err = new Error(`RESUMETIMEOUT: Couldn't resume transfert`)
@@ -494,26 +487,33 @@ export default class XDCC extends Client {
 						if (this.verbose) {
 							console.error(
 								`\u2937`.padStart(6),
-								`\x1b[1m\x1b[31m\u0058\x1b[0m couldn't resume download of: \x1b[33m${fileInfo.file}\x1b[0m`
-							)						
+								`${colors.bold(colors.red('\u0058'))} timeout : couldn't resume download of: ${colors.yellow(fileInfo.file)}`
+							)
+							if(fileInfo.port === 0) {
+								console.error(
+									`\u2937`.padStart(4),
+									`${colors.bold(colors.cyan('\u2139'))} resume not supported by bot ${colors.yellow(resp.nick)} attempting to redownload ${colors.yellow(fileInfo.file)} from start`
+								)
+								fs.unlinkSync(fileInfo.filePath!)
+								const file = fs.createWriteStream(fileInfo.filePath!)
+								file.on('ready', () => { this.passiveToFile(file, fileInfo, timeout, resp.nick)})
+							}			
 						}
 					}, 10000);
 				} else if(fileInfo.type === 'DCC ACCEPT') {
-					console.log(fileInfo)
 					if(this.verbose) {
 						console.error(
 							`\u2937`.padStart(6),
-							`\x1b[1m\x1b[32m\u2713\x1b[0m Resuming download of: \x1b[33m${fileInfo.file}\x1b[0m`
+							`${colors.bold(colors.cyan('\u2139'))} resuming download of: ${colors.yellow(fileInfo.file)}`
 						)
 					}
 					fileInfo.length = fileInfo.length - fileInfo.token
-					console.log('resume missing : '+fileInfo.length)
-					const file = fs.createWriteStream(fileInfo.filePath, {flags: 'r+', start: position})
+					const file = fs.createWriteStream(fileInfo.filePath!, {flags: 'r+', start: position})
 					file.on('ready', () => {
 						if (fileInfo.port === 0) {
 							clearTimeout(timeout)
 							clearTimeout(this.timeouts)
-							this.passiveToFile(file, fileInfo, timeout, resp.nick)
+							this.passiveToFile(file, fileInfo, timeout, resp.nick, true)
 						} else {
 							clearTimeout(this.timeouts)
 							this.activeToFile(file, fileInfo, timeout, resp.nick)
@@ -521,7 +521,7 @@ export default class XDCC extends Client {
 					})
 				}
 			} else {
-				const file = fs.createWriteStream(fileInfo.filePath)
+				const file = fs.createWriteStream(fileInfo.filePath!)
 				file.on('ready', () => {
 					if (fileInfo.port === 0) {
 						clearTimeout(timeout)
@@ -538,7 +538,7 @@ export default class XDCC extends Client {
 	private setupProgressBar(len: number): ProgressBar {
 		return new ProgressBar(
 			`\u2937`.padStart(6) +
-				' \x1b[1m\x1b[32m\u2713\x1b[0m downloading [:bar] :rate/s :percent :etas',
+				` ${colors.bold(colors.green('\u2713'))} downloading [:bar] :rate/s :percent :etas`,
 			{
 				complete: '=',
 				incomplete: ' ',
@@ -568,7 +568,7 @@ export default class XDCC extends Client {
 				if (this.verbose) {
 					bar.interrupt(
 						`\u2937`.padStart(8) +
-							' \x1b[1m\x1b[31m\u0058\x1b[0m ' +
+							` ${colors.bold(colors.red('\u0058'))} ` +
 							err.message
 					)
 				}
@@ -576,7 +576,7 @@ export default class XDCC extends Client {
 			if (this.verbose) {
 				console.error(
 					`\u2937`.padStart(6),
-					`\x1b[1m\x1b[32m\u2713\x1b[0m opening connection with bot: \x1b[33m${fileInfo.ip}:${fileInfo.port}\x1b[0m`
+					`${colors.bold(colors.green('\u2713'))} opening connection with bot: ${colors.yellow(`${fileInfo.ip}:${fileInfo.port}`)}`
 				)
 			}
 		})
@@ -595,7 +595,7 @@ export default class XDCC extends Client {
 					if (this.verbose) {
 						bar.interrupt(
 							`\u2937`.padStart(8) +
-								' \x1b[1m\x1b[31m\u0058\x1b[0m ' +
+								` ${colors.bold(colors.red('\u0058'))} ` +
 								err.message
 						)
 					}
@@ -614,7 +614,7 @@ export default class XDCC extends Client {
 			if (this.verbose) {
 				console.error(
 					`\u2937`.padStart(8),
-					`\x1b[1m\x1b[32m\u2713\x1b[0m done: \x1b[36m${file.path}\x1b[0m`
+					`${colors.bold(colors.green('\u2713'))} done: \x1b[36m${file.path}\x1b[0m`
 				)
 			}
 			self.emit('downloaded', fileInfo)
@@ -630,9 +630,11 @@ export default class XDCC extends Client {
 		file: fs.WriteStream,
 		fileInfo: FileInfo,
 		timeout: NodeJS.Timeout,
-		nick: string
+		nick: string,
+		resume=false
 	): void {
-		const bar = this.setupProgressBar(fileInfo.length)
+		fileInfo.position = fileInfo.position ? fileInfo.position : 0
+		const bar = this.setupProgressBar(fileInfo.length-fileInfo.position)
 		const self = this
 		let received = 0
 		const sendBuffer = Buffer.alloc(4)
@@ -662,7 +664,7 @@ export default class XDCC extends Client {
 						if (this.verbose) {
 							bar.interrupt(
 								`\u2937`.padStart(8) +
-									' \x1b[1m\x1b[31m\u0058\x1b[0m ' +
+									` ${colors.bold(colors.red('\u0058'))} ` +
 									err.message
 							)
 						}
@@ -680,7 +682,7 @@ export default class XDCC extends Client {
 					if (this.verbose) {
 						console.error(
 							`\u2937`.padStart(8),
-							`\x1b[1m\x1b[32m\u2713\x1b[0m done: \x1b[36m${file.path}\x1b[0m`
+							`${colors.bold(colors.green('\u2713'))} done: \x1b[36m${file.path}\x1b[0m`
 						)
 					}
 					self.emit('downloaded', fileInfo)
@@ -696,7 +698,7 @@ export default class XDCC extends Client {
 					if (this.verbose) {
 						bar.interrupt(
 							`\u2937`.padStart(8) +
-								' \x1b[1m\x1b[31m\u0058\x1b[0m ' +
+								` ${colors.bold(colors.red('\u0058'))} ` +
 								err.message
 						)
 					}
@@ -713,22 +715,26 @@ export default class XDCC extends Client {
 			if (this.verbose) {
 				console.error(
 					`\u2937`.padStart(6),
-					`\x1b[1m\x1b[31m\u0058\x1b[0m all passive ports are currently used: \x1b[33m${fileInfo.ip}:${fileInfo.port}\x1b[0m`
+					`${colors.bold(colors.red('\u0058'))} all passive ports are currently used: ${colors.yellow(`${fileInfo.ip}:${fileInfo.port}`)}`
 				)
 			}
 		}
 		server.on('listening', () => {
-			this.raw(
-				`PRIVMSG ${nick} ${String.fromCharCode(1)}DCC SEND ${
-					fileInfo.file
-				} ${this.ip} ${pick} ${fileInfo.length} ${
-					fileInfo.token
-				}${String.fromCharCode(1)}`
-			)
+
+
+
+				this.raw(
+					`PRIVMSG ${nick} ${String.fromCharCode(1)}DCC SEND ${
+						fileInfo.file
+					} ${this.ip} ${pick} ${fileInfo.length} ${
+						fileInfo.token
+					}${String.fromCharCode(1)}`
+				)
+
 			if (this.verbose) {
 				console.error(
 					`\u2937`.padStart(6),
-					`\x1b[1m\x1b[32m\u2713\x1b[0m listening for passive download at: \x1b[33m${this.ip}:${pick}\x1b[0m`
+					`${colors.bold(colors.cyan('\u2139'))} waiting for connexion at: ${colors.yellow(`${this.uint32ToIP(this.ip)}:${pick}`)}`
 				)
 			}
 		})
@@ -741,7 +747,7 @@ export default class XDCC extends Client {
 				if (this.verbose) {
 					console.error(
 						`\u2937`.padStart(6),
-						`\x1b[1m\x1b[31m\u0058\x1b[0m couldn't setup a passive transfert: \x1b[33m${err}\x1b[0m`
+						`${colors.bold(colors.red('\u0058'))} couldn't setup a passive transfert: ${colors.yellow(err.message)}`
 					)
 				}
 			})
@@ -815,7 +821,7 @@ export default class XDCC extends Client {
 		if (this.verbose) {
 			console.error(
 				`\u2937`.padStart(4),
-				`\x1b[1m\x1b[36m\u2139\x1b[0m batch download of packets: \x1b[33m${packets}\x1b[0m`
+				`${colors.bold(colors.cyan('\u2139'))} batch download of packets: \x1b[33m${packets}\x1b[0m`
 			)
 		}
 		this.emit('request-batch', {
@@ -896,7 +902,6 @@ export default class XDCC extends Client {
 		if (parts === null) {
 			throw new TypeError(`CTCP : received unexpected msg : ${text}`)
 		}
-		console.log(parts)
 		if(parts[1]==='SEND') {
 			return {
 				type : `${parts[0]} ${parts[1]}`,
@@ -921,7 +926,8 @@ export default class XDCC extends Client {
 				ip: resume[0].ip,
 				port: parseInt(parts[3], 10),
 				length: resume[0].length,
-				token: parseInt(parts[4], 10),
+				position: parseInt(parts[4], 10),
+				token: resume[0].token
 			}
 		}
 	}
@@ -1097,6 +1103,8 @@ declare interface FileInfo {
 	length: number
 	/** Token (passive DCC) */
 	token: number
+	/** Resume Position */
+	position?: number
 }
 
 /**
