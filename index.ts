@@ -590,6 +590,14 @@ export default class XDCC extends Client {
       } else {
         const file = fs.createWriteStream(fileInfo.filePath)
         file.on('ready', () => {
+          if (this.verbose) {
+            console.error(
+              `\u2937`.padStart(6),
+              `${colors.bold(
+                colors.cyan('\u2139')
+              )} starting download of: ${colors.yellow(fileInfo.file)}`
+            )
+          }
           if (fileInfo.port === 0) {
             clearTimeout(timeout)
             clearTimeout(this.timeouts)
