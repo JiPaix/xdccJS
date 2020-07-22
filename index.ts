@@ -1045,6 +1045,7 @@ export default class XDCC extends Client {
       bar?: ProgressBar
     },
     timeout: number,
+    /* eslint-disable @typescript-eslint/ban-types */
     exec?: Function
   ): NodeJS.Timeout {
     return setTimeout(() => {
