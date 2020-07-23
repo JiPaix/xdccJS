@@ -149,7 +149,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides Client.__constructor</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/0e56bcd/index.ts#L60">index.ts:60</a></li>
+									<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/7ecfa90/index.ts#L63">index.ts:63</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -170,6 +170,7 @@
  <span class="hljs-attr">nick</span>: <span class="hljs-string">&#x27;JiPaix&#x27;</span>,
  <span class="hljs-attr">chan</span>: [<span class="hljs-string">&#x27;#itsMe&#x27;</span>, <span class="hljs-string">&#x27;#JiPaix&#x27;</span> ],
  <span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;downloads&#x27;</span>,
+ <span class="hljs-attr">retry</span>: <span class="hljs-number">2</span>,
  <span class="hljs-attr">verbose</span>: <span class="hljs-literal">true</span>,
  <span class="hljs-attr">randomizeNick</span>: <span class="hljs-literal">true</span>,
  <span class="hljs-attr">passivePort</span> : [<span class="hljs-number">5001</span>, <span class="hljs-number">5002</span>, <span class="hljs-number">5003</span>]
@@ -198,7 +199,7 @@
 					<div class="tsd-signature tsd-kind-icon">download-<wbr>err<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span>, f<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/0e56bcd/index.ts#L1192">index.ts:1192</a></li>
+							<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/7ecfa90/index.ts#L1247">index.ts:1247</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -208,7 +209,7 @@
 						<dl class="tsd-comment-tags">
 							<dt>example</dt>
 							<dd><pre><code class="language-js">xdccJS.on(<span class="hljs-string">&#x27;download-err&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">e, f</span>) =&gt;</span> {
-  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">`failed to download <span class="hljs-subst">${f.file}</span>`</span>)
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`failed to download <span class="hljs-subst">${f.file}</span>`</span>)
   <span class="hljs-built_in">console</span>.error(e)
 })</code></pre>
 							</dd>
@@ -245,7 +246,7 @@
 					<div class="tsd-signature tsd-kind-icon">download-<wbr>start<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>f<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/0e56bcd/index.ts#L1168">index.ts:1168</a></li>
+							<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/7ecfa90/index.ts#L1223">index.ts:1223</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -255,7 +256,7 @@
 						<dl class="tsd-comment-tags">
 							<dt>example</dt>
 							<dd><pre><code class="language-js">xdccJS.on(<span class="hljs-string">&#x27;download-start&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">f</span>) =&gt;</span> {
-  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">`Starting download of <span class="hljs-subst">${f.file}</span>`</span>)
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Starting download of <span class="hljs-subst">${f.file}</span>`</span>)
 })</code></pre>
 							</dd>
 						</dl>
@@ -288,7 +289,7 @@
 					<div class="tsd-signature tsd-kind-icon">downloaded<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>f<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/0e56bcd/index.ts#L1204">index.ts:1204</a></li>
+							<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/7ecfa90/index.ts#L1259">index.ts:1259</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -298,7 +299,7 @@
 						<dl class="tsd-comment-tags">
 							<dt>example</dt>
 							<dd><pre><code class="language-js">xdccJS.on(<span class="hljs-string">&#x27;downloaded&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">f</span>) =&gt;</span> {
-  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">`Download completed: <span class="hljs-subst">${f.filePath}</span>`</span>)
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Download completed: <span class="hljs-subst">${f.filePath}</span>`</span>)
 })</code></pre>
 							</dd>
 						</dl>
@@ -331,7 +332,7 @@
 					<div class="tsd-signature tsd-kind-icon">downloading<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>r<span class="tsd-signature-symbol">: </span><a href="../index.html#received" class="tsd-signature-type">received</a>, f<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/0e56bcd/index.ts#L1179">index.ts:1179</a></li>
+							<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/7ecfa90/index.ts#L1234">index.ts:1234</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -341,7 +342,7 @@
 						<dl class="tsd-comment-tags">
 							<dt>example</dt>
 							<dd><pre><code class="language-js">xdccJS.on(<span class="hljs-string">&#x27;downloading&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">r, f</span>) =&gt;</span> {
-  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">`<span class="hljs-subst">${f.file}</span> - <span class="hljs-subst">${r}</span>/<span class="hljs-subst">${FileInfo.length}</span> Bytes`</span>)
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`<span class="hljs-subst">${f.file}</span> - <span class="hljs-subst">${r}</span>/<span class="hljs-subst">${FileInfo.length}</span> Bytes`</span>)
 })</code></pre>
 							</dd>
 						</dl>
@@ -377,10 +378,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-event tsd-parent-kind-class tsd-is-static">
 					<a name="batch_complete" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> batch-<wbr>complete</h3>
-					<div class="tsd-signature tsd-kind-icon">batch-<wbr>complete<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>i<span class="tsd-signature-symbol">: </span><a href="../interfaces/batchinfo.html" class="tsd-signature-type">batchInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<div class="tsd-signature tsd-kind-icon">batch-<wbr>complete<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>i<span class="tsd-signature-symbol">: </span><a href="../interfaces/batchinfo.html" class="tsd-signature-type">BatchInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/0e56bcd/index.ts#L1219">index.ts:1219</a></li>
+							<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/7ecfa90/index.ts#L1274">index.ts:1274</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -394,7 +395,7 @@
 })
 
 xdccJS.on(<span class="hljs-string">&#x27;batch-complete&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">batchInfo</span>) =&gt;</span> {
-    <span class="hljs-built_in">console</span>.error(batchInfo) <span class="hljs-comment">//=&gt; { target: &#x27;XDCC|BOT&#x27;, packet: [23, 24, 25, 102, 300] }</span>
+    <span class="hljs-built_in">console</span>.log(batchInfo) <span class="hljs-comment">//=&gt; { target: &#x27;XDCC|BOT&#x27;, packet: [23, 24, 25, 102, 300] }</span>
 })</code></pre>
 							</dd>
 						</dl>
@@ -404,14 +405,14 @@ xdccJS.on(<span class="hljs-string">&#x27;batch-complete&#x27;</span>, <span cla
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-signature">
 								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-event">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>i<span class="tsd-signature-symbol">: </span><a href="../interfaces/batchinfo.html" class="tsd-signature-type">batchInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>i<span class="tsd-signature-symbol">: </span><a href="../interfaces/batchinfo.html" class="tsd-signature-type">BatchInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
 										<h4 class="tsd-parameters-title">Parameters</h4>
 										<ul class="tsd-parameters">
 											<li>
-												<h5>i: <a href="../interfaces/batchinfo.html" class="tsd-signature-type">batchInfo</a></h5>
+												<h5>i: <a href="../interfaces/batchinfo.html" class="tsd-signature-type">BatchInfo</a></h5>
 											</li>
 										</ul>
 										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -427,7 +428,7 @@ xdccJS.on(<span class="hljs-string">&#x27;batch-complete&#x27;</span>, <span cla
 					<div class="tsd-signature tsd-kind-icon">xdcc-<wbr>ready<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/0e56bcd/index.ts#L1156">index.ts:1156</a></li>
+							<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/7ecfa90/index.ts#L1211">index.ts:1211</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -467,7 +468,7 @@ xdccJS.on(<span class="hljs-string">&#x27;batch-complete&#x27;</span>, <span cla
 					<div class="tsd-signature tsd-kind-icon">pipe-<wbr>data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>chunk<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span>, r<span class="tsd-signature-symbol">: </span><a href="../index.html#received" class="tsd-signature-type">received</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/0e56bcd/index.ts#L1245">index.ts:1245</a></li>
+							<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/7ecfa90/index.ts#L1300">index.ts:1300</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -479,7 +480,7 @@ xdccJS.on(<span class="hljs-string">&#x27;batch-complete&#x27;</span>, <span cla
 							<dd><pre><code class="language-js"><span class="hljs-keyword">let</span> stream = fs.createWriteStream( <span class="hljs-string">&#x27;MyFile.mp4&#x27;</span> )
 xdccJS.on(<span class="hljs-string">&#x27;pipe-data&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">chunk, r</span>) =&gt;</span> {
   stream.write(chunk)
-  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">`Downloaded <span class="hljs-subst">${stream.length}</span> out of <span class="hljs-subst">${r}</span>`</span>)
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Downloaded <span class="hljs-subst">${stream.length}</span> out of <span class="hljs-subst">${r}</span>`</span>)
 })</code></pre>
 							</dd>
 						</dl>
@@ -515,7 +516,7 @@ xdccJS.on(<span class="hljs-string">&#x27;pipe-data&#x27;</span>, <span class="h
 					<div class="tsd-signature tsd-kind-icon">pipe-<wbr>downloaded<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>f<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/0e56bcd/index.ts#L1273">index.ts:1273</a></li>
+							<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/7ecfa90/index.ts#L1328">index.ts:1328</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -525,7 +526,7 @@ xdccJS.on(<span class="hljs-string">&#x27;pipe-data&#x27;</span>, <span class="h
 						<dl class="tsd-comment-tags">
 							<dt>example</dt>
 							<dd><pre><code class="language-js"><span class="hljs-keyword">let</span> file = fs.createWriteStream( <span class="hljs-string">&#x27;MyFile.mp4&#x27;</span> )
-xdccJS.on(<span class="hljs-string">&#x27;pipe-downloaded&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">e, f</span>) =&gt;</span> {
+xdccJS.on(<span class="hljs-string">&#x27;pipe-downloaded&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">f</span>) =&gt;</span> {
   file.end()
 })</code></pre>
 							</dd>
@@ -559,7 +560,7 @@ xdccJS.on(<span class="hljs-string">&#x27;pipe-downloaded&#x27;</span>, <span cl
 					<div class="tsd-signature tsd-kind-icon">pipe-<wbr>err<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span>, f<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/0e56bcd/index.ts#L1260">index.ts:1260</a></li>
+							<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/7ecfa90/index.ts#L1315">index.ts:1315</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -571,7 +572,7 @@ xdccJS.on(<span class="hljs-string">&#x27;pipe-downloaded&#x27;</span>, <span cl
 							<dd><pre><code class="language-js"><span class="hljs-keyword">let</span> file = fs.createWriteStream( <span class="hljs-string">&#x27;MyFile.mp4&#x27;</span> )
 xdccJS.on(<span class="hljs-string">&#x27;pipe-err&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">e, f</span>) =&gt;</span> {
   file.end()
-  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">`failed to download : <span class="hljs-subst">${f.file}</span>`</span>)
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`failed to download : <span class="hljs-subst">${f.file}</span>`</span>)
   <span class="hljs-built_in">console</span>.error(e)
 })</code></pre>
 							</dd>
@@ -608,7 +609,7 @@ xdccJS.on(<span class="hljs-string">&#x27;pipe-err&#x27;</span>, <span class="hl
 					<div class="tsd-signature tsd-kind-icon">pipe-<wbr>start<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>f<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/0e56bcd/index.ts#L1231">index.ts:1231</a></li>
+							<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/7ecfa90/index.ts#L1286">index.ts:1286</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -618,7 +619,7 @@ xdccJS.on(<span class="hljs-string">&#x27;pipe-err&#x27;</span>, <span class="hl
 						<dl class="tsd-comment-tags">
 							<dt>example</dt>
 							<dd><pre><code class="language-js">xdccJS.on(<span class="hljs-string">&#x27;pipe-start&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">f</span>) =&gt;</span> {
-  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">`File length  : <span class="hljs-subst">${f.length}</span>`</span>)
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`File length  : <span class="hljs-subst">${f.length}</span>`</span>)
 })</code></pre>
 							</dd>
 						</dl>
@@ -652,13 +653,13 @@ xdccJS.on(<span class="hljs-string">&#x27;pipe-err&#x27;</span>, <span class="hl
 					<a name="download" class="tsd-anchor"></a>
 					<h3>download</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">download<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, packet<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">download<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, packet<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span>, candidate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Candidate</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/0e56bcd/index.ts#L977">index.ts:977</a></li>
+									<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/7ecfa90/index.ts#L962">index.ts:962</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -741,10 +742,13 @@ xdccJS.on(<span class="hljs-string">&#x27;xdcc-ready&#x27;</span>, <span class="
 									</div>
 								</li>
 								<li>
-									<h5>packet: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
+									<h5>packet: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Packet</p>
 									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> candidate: <span class="tsd-signature-type">Candidate</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -761,7 +765,7 @@ xdccJS.on(<span class="hljs-string">&#x27;xdcc-ready&#x27;</span>, <span class="
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/0e56bcd/index.ts#L1000">index.ts:1000</a></li>
+									<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/7ecfa90/index.ts#L998">index.ts:998</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">

@@ -16,7 +16,8 @@
     "test": "snyk test --all-projects && node ./node_modules/mocha/bin/mocha -r ts-node/register test/mocha.ts",
     "build": "node ./node_modules/rimraf/bin.js dist && node ./node_modules/typescript/bin/tsc",
     "prepublishOnly": "npm run build && npm run snyk-wiz",
-    "snyk-wiz": "node ./node_modules/snyk/dist/cli/index.js wizard"
+    "snyk-wiz": "node ./node_modules/snyk/dist/cli/index.js wizard",
+    "doc": "node ./node_modules/typedoc/bin/typedoc"
   },
   "repository": {
     "type": "git",
@@ -73,7 +74,8 @@
     "commander": "^5.1.0",
     "eventemitter3": "^4.0.0",
     "irc-framework": "^4.7.0",
-    "progress": "https://github.com/JiPaix/node-progress/tarball/master"
+    "progress": "https://github.com/JiPaix/node-progress/tarball/master",
+    "public-ip": "^4.0.2"
   },
   "snyk": true
 }

@@ -74,6 +74,7 @@ export default class XDCC extends Client {
      *  nick: 'JiPaix',
      *  chan: ['#itsMe', '#JiPaix' ],
      *  path: 'downloads',
+     *  retry: 2,
      *  verbose: true,
      *  randomizeNick: true,
      *  passivePort : [5001, 5002, 5003]
@@ -1356,7 +1357,7 @@ declare interface Params {
   path?: false | string
   /** Display information regarding your download in console, default : false */
   verbose?: boolean
-  /** Add Random number to nickname, default: false */
+  /** Add Random numbers to nickname, default: false */
   randomizeNick?: boolean
   /** Port(s) for passive DCC, default : [5001] */
   passivePort?: number[]
