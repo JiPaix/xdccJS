@@ -1,21 +1,27 @@
 <h1 align="center">xdccJS<br><a href="https://travis-ci.com/github/JiPaix/xdccJS"><img src="https://travis-ci.com/JiPaix/xdccJS.svg?branch=master"/></a> <a href="https://www.codefactor.io/repository/github/jipaix/xdccjs"><img src="https://www.codefactor.io/repository/github/jipaix/xdccjs/badge" /></a>  <a href="https://deepscan.io/dashboard#view=project&tid=8945&pid=11179&bid=163106"><img src="https://deepscan.io/api/teams/8945/projects/11179/branches/163106/badge/grade.svg"/> <a href="https://www.npmjs.com/package/xdccjs"><img src='https://img.shields.io/npm/dt/xdccjs'/></a> <a href="https://snyk.io/test/github/JiPaix/xdccJS?targetFile=package.json"><img src="https://snyk.io/test/github/JiPaix/xdccJS/badge.svg?targetFile=package.json" data-canonical-src="https://snyk.io/test/github/JiPaix/xdccJS?targetFile=package.json" style="max-width:100%;"></a> <a href="https://discord.gg/HhhqdUd"><img src='https://img.shields.io/discord/706018150520717403'/></a></h1>
 <h5 align="center">a Node.js module to download files from XDCC bots on IRC</h5>
 
-<h4 align="center"><a href="#xdccjs-as-a-cli-">CLI</a> | <a href="#xdccjs-as-a-module-">MODULE</a> | <a href="https://jipaix.github.io/xdccJS/classes/xdcc.html">API</a> | <a href="https://github.com/JiPaix/xdccJS/tree/master/examples/">Advanced Examples</a></h4>
+<h4 align="center"><a href="#features-">Features</a> | <a href="#xdccjs-cli-">CLI</a> | <a href="#xdccjs-library-">Library</a> | <a href="https://jipaix.github.io/xdccJS/classes/xdcc.html">API</a> | <a href="https://github.com/JiPaix/xdccJS/tree/master/examples/">Advanced Examples</a></h4>
 
 
 ## Introduction
-***xdccJS can either be used as a CLI or a module*** to download files using the <a href="https://en.wikipedia.org/wiki/XDCC">XDCC protocol</a>  
-It supports <a href="https://en.wikipedia.org/wiki/Direct_Client-to-Client#Passive_DCC">passive dcc</a>, download resume and can handle batch downloads or even pipes.  
+***xdccJS can either be used as a CLI or a module*** to download files using the <a href="https://en.wikipedia.org/wiki/XDCC">XDCC protocol</a>   
 It can also act as a "simple" irc client : <a href="https://github.com/kiwiirc/irc-framework">@kiwiirc/irc-framework</a> is included with xdccJS (xdccJS basically extends it),  
 so everything you can do with irc-framework can be done with xdccJS!
+## Features :
+- <a href="https://en.wikipedia.org/wiki/Direct_Client-to-Client#Passive_DCC">Passive DCC</a>
+- Batch downloads : `1-3, 5, 32-35, 101`
+- Resume partially downloaded files
+- Auto-retry on fail
+- Pipes!
 
-## xdccJS as a CLI :
-#### install xdccJS as a CLI :  
+
+## xdccJS CLI :
+#### Install xdccJS CLI :  
 ```bash
 npm install xdccjs -g
 ```  
-#### start downloading :  
+#### Start downloading :  
 ```bash
 xdccJS --server irc.server.net --bot "XDCC-BOT|NICKNAME" --download 110 --path "/home/user/downloads"
 ```  
@@ -42,7 +48,7 @@ Options:
 - `--path` and `--bot` option's values ***MUST*** be either escaped or quoted :  
 - xdccJS uses `stderr` to print download status informations, `stdout` is ***strictly*** used for download data 
 
-## xdccJS as a MODULE :
+## xdccJS library :
 #### Install xdccJS
 `npm install xdccjs`
 #### Initialize xdccJS :
@@ -72,6 +78,7 @@ let opts = {
   nick: 'ItsMeJiPaix',
   chan: ['#candy', '#fruits'],
   path: 'my/download/folder',
+  retry: 2,
   verbose: true,
   randomizeNick: true,
   passivePort: [5000, 5001, 5002]
