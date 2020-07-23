@@ -213,6 +213,7 @@ export default class XDCC extends Client {
       self.emit('xdcc-ready')
     })
     this.on('request', (args: { target: string; packet: string | number }) => {
+      args.packet = this.checkHashtag(args.packet, false)
       const candidate = this.getCandidate(args.target)
       this.say(args.target, `xdcc send ${args.packet}`)
       if (this.verbose) {
