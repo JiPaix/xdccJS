@@ -1,7 +1,7 @@
 {
   "name": "xdccjs",
-  "version": "2.8.0",
-  "description": "download files from XDCC bots on IRC",
+  "version": "2.9.0",
+  "description": "download files from XDCC bots on IRC, complete implementation of the XDCC protocol",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
@@ -32,7 +32,6 @@
     "typescript",
     "downloader",
     "download",
-    "bot",
     "client",
     "passive",
     "cli"

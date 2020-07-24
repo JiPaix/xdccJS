@@ -6,15 +6,15 @@
 const XDCC = require('xdccjs').default
 
 let opts = {
-  host: 'irc.server.net',
-  port: 6660,
-  nick: 'ItsMeJiPaix',
-  chan: ['#candy', '#fruits'],
-  path: 'downloads',
-  retry: 2,
-  verbose: true, // optional
-  randomizeNick: true, // optional
-  passivePort: [5000, 5001, 5002], // optional
+  host: 'irc.server.net', // IRC hostname                           - required
+  port: 6660, // IRC port                                           - optional (default: 6667)
+  nick: 'ItsMeJiPaix', // Nickname                                  - optional (default: xdccJS)
+  chan: ['#candy', '#fruits'], // Channel(s)                        - optional (default: "#xdccJS")
+  path: 'downloads', // Download path                               - optional (default: false, which enables piping)
+  retry: 2, // Nb of retries on failed download                     - optional (default: 1)
+  verbose: true, // Display download progress and xdccJS status     - optioanl (default: false)
+  randomizeNick: true, // Add random numbers at end of nickname     - optional (default: true)
+  passivePort: [5000, 5001, 5002], // Ports to use with Passive DCC  - optional (default: [5001])
 }
 
 const xdccJS = new XDCC(opts)
@@ -43,7 +43,7 @@ xdccJS.on('xdcc-ready', () => {
     })
     // listening to errors
     xdccJS.on('pipe-err', () => {
-        res.status(500).end() // stop sending data to client and raise a status 500 to make it aware of failure
+      res.status(500).end() // stop sending data to client and raise a status 500 to make it aware of failure
     })
   })
 })
