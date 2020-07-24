@@ -92,15 +92,9 @@ export default class XDCC extends Client {
     })
     this._is('host', parameters.host, 'string')
     parameters.port = this._is('port', parameters.port, 'number', 6667)
-    parameters.nick = this._is(
-      'nick',
-      parameters.nick,
-      'string',
-      this.nickRandomizer('xdccJS')
-    )
-    if (this._is('randomizeNick', parameters.randomizeNick, 'boolean', false)) {
+    if (this._is('randomizeNick', parameters.randomizeNick, 'boolean', true)) {
       this.nick = this.nickRandomizer(
-        parameters.nick ? parameters.nick : this.nickRandomizer('xdccJS')
+        parameters.nick ? parameters.nick : 'xdccJS'
       )
     } else {
       this.nick = parameters.nick
