@@ -78,6 +78,7 @@
   "exclude": [
     "node_modules/**",
     "dist/**",
-    "./test.*"
+    "./test.*",
+    "test/**"
   ]
 }

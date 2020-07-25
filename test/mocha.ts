@@ -34,28 +34,20 @@ describe('initialize', () => {
   })
   it('connect', function (done) {
     this.timeout(10000)
-    start.on('xdcc-ready', () => {
+    start.on('ready', () => {
       done()
     })
   })
   it('download()', function (done) {
-    start.on('request', (res: { target: string; packet: string | number }) => {
-      if (res.target === 'JiPaix' && res.packet === '#1') {
+    start.on('request', (res: { target: string; packets: number[] }) => {
+      let check
+      for (var i = 0; i < res.packets.length; i++) {
+        check = [1, 2, 3, 200][i] === res.packets[i]
+      }
+      if (check) {
         done()
       }
     })
-    start.download('JiPaix', 1)
-  })
-  it('downloadBatch()', function (done) {
-    start.on('request-batch', (res: { target: string; packet: number[] }) => {
-      if (
-        res.target === 'JiPaix' &&
-        [2, 3, 4, 5, 9].every((val, i, arr) => val === res.packet[i])
-      ) {
-        start.quit()
-        done()
-      }
-    })
-    start.downloadBatch('JiPaix', '2-5 , 9')
+    start.download('JiPaix', '1-3, 200')
   })
 })
