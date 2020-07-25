@@ -115,10 +115,10 @@ xdccJS.on('done', (failures) => {
 
 By default xdccJS stays connected to IRC and is waiting for instruction (downloads)
 
-To safely disconnect use the `canQuit` event :
+To safely disconnect use the `can quit` event :
 ```js
 // event triggered once all your downloads are done
-xdccJS.on('canQuit', (fileInfo) =>{
+xdccJS.on('can-quit', (fileInfo) =>{
   xdccJS.quit()
 })
 ```

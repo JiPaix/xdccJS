@@ -2727,6 +2727,9 @@ img {
 					<a href="xdcc.html#constructor" class="tsd-kind-icon">constructor</a>
 				</li>
 				<li class=" tsd-kind-event tsd-parent-kind-class tsd-is-static">
+					<a href="xdcc.html#can_quit" class="tsd-kind-icon">can quit</a>
+				</li>
+				<li class=" tsd-kind-event tsd-parent-kind-class tsd-is-static">
 					<a href="xdcc.html#data" class="tsd-kind-icon">data</a>
 				</li>
 				<li class=" tsd-kind-event tsd-parent-kind-class tsd-is-static">
@@ -2743,6 +2746,9 @@ img {
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="xdcc.html#download" class="tsd-kind-icon">download</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="xdcc.html#reconnect" class="tsd-kind-icon">reconnect</a>
 				</li>
 			</ul>
 		</li>
@@ -2794,6 +2800,7 @@ img {
 					<section class="tsd-index-section ">
 						<h3>Events</h3>
 						<ul class="tsd-index-list">
+							<li class="tsd-kind-event tsd-parent-kind-class tsd-is-static"><a href="xdcc.html#can_quit" class="tsd-kind-icon">can quit</a></li>
 							<li class="tsd-kind-event tsd-parent-kind-class tsd-is-static"><a href="xdcc.html#data" class="tsd-kind-icon">data</a></li>
 							<li class="tsd-kind-event tsd-parent-kind-class tsd-is-static"><a href="xdcc.html#done" class="tsd-kind-icon">done</a></li>
 							<li class="tsd-kind-event tsd-parent-kind-class tsd-is-static"><a href="xdcc.html#downloaded" class="tsd-kind-icon">downloaded</a></li>
@@ -2805,6 +2812,7 @@ img {
 						<h3>Methods</h3>
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="xdcc.html#download" class="tsd-kind-icon">download</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="xdcc.html#reconnect" class="tsd-kind-icon">reconnect</a></li>
 						</ul>
 					</section>
 				</div>
@@ -2823,7 +2831,7 @@ img {
 						<aside class="tsd-sources">
 							<p>Overrides Client.__constructor</p>
 							<ul>
-								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/34e5649/index.ts#L32">index.ts:32</a></li>
+								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/06e66e8/index.ts#L35">index.ts:35</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3034,12 +3042,49 @@ xdccJS.download(<span class="hljs-string">&#x27;xdcc|bot&#x27;</span>, <span cla
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Events</h2>
 			<section class="tsd-panel tsd-member tsd-kind-event tsd-parent-kind-class tsd-is-static">
+				<a name="can_quit" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagStatic">Static</span> can quit</h3>
+				<div class="tsd-signature tsd-kind-icon">can quit<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/06e66e8/index.ts#L1372">index.ts:1372</a></li>
+					</ul>
+				</aside>
+				<div class="tsd-comment tsd-typography">
+					<dl class="tsd-comment-tags">
+						<dt>description</dt>
+						<dd><p>Event triggered when all downloads are done</p>
+						</dd>
+						<dt>example</dt>
+						<dd><p>xdccJS.on(&#39;can quit&#39;, () =&gt; {
+								xdccJS.quit()
+							})</p>
+						</dd>
+					</dl>
+				</div>
+				<div class="tsd-type-declaration">
+					<h4>Type declaration</h4>
+					<ul class="tsd-parameters">
+						<li class="tsd-parameter-signature">
+							<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-event">
+								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+							</ul>
+							<ul class="tsd-descriptions">
+								<li class="tsd-description">
+									<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-event tsd-parent-kind-class tsd-is-static">
 				<a name="data" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagStatic">Static</span> data</h3>
 				<div class="tsd-signature tsd-kind-icon">data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>f<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Buffer</span>, r<span class="tsd-signature-symbol">: </span><a href="../index.html#received" class="tsd-signature-type">received</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/34e5649/index.ts#L1285">index.ts:1285</a></li>
+						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/06e66e8/index.ts#L1345">index.ts:1345</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3097,7 +3142,7 @@ xdccJS.once(<span class="hljs-string">&#x27;data&#x27;</span>, <span class="hljs
 				<div class="tsd-signature tsd-kind-icon">done<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>failures<span class="tsd-signature-symbol">: </span><a href="../interfaces/job.html" class="tsd-signature-type">Job</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/34e5649/index.ts#L1346">index.ts:1346</a></li>
+						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/06e66e8/index.ts#L1415">index.ts:1415</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3160,7 +3205,7 @@ xdccJS.on(<span class="hljs-string">&#x27;done&#x27;</span>, <span class="hljs-f
 				<div class="tsd-signature tsd-kind-icon">downloaded<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>f<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/34e5649/index.ts#L1314">index.ts:1314</a></li>
+						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/06e66e8/index.ts#L1383">index.ts:1383</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3203,7 +3248,7 @@ xdccJS.on(<span class="hljs-string">&#x27;done&#x27;</span>, <span class="hljs-f
 				<div class="tsd-signature tsd-kind-icon">error<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span>, fileInfo<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/34e5649/index.ts#L1303">index.ts:1303</a></li>
+						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/06e66e8/index.ts#L1363">index.ts:1363</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3256,7 +3301,7 @@ timeout: no response from BOT-NICKNAME</code></pre>
 				<div class="tsd-signature tsd-kind-icon">ready<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/34e5649/index.ts#L1262">index.ts:1262</a></li>
+						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/06e66e8/index.ts#L1322">index.ts:1322</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3300,7 +3345,7 @@ timeout: no response from BOT-NICKNAME</code></pre>
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/34e5649/index.ts#L1009">index.ts:1009</a></li>
+								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/06e66e8/index.ts#L1069">index.ts:1069</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3371,6 +3416,50 @@ xdccJS.on(<span class="hljs-string">&#x27;ready&#x27;</span>, <span class="hljs-
 							</li>
 							<li>
 								<h5>packets: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="reconnect" class="tsd-anchor"></a>
+				<h3>reconnect</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">reconnect<span class="tsd-signature-symbol">(</span>info<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>chan<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>host<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>port<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/06e66e8/index.ts#L256">index.ts:256</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<dl class="tsd-comment-tags">
+								<dt>description</dt>
+								<dd><p>reconnect to IRC</p>
+								</dd>
+								<dt>remark</dt>
+								<dd><p>will reconnect to the same server if no parameters are provided</p>
+								</dd>
+								<dt>default</dt>
+								<dd><p>info.port = 6667</p>
+								</dd>
+								<dt>example</dt>
+								<dd><pre><code class="language-js"><span class="hljs-comment">// reconnect to the same server</span>
+xdccJS.reconnect()</code></pre>
+									<pre><code class="language-js"><span class="hljs-comment">// connect to another server</span>
+xdccJS.reconnect({
+   <span class="hljs-attr">host</span>: <span class="hljs-string">&#x27;irc.newserver.net&#x27;</span>
+})</code></pre>
+								</dd>
+							</dl>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> info: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>chan<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>host<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>port<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>

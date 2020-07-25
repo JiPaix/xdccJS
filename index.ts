@@ -16,7 +16,7 @@ import * as ip from 'public-ip'
 export default class XDCC extends Client {
   private host: string
   private port?: number = 6667
-  public canQuit = false
+  private canQuit = false
   private retry: number
   private nick: string
   private chan: string[]
@@ -237,10 +237,26 @@ export default class XDCC extends Client {
       return variable
     }
   }
+  /**
+   * @description reconnect to IRC
+   * @remark will reconnect to the same server if no parameters are provided
+   * @default
+   * info.port = 6667
+   * @example
+   * ```js
+   * // reconnect to the same server
+   * xdccJS.reconnect()
+   * ```
+   * ```js
+   * // connect to another server
+   * xdccJS.reconnect({
+   *    host: 'irc.newserver.net'
+   * })
+   */
   public reconnect(info?: {
     host: string
     port?: number
-    chan: string | string[]
+    chan?: string | string[]
   }): void {
     this.quit()
     this.connectionTimeout = setTimeout(() => {
@@ -361,7 +377,7 @@ export default class XDCC extends Client {
           if (this.retryCandidates.length) {
             this.canQuit = false
           } else {
-            this.emit('canQuit')
+            this.emit('can-quit')
             this.canQuit = true
           }
           this.emit('done', {
@@ -1345,6 +1361,15 @@ export default class XDCC extends Client {
    * ```
    */
   static EVENT_ERR: (error: Error, fileInfo: FileInfo) => void
+  /**
+   * @description Event triggered when all downloads are done
+   * @event can-quit
+   * @example
+   * xdccJS.on('can-quit', () => {
+   *    xdccJS.quit()
+   * })
+   */
+  static EVENT_QUIT: () => void
   /**
    * @description Event triggered when a download is completed.
    * @event downloaded
