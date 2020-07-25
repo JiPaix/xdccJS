@@ -6,7 +6,6 @@ import { Client } from 'irc-framework'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as net from 'net'
-import * as http from 'http'
 import * as ProgressBar from 'progress'
 import * as colors from 'colors/safe'
 import * as ip from 'public-ip'
@@ -26,65 +25,136 @@ export default class XDCC extends Client {
   }[] = []
   private retryCandidates: Candidate[] = []
   private connectionTimeout: NodeJS.Timeout
-  /**
-   * Download path (absolute or relative) <br/>
-   * value inherited from {@link constructor}'s parameter {@link Params.path}
-   * @see {@link download}
-   * @example
-   * ```js
-   * // absolute path :
-   * params.path = '/home/user/downloads'
-   * const xdccJS = new XDCC(params)
-   * ```
-   * @example
-   * ```js
-   * // relative path
-   * params.path = 'downloads' //=> /your/project/path/downloads
-   * const xdccJS = new XDCC(params)
-   * ```
-   * @example
-   * ```js
-   * param.path = 'downloads'
-   * const xdccJS = new XDCC(param)
-   *
-   * // ... later in your code
-   *  xdccJS.path = '/another/path'
-   * ```
-   */
   private path: false | string = false
   private verbose: boolean
-  /**
-   * Array of port(s) to use for passive DCCs <br/>
-   * number of port determine how many passive dcc you can run in parallel. <br/>
-   * default value : `[5001]`
-   */
   private passivePort: number[] = [5001]
   private portInUse: number[] = []
   private ip!: number
 
   /**
-     * Initiate IRC connection, see {@link Params} for a complete description of all parameters
-     * @fires {@link xdcc-ready}
-     * @remark If you want to use pipes {@link Params.path} must be set to false, see {@link XDCC.download} examples
+   * @description Initiate IRC connection, see {@link Params} for a complete description of all parameters
+   * @remark If you want to use pipes {@link Params.path} must be set to false
+   * @example
+   * ```js
+   * let params = {
+   *  host: 'irc.server.net',
+   *  port: 6667,
+   *  nick: 'JiPaix',
+   *  chan: ['#itsMe', '#JiPaix' ],
+   *  path: 'downloads',
+   *  retry: 2,
+   *  verbose: true,
+   *  randomizeNick: true,
+   *  passivePort : [5001, 5002, 5003]
+   * }
+   *
+   * const xdccJS = new XDCC(params)
+   *
+   * xdccJS.on('ready', () => {
+   *  // do your stuff here
+   * })
+   * ```
+   */
+  constructor(parameters: {
+    /**
+     * @description IRC server's hostname
      * @example
-     * ```javascript
-     * let opts = {
-     *  host: 'irc.server.net',
-     *  port: 6667,
-     *  nick: 'JiPaix',
-     *  chan: ['#itsMe', '#JiPaix' ],
-     *  path: 'downloads',
-     *  retry: 2,
-     *  verbose: true,
-     *  randomizeNick: true,
-     *  passivePort : [5001, 5002, 5003]
-     * }
-     *
-     * const xdccJS = new XDCC(opts)
+     * ```js
+     * params.host = 'irc.server.net'
      * ```
-
      */
-  constructor(parameters: Params) {
+    host: string
+    /**
+     * @description IRC server PORT
+     * @default `6667`
+     * @example
+     * ```js
+     * params.port = 6669
+     * ```
+     */
+    port?: number
+    /**
+     * @description Nickname to use on IRC
+     * @default `'xdccJS' + randomInt`
+     * @example
+     * ```js
+     * params.nick = 'JiPaix'
+     * ```
+     */
+    nick?: string
+    /**
+     * @description Channel(s) to join
+     * @remark Hashtags are optional
+     * @example
+     * ```js
+     * params.chan = '#wee'
+     * // can also be an array
+     * params.chan = ['#wee', '#happy']
+     * // in both cases # are optional
+     * params.chan = 'weee'
+     * params.chan = ['#wee', 'happy']
+     * ```
+     */
+    chan?: string | string[]
+    /**
+     * @description Download path
+     * @default `false`
+     * @remark `undefined` or `false` enables piping, see {@link XDCC.download} for example on how to use pipes.
+     * @example
+     * ```js
+     * // absolute path
+     * params.path = '/home/user/downloads
+     * ```
+     * @example
+     * ```js
+     * // relative path
+     * params.path = 'downloads/xdcc' //=> /your/project/folder/downloads/xdcc
+     * ```
+     * @example
+     * ```js
+     * // explicitly enable piping
+     * params.path = false
+     * ```
+     * */
+    path?: string | false
+    /**
+     * @description Display information regarding your download in console
+     * @default `false`
+     * @example
+     * ```js
+     * params.verbose = true
+     * ```
+     */
+    verbose?: boolean
+    /**
+     * @description Add Random numbers to nickname
+     * @default: `true`
+     * @example
+     * ```js
+     * params.randomizeNick = false
+     * ```
+     */
+    randomizeNick?: boolean
+    /**
+     * @description Array of ports for passive DCC
+     * @default `[5001]`
+     * @remark Some xdcc bots use passive dcc, this require to have these ports opened on your computer/router/firewall
+     * @example
+     * ```js
+     * params.passivePort = [3833, 2525]
+     */
+    passivePort?: number[]
+    /**
+     * @description Number of retries when a download fails
+     * @default `1`
+     * @example
+     * ```js
+     * // we've set params.retry = 2
+     * xdccJS.download('xdcc|bot', '20, 25')
+     * // if download of pack '20' fails it will retry twice before skipping to pack '25'
+     */
+    retry?: number
+  }) {
     super()
     ip.v4().then(res => {
       const d = res.split('.')
@@ -163,26 +233,6 @@ export default class XDCC extends Client {
     }
   }
 
-  private getRemoteIP(): void {
-    const options = {
-      host: 'ipv4bot.whatismyipaddress.com',
-      port: 80,
-      path: '/',
-    }
-    http.get(options, res => {
-      let data = ''
-      res.on('data', chunk => {
-        data = data + chunk
-      })
-      res.on('end', () => {
-        const b = Buffer.from(data).toString()
-        const d = b.split('.')
-        const res = ((+d[0] * 256 + +d[1]) * 256 + +d[2]) * 256 + +d[3]
-        this.ip = res
-      })
-    })
-  }
-
   private live(ircServer: string): void {
     const self = this
     this.on('connected', () => {
@@ -204,26 +254,17 @@ export default class XDCC extends Client {
           )}`
         )
       }
-      self.emit('xdcc-ready')
+      self.emit('ready')
     })
-    this.on('request', (args: { target: string; packet: string | number }) => {
-      args.packet = this.checkHashtag(args.packet, false)
+    this.on('request', (args: { target: string; packets: number[] }) => {
+      let i = 0
       const candidate = this.getCandidate(args.target)
-      this.say(args.target, `xdcc send ${args.packet}`)
-      if (this.verbose) {
-        console.error(
-          `\u2937`.padStart(4),
-          `${colors.bold(
-            colors.green('\u2713')
-          )} sending command: /MSG ${colors.yellow(
-            args.target
-          )} xdcc send ${colors.yellow(args.packet.toString())}`
-        )
-      }
+      candidate.now = args.packets[i]
+      this.say(args.target, `xdcc send ${args.packets[i]}`)
       candidate.timeout = this.setupTimeout(
         [true, args.target],
         {
-          eventname: this.path ? 'download-err' : 'pipe-err',
+          eventname: 'error',
           message: `timeout: no response from ${colors.yellow(args.target)}`,
           padding: 6,
         },
@@ -232,37 +273,38 @@ export default class XDCC extends Client {
           this.redownload(candidate)
         }
       )
-      this.on('ctcp request', (resp: { [prop: string]: string }): void => {
-        if (this.path) {
-          this.downloadToFile(resp, candidate)
-        } else {
-          this.downloadToPipe(resp, candidate)
-        }
-      })
-    })
-
-    this.on('request-batch', (args: { target: string; packet: number[] }) => {
-      if (!this.path) {
-        throw new Error(`downloadBatch() can't be used in pipe mode.`)
-      }
-      let i = 0
-      if (i < args.packet.length) {
-        this.say(args.target, `xdcc send ${args.packet[i]}`)
-        if (this.verbose) {
-          console.error(
-            `\u2937`.padStart(4),
-            `${colors.bold(
-              colors.green('\u2713')
-            )} sending command: /MSG ${colors.yellow(
-              args.target
-            )} xdcc send ${colors.yellow(args.packet[i].toString())}`
-          )
-        }
+      if (this.verbose) {
+        console.error(
+          `\u2937`.padStart(4),
+          `${colors.bold(
+            colors.green('\u2713')
+          )} sending command: /MSG ${colors.yellow(
+            args.target
+          )} xdcc send ${colors.yellow(args.packets[i].toString())}`
+        )
         i++
       }
-      this.on('downloaded', () => {
-        if (i < args.packet.length) {
-          this.say(args.target, `xdcc send ${args.packet[i]}`)
+      this.on('next', () => {
+        if (i < args.packets.length) {
+          candidate.pack = candidate.pack.filter(
+            pending => pending !== candidate.now
+          )
+          candidate.now = args.packets[i]
+          this.say(args.target, `xdcc send ${args.packets[i]}`)
+          candidate.timeout = this.setupTimeout(
+            [true, args.target],
+            {
+              eventname: 'error',
+              message: `timeout: no response from ${colors.yellow(
+                args.target
+              )}`,
+              padding: 6,
+            },
+            1000 * 15,
+            () => {
+              this.redownload(candidate)
+            }
+          )
           if (this.verbose) {
             console.error(
               `\u2937`.padStart(4),
@@ -270,12 +312,22 @@ export default class XDCC extends Client {
                 colors.green('\u2713')
               )} sending command: /MSG ${colors.yellow(
                 args.target
-              )} xdcc send ${colors.yellow(args.packet[i].toString())}`
+              )} xdcc send ${colors.yellow(args.packets[i].toString())}`
             )
           }
           i++
         } else {
-          this.emit('batch-complete', args)
+          this.retryCandidates = this.retryCandidates.filter(
+            candidates => candidates.nick !== candidate.nick
+          )
+          this.emit('done')
+        }
+      })
+      this.on('ctcp request', (resp: { [prop: string]: string }): void => {
+        if (this.path) {
+          this.downloadToFile(resp, candidate)
+        } else {
+          this.downloadToPipe(resp, candidate)
         }
       })
     })
@@ -287,10 +339,9 @@ export default class XDCC extends Client {
   ): void {
     const self = this
     const fileInfo = this.parseCtcp(resp.message, resp.nick)
-
     if (fileInfo) {
       let received = 0
-      const sendBuffer = Buffer.alloc(4)
+      const sendBuffer = Buffer.alloc(8)
       const available = this.passivePort.filter(
         port => !this.portInUse.includes(port)
       )
@@ -302,7 +353,7 @@ export default class XDCC extends Client {
           candidate.timeout = this.setupTimeout(
             [true, resp.nick],
             {
-              eventname: 'pipe-err',
+              eventname: 'error',
               message: `timeout: no initial connection`,
               padding: 6,
               bar: bar,
@@ -312,24 +363,23 @@ export default class XDCC extends Client {
             () => {
               server.close(() => {
                 this.portInUse = this.portInUse.filter(p => p !== pick)
-                this.redownload(candidate)
+                this.redownload(candidate, fileInfo)
               })
             }
           )
-          this.emit('pipe-start', fileInfo)
           client.on('data', data => {
             candidate.timeout ? clearTimeout(candidate.timeout) : false
             received += data.length
-            sendBuffer.writeUInt32BE(received, 0)
+            sendBuffer.writeBigInt64BE(BigInt(received), 0)
             client.write(sendBuffer)
-            self.emit('pipe-data', data, received)
+            self.emit('data', data, received)
             if (this.verbose) {
               bar.tick(data.length)
             }
             candidate.timeout = this.setupTimeout(
               [true, resp.nick],
               {
-                eventname: 'pipe-err',
+                eventname: 'error',
                 message: `timeout: not receiving data`,
                 padding: 6,
                 bar: bar,
@@ -339,7 +389,7 @@ export default class XDCC extends Client {
               () => {
                 server.close(() => {
                   this.portInUse = this.portInUse.filter(p => p !== pick)
-                  this.redownload(candidate)
+                  this.redownload(candidate, fileInfo)
                 })
               }
             )
@@ -351,25 +401,23 @@ export default class XDCC extends Client {
             candidate.timeout ? clearTimeout(candidate.timeout) : false
             server.close(() => {
               this.portInUse = this.portInUse.filter(p => p !== pick)
-              this.retryCandidates = this.retryCandidates.filter(
-                candidates => candidates.nick !== candidate.nick
-              )
-              self.emit('pipe-downloaded', fileInfo)
               if (this.verbose) {
                 console.error(
                   `\u2937`.padStart(8),
-                  `${colors.bold(colors.green('\u2713'))} done: \x1b[36m${
-                    fileInfo.file
-                  }\x1b[0m`
+                  `${colors.bold(
+                    colors.green('\u2713')
+                  )} done piping: ${colors.cyan(fileInfo.file)}`
                 )
               }
+              self.emit('downloaded', fileInfo)
+              self.emit('next')
             })
           })
           client.on('error', () => {
             candidate.timeout = this.setupTimeout(
               [true, resp.nick],
               {
-                eventname: 'pipe-err',
+                eventname: 'error',
                 message: `connection error: ${colors.bold(
                   colors.yellow(resp.nick)
                 )} has disconnected`,
@@ -380,7 +428,7 @@ export default class XDCC extends Client {
               () => {
                 server.close(() => {
                   this.portInUse = this.portInUse.filter(p => p !== pick)
-                  this.redownload(candidate)
+                  this.redownload(candidate, fileInfo)
                 })
               }
             )
@@ -399,25 +447,28 @@ export default class XDCC extends Client {
           this.portInUse.push(pick)
           server.listen(pick, '0.0.0.0')
         } else {
-          server.close(() => {
-            this.portInUse = this.portInUse.filter(p => p !== pick)
-            this.say(resp.nick, 'XDCC CANCEL')
-            const err = new Error('all passive ports are currently used')
-            self.emit('pipe-err', err, fileInfo)
-            if (this.verbose) {
-              bar.interrupt(
-                `\u2937`.padStart(6) +
-                  ` ${colors.bold(colors.red('\u0058'))} ` +
-                  err.message
-              )
+          this.setupTimeout(
+            [true, resp.nick],
+            {
+              eventname: 'error',
+              message: `all passive ports are currently used`,
+              bar: bar,
+              fileInfo: fileInfo,
+              padding: 6,
+            },
+            0,
+            () => {
+              server.close(() => {
+                this.portInUse = this.portInUse.filter(p => p !== pick)
+              })
             }
-          })
+          )
         }
         server.on('error', () => {
           candidate.timeout = this.setupTimeout(
             [true, resp.nick],
             {
-              eventname: 'pipe-err',
+              eventname: 'error',
               message: `server error: server has stopped functioning`,
               bar: bar,
               padding: 8,
@@ -426,7 +477,7 @@ export default class XDCC extends Client {
             () => {
               server.close(() => {
                 this.portInUse = this.portInUse.filter(p => p !== pick)
-                this.redownload(candidate)
+                this.redownload(candidate, fileInfo)
               })
             }
           )
@@ -435,7 +486,7 @@ export default class XDCC extends Client {
         candidate.timeout = this.setupTimeout(
           [true, resp.nick],
           {
-            eventname: 'pipe-err',
+            eventname: 'error',
             message: `timeout: couldn't connect to: ${colors.yellow(
               `${fileInfo.ip}:${fileInfo.port}`
             )}`,
@@ -445,24 +496,23 @@ export default class XDCC extends Client {
           },
           1000 * 10,
           () => {
-            this.redownload(candidate)
+            this.redownload(candidate, fileInfo)
           }
         )
         const client = net.connect(fileInfo.port, fileInfo.ip)
         client.on('connect', () => {
-          self.emit('pipe-start', fileInfo)
           candidate.timeout ? clearTimeout(candidate.timeout) : false
           candidate.timeout = this.setupTimeout(
             [true, resp.nick],
             {
-              eventname: 'pipe-err',
+              eventname: 'error',
               message: `timeout: not receiving data`,
               padding: 6,
               bar: bar,
             },
             1000 * 2,
             () => {
-              this.redownload(candidate)
+              this.redownload(candidate, fileInfo)
             }
           )
           if (this.verbose) {
@@ -479,20 +529,20 @@ export default class XDCC extends Client {
         client.on('data', data => {
           candidate.timeout ? clearTimeout(candidate.timeout) : false
           received += data.length
-          sendBuffer.writeUInt32BE(received, 0)
+          sendBuffer.writeBigInt64BE(BigInt(received), 0)
           client.write(sendBuffer)
-          self.emit('pipe-data', data, received)
+          self.emit('data', data, received)
           candidate.timeout = this.setupTimeout(
             [true, resp.nick],
             {
-              eventname: 'pipe-err',
+              eventname: 'error',
               message: `timeout: not receiving data`,
               padding: 6,
               bar: bar,
             },
             1000 * 2,
             () => {
-              this.redownload(candidate)
+              this.redownload(candidate, fileInfo)
             }
           )
           if (this.verbose) {
@@ -504,24 +554,22 @@ export default class XDCC extends Client {
         })
         client.on('end', () => {
           candidate.timeout ? clearTimeout(candidate.timeout) : false
-          this.retryCandidates = this.retryCandidates.filter(
-            candidates => candidates.nick !== candidate.nick
-          )
-          self.emit('pipe-downloaded', fileInfo)
           if (this.verbose) {
             console.error(
-              `\u2937`.padStart(6),
-              `${colors.bold(colors.green('\u2713'))} done: ${colors.yellow(
-                fileInfo.file
-              )}`
+              `\u2937`.padStart(8),
+              `${colors.bold(
+                colors.green('\u2713')
+              )} done piping: ${colors.cyan(fileInfo.file)}`
             )
           }
+          self.emit('downloaded', fileInfo)
+          self.emit('next')
         })
         client.on('error', () => {
           candidate.timeout = this.setupTimeout(
             [true, resp.nick],
             {
-              eventname: 'pipe-err',
+              eventname: 'error',
               message: `connection error: ${colors.bold(
                 colors.yellow(resp.nick)
               )} has disconnected`,
@@ -531,7 +579,7 @@ export default class XDCC extends Client {
             0,
             () => {
               this.portInUse = this.portInUse.filter(p => p !== pick)
-              this.redownload(candidate)
+              this.redownload(candidate, fileInfo)
             }
           )
         })
@@ -549,7 +597,7 @@ export default class XDCC extends Client {
       candidate.timeout = this.setupTimeout(
         [true, resp.nick],
         {
-          eventname: 'download-err',
+          eventname: 'error',
           message: `couldn't connect to: ${colors.yellow(
             `${fileInfo.ip}:${fileInfo.port}`
           )}`,
@@ -557,7 +605,7 @@ export default class XDCC extends Client {
         },
         1000 * 10,
         () => {
-          this.redownload(candidate)
+          this.redownload(candidate, fileInfo)
         }
       )
       if (fs.existsSync(fileInfo.filePath)) {
@@ -587,7 +635,7 @@ export default class XDCC extends Client {
           candidate.timeout = this.setupTimeout(
             [true, resp.nick],
             {
-              eventname: 'download-err',
+              eventname: 'error',
               message: `couldn't resume download of ${colors.yellow(
                 fileInfo.file
               )}`,
@@ -595,7 +643,7 @@ export default class XDCC extends Client {
             },
             1000 * 10,
             () => {
-              this.redownload(candidate)
+              this.redownload(candidate, fileInfo)
             }
           )
         } else if (fileInfo.type === 'DCC ACCEPT') {
@@ -652,14 +700,13 @@ export default class XDCC extends Client {
     const bar = this.setupProgressBar(fileInfo.length)
     const self = this
     let received = 0
-    const sendBuffer = Buffer.alloc(4)
+    const sendBuffer = Buffer.alloc(8)
     const client = net.connect(fileInfo.port, fileInfo.ip)
     client.on('connect', () => {
-      self.emit('download-start', fileInfo)
       candidate.timeout = this.setupTimeout(
         [true, nick],
         {
-          eventname: 'download-err',
+          eventname: 'error',
           message: `timeout: connected but not receiving data`,
           padding: 6,
           bar: bar,
@@ -667,7 +714,7 @@ export default class XDCC extends Client {
         },
         1000 * 2,
         () => {
-          this.redownload(candidate)
+          this.redownload(candidate, fileInfo)
         }
       )
       if (this.verbose) {
@@ -685,13 +732,13 @@ export default class XDCC extends Client {
       candidate.timeout ? clearTimeout(candidate.timeout) : false
       file.write(data)
       received += data.length
-      sendBuffer.writeUInt32BE(received, 0)
+      sendBuffer.writeBigInt64BE(BigInt(received), 0)
       client.write(sendBuffer)
-      self.emit('downloading', received, fileInfo)
+      self.emit('data', fileInfo, received)
       candidate.timeout = this.setupTimeout(
         [true, nick],
         {
-          eventname: 'download-err',
+          eventname: 'error',
           message: `timeout: not receiving data`,
           padding: 6,
           fileInfo: fileInfo,
@@ -699,7 +746,7 @@ export default class XDCC extends Client {
         },
         1000 * 2,
         () => {
-          this.redownload(candidate)
+          this.redownload(candidate, fileInfo)
         }
       )
       if (this.verbose) {
@@ -712,9 +759,6 @@ export default class XDCC extends Client {
     client.on('end', () => {
       file.end()
       candidate.timeout ? clearTimeout(candidate.timeout) : false
-      this.retryCandidates = this.retryCandidates.filter(
-        candidates => candidates.nick !== candidate.nick
-      )
       if (this.verbose) {
         console.error(
           `\u2937`.padStart(8),
@@ -724,6 +768,7 @@ export default class XDCC extends Client {
         )
       }
       self.emit('downloaded', fileInfo)
+      self.emit('next')
     })
     client.on('error', () => {
       file.end()
@@ -731,7 +776,7 @@ export default class XDCC extends Client {
       candidate.timeout = this.setupTimeout(
         [true, nick],
         {
-          eventname: 'download-err',
+          eventname: 'error',
           message: `connection error: ${colors.bold(
             colors.yellow(nick)
           )} has disconnected`,
@@ -741,7 +786,7 @@ export default class XDCC extends Client {
         },
         0,
         () => {
-          this.redownload(candidate)
+          this.redownload(candidate, fileInfo)
         }
       )
     })
@@ -758,24 +803,23 @@ export default class XDCC extends Client {
     const bar = this.setupProgressBar(fileInfo.length - fileInfo.position)
     const self = this
     let received = 0
-    const sendBuffer = Buffer.alloc(4)
+    const sendBuffer = Buffer.alloc(8)
     const available = this.passivePort.filter(
       port => !this.portInUse.includes(port)
     )
     const pick = available[Math.floor(Math.random() * available.length)]
     const server = net.createServer(client => {
-      this.emit('download-start', fileInfo)
       client.on('data', data => {
         file.write(data)
         candidate.timeout ? clearTimeout(candidate.timeout) : false
         received += data.length
-        sendBuffer.writeUInt32BE(received, 0)
+        sendBuffer.writeBigInt64BE(BigInt(received), 0)
         client.write(sendBuffer)
-        self.emit('downloading', received, fileInfo)
+        self.emit('data', fileInfo, received)
         candidate.timeout = this.setupTimeout(
           [true, nick],
           {
-            eventname: 'download-err',
+            eventname: 'error',
             message: `timeout: not receiving data`,
             padding: 6,
             fileInfo: fileInfo,
@@ -785,7 +829,7 @@ export default class XDCC extends Client {
           () => {
             server.close(() => {
               this.portInUse = this.portInUse.filter(p => p !== pick)
-              this.redownload(candidate)
+              this.redownload(candidate, fileInfo)
             })
           }
         )
@@ -809,10 +853,8 @@ export default class XDCC extends Client {
               }\x1b[0m`
             )
           }
-          this.retryCandidates = this.retryCandidates.filter(
-            candidates => candidates.nick !== candidate.nick
-          )
           self.emit('downloaded', fileInfo)
+          self.emit('next')
         })
       })
       client.on('error', () => {
@@ -821,8 +863,10 @@ export default class XDCC extends Client {
         candidate.timeout = this.setupTimeout(
           [true, nick],
           {
-            eventname: 'download-err',
-            message: ``,
+            eventname: 'error',
+            message: `connection error: ${colors.bold(
+              colors.yellow(nick)
+            )} has disconnected`,
             padding: 6,
             bar: bar,
             fileInfo: fileInfo,
@@ -844,7 +888,7 @@ export default class XDCC extends Client {
       candidate.timeout = this.setupTimeout(
         [true, nick],
         {
-          eventname: 'download-err',
+          eventname: 'error',
           message: `all passive ports are currently used: ${colors.yellow(
             `${fileInfo.ip}:${fileInfo.port}`
           )}`,
@@ -879,8 +923,10 @@ export default class XDCC extends Client {
       candidate.timeout = this.setupTimeout(
         [true, nick],
         {
-          eventname: 'download-err',
-          message: ``,
+          eventname: 'error',
+          message: `connection error: ${colors.bold(
+            colors.yellow(nick)
+          )} has disconnected`,
           padding: 6,
           bar: bar,
           fileInfo: fileInfo,
@@ -895,15 +941,11 @@ export default class XDCC extends Client {
     })
   }
   /**
-   * Method used to download a single packet.<br/><br/>
+   * @description Method used to download a single packet.<br/><br/>
    * @param target Bot's nickname
    * @param packet Packet
-   * @remark Fires either download or pipe events depending on {@link Params.path}'s value
-   * @fires {@link download-err| Download Events}
-   * @fires {@link pipe-data| Pipe Events}
-   * @see {@link Params.path}
-   * @example saving file on disk
-   * ```javascript
+   * @example
+   * ```js
    * const params = {
    *  host: 'irc.server.net',
    *  path: '/home/user/downloads'
@@ -911,7 +953,7 @@ export default class XDCC extends Client {
    *
    * const xdccJS = new XDCC(params)
    *
-   * xdccJS.on('xdcc-ready', () => {
+   * xdccJS.on('ready', () => {
    *   xdccJS.download('XDCC|Bot', 152)
    * })
    *
@@ -924,17 +966,18 @@ export default class XDCC extends Client {
    * })
    *
    * ```
-   * @example how to use pipes
-   * ```javascript
+   * @example
+   * ```js
+   * // how to use pipes
    * // example with express
    * const params = {
-   *  host: 'irc.server.net',
-   *  path: false // important!
+   *    host: 'irc.server.net',
+   *    path: false // important!
    * }
    *
    * const xdccJS = new XDCC(params)
    *
-   * xdccJS.on('xdcc-ready', () => {
+   * xdccJS.on('ready', () => {
    * 	app.listen(3000)
    * 	app.get('/download', (req, res) => {
    * 		// start a download eg: http://hostname:3000/download?bot=XDCCBOT&pack=32
@@ -956,47 +999,11 @@ export default class XDCC extends Client {
    */
   public download(
     target: string,
-    packet: string | number | number[],
-    candidate?: Candidate
+    packets: string | string[] | number | number[]
   ): void {
-    if (typeof packet === 'string') {
-      packet = this.checkHashtag(packet, false)
-    }
-    if (!candidate) {
-      this.retryCandidates.push({
-        nick: target,
-        pack: packet,
-        retry: 0,
-      })
-    }
-    this.emit('request', {
-      target,
-      packet,
-    })
-  }
-  /**
-   * Method used to download multiple packets
-   * @param target Bot's nickname
-   * @param packets Packets
-   * @remark Fires either download or pipe events depending on {@link path}'s value
-   * @fires {@link download-err| Download Events}
-   * @fires {@link pipe-data| Pipe Events}
-   * @fire {@link batch-complete}
-   * @see {@link path}
-   * @example
-   * ```javascript
-   * xdccJS.downloadBatch('XDCC|Bot', '1-10, 25-27, 30')
-   * // accepts array of numbers too, (strings are converted to number)
-   * xdccJS.downloadBatch('XDCC|Bot', [1, 2, 3, '24', 32, 33, 35])
-   * ```
-   */
-  public downloadBatch(
-    target: string,
-    packets: string | number[] | string[]
-  ): void {
-    const range: number[] = []
+    let range = []
     if (typeof packets === 'string') {
-      const packet = packets.split(',')
+      const packet = packets.replace(/#/gi, '').split(',')
       for (const s of packet) {
         const minmax = s.split('-')
         if (s.includes('-')) {
@@ -1007,38 +1014,35 @@ export default class XDCC extends Client {
           range.push(parseInt(s))
         }
       }
-    } else {
-      if (Array.isArray(packets)) {
-        for (const pack of packets) {
-          if (typeof pack === 'number') {
-            range.push(pack)
-          } else {
-            range.push(parseInt(pack))
-          }
+    } else if (Array.isArray(packets)) {
+      for (let pack of packets) {
+        if (typeof pack === 'number') {
+          range.push(pack)
+        } else if (typeof pack === 'string') {
+          pack = pack.replace(/#/gi, '')
+          range.push(parseInt(pack))
         }
       }
+    } else if (typeof packets === 'number') {
+      range.push(packets)
     }
-
-    if (this.verbose) {
-      console.error(
-        `\u2937`.padStart(4),
-        `${colors.bold(
-          colors.cyan('\u2139')
-        )} batch download of packets: \x1b[33m${packets}\x1b[0m`
-      )
+    range = range
+      .sort((a, b) => a - b)
+      .filter((item, pos, ary) => {
+        return !pos || item != ary[pos - 1]
+      })
+    const candidate = this.getCandidate(target)
+    if (!candidate) {
+      this.retryCandidates.push({
+        nick: target,
+        pack: range,
+        retry: 0,
+        now: 0,
+      })
     }
-    this.emit('request-batch', {
-      target: target,
-      packet: range,
-    })
+    this.emit('request', { target: target, packets: range })
   }
 
-  private downloadRetry(candidate: Candidate): void {
-    if (candidate.retry > 0) {
-      candidate.retry = candidate.retry--
-      this.download(candidate.nick, candidate.pack, candidate)
-    }
-  }
   private nickRandomizer(nick: string): string {
     if (nick.length > 6) {
       nick = nick.substr(0, 6)
@@ -1176,151 +1180,143 @@ export default class XDCC extends Client {
   }
   private getCandidate(target: string): Candidate {
     return this.retryCandidates.filter(
-      candidates => candidates.nick === target
+      candidates => candidates.nick === target || candidates.ident === target
     )[0]
   }
 
-  private redownload(candidate: Candidate): void {
+  private redownload(candidate: Candidate, fileInfo?: FileInfo): void {
     if (candidate.retry < this.retry) {
-      console.error(
-        `\u2937`.padStart(4),
-        `${colors.bold(
-          colors.cyan('\u2139')
-        )} retrying: attempt ${++candidate.retry}/${this.retry}`
-      )
-      this.download(candidate.nick, candidate.pack, candidate)
-    } else {
-      this.quit()
+      candidate.retry++
+      this.say(candidate.nick, `xdcc send ${candidate.now}`)
+      if (this.verbose) {
+        console.error(
+          `\u2937`.padStart(6),
+          `${colors.bold(colors.cyan('\u2139'))} retrying: ${candidate.retry}/${
+            this.retry
+          }`
+        )
+      }
+      candidate.timeout = setInterval(() => {
+        if (candidate.retry < this.retry) {
+          this.say(candidate.nick, `xdcc send ${candidate.now}`)
+          candidate.retry++
+          if (this.verbose) {
+            console.error(
+              `\u2937`.padStart(6),
+              `${colors.bold(colors.cyan('\u2139'))} retrying: ${
+                candidate.retry
+              }/${this.retry}`
+            )
+          }
+        } else {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          clearInterval(candidate.timeout!)
+          if (this.verbose) {
+            console.error(
+              `\u2937`.padStart(8),
+              `${colors.bold(colors.red('\u0058'))} skipped pack: ${
+                candidate.now
+              }`
+            )
+          }
+          this.emit('error', `skipped pack: ${candidate.now}`, fileInfo)
+          this.emit('next')
+        }
+      }, 1000 * 15)
     }
   }
   /**
    * Event triggered when xdccJS is ready to download
-   * @event xdcc-ready
+   * @event ready
    * @example
    * ```js
-   * xdccJS.on('xdcc-ready', () => {
+   * xdccJS.on('ready', () => {
    *  xdccJS.download('XDCC|BOT', 23)
    * })
    * ```
    */
-  static EVENT_XDCC_READY: () => void
+  static EVENT_READY: () => void
   /**
-   * Event triggered when a download starts.
-   * @category Download
-   * @event download-start
-   * @example
+   * @description	Event triggered when chunks of data are being received
+   * @remark Depending on {@link Params.path} value, returns either a Buffer with the acutal data or a {@link FileInfo}
+   * @event data
+   * @example {@link Params.path} defined as a path
    * ```js
-   * xdccJS.on('download-start', (f) => {
-   *   console.log(`Starting download of ${f.file}`)
+   * // use .once to avoid spamming console and throttle download speed)
+   * xdccJS.once('data', (fileInfo, received) => {
+   *   console.log('downloading: ' + fileInfo.file)
+   * })
+   * ```
+   * console output:
+   * ```
+   * downloading: myfile.mp4
+   * ```
+   * @example {@link Params.path} set to false or undefined
+   * ```js
+   * xdccJS.on('data', (data, received) => {
+   *   stream.write(data)
    * })
    * ```
    */
-  static EVENT_XDCC_START: (f: FileInfo) => void
+  static EVENT_DATA: (f: FileInfo | Buffer, r: received) => void
   /**
-   * Event triggered when chunks of data are being received
-   * @category Download
-   * @event downloading
+   * @description Event triggered when a download fails
+   * @remark This event doesn't skip {@link Params.retry}
+   * @event error
    * @example
    * ```js
-   * xdccJS.on('downloading', (r, f) => {
-   *   console.log(`${f.file} - ${r}/${FileInfo.length} Bytes`)
-   * })
-   */
-  static EVENT_XDCC_WHILE: (r: received, f: FileInfo) => void
-  /**
-   * Event triggered when a download fails.
-   * @category Download
-   * @event download-err
-   * @example
-   * ```js
-   * xdccJS.on('download-err', (e, f) => {
-   *   console.log(`failed to download ${f.file}`)
-   *   console.error(e)
+   * xdccJS.on('error', (error, fileInfo) => {
+   *   console.log(`failed to download ${fileInfo.file}`)
+   *   console.error(error)
    * })
    * ```
+   * console output:
+   * ```sh
+   * failed to download myfile.mp4
+   * timeout: no response from BOT-NICKNAME
+   * ```
    */
-  static EVENT_XDCC_ERR: (e: Error, f: FileInfo) => void
+  static EVENT_ERR: (error: Error, fileInfo: FileInfo) => void
   /**
-   * Event triggered when a download is completed.
-   * @category Download
+   * @description Event triggered when a download is completed.
    * @event downloaded
    * @example
    * ```js
-   * xdccJS.on('downloaded', (f) => {
-   *   console.log(`Download completed: ${f.filePath}`)
+   * xdccJS.on('downloaded', (fileInfo) => {
+   *   console.log(`Download completed: ${fileInfo.filePath}`)
    * })
    * ```
    */
-  static EVENT_XDCC_DONE: (f: FileInfo) => void
+  static EVENT_DOWNLOADED: (f: FileInfo) => void
   /**
-   * Event triggered when {@link downloadBatch} has completed all downloads
-   * @event batch-complete
+   * @description Event triggered when all jobs are done
+   * @remark If one (or more) download failed an array of {@link Failures} is returned
+   * @event done
    * @example
    * ```js
-   * xdccJS.on('xdcc-ready', () => {
-   *  xdccJS.downloadBatch('XDCC|BOT', '23-25, 102, 300')
+   * xdccJS.on('ready', () => {
+   *  xdccJS.download('XDCC|BLUE', '23-25, 102, 300')
+   *  xdccJS.download('XDCC|RED', 1152)
    * })
    *
-   * xdccJS.on('batch-complete', (batchInfo) => {
-   * 	console.log(batchInfo) //=> { target: 'XDCC|BOT', packet: [23, 24, 25, 102, 300] }
+   * xdccJS.on('done', (failures) => {
+   *  if(failures) {
+   *    console.log(failures)
+   *  }
    * })
    * ```
-   */
-  static EVENT_XDCC_BATCH: (i: BatchInfo) => void
-  /**
-   * Event triggered when a pipable download starts. callback returns {@link FileInfo}
-   * @category Pipe
-   * @event pipe-start
-   * @example
+   * console output:
    * ```js
-   * xdccJS.on('pipe-start', (f) => {
-   *   console.log(`File length  : ${f.length}`)
-   * })
-   * ```
+   * [
+   *  {
+   *    target: 'XDCC|BLUE', packets: [23,24]
+   *  },
+   *  {
+   *    target: 'XDCC|RED', packets: [1152]
+   *  }
+   * ]
    */
-  static EVENT_PIPE_START: (f: FileInfo) => void
-  /**
-   * Event triggered when receiving data from a piped download.
-   * @category Pipe
-   * @event pipe-data
-   * @example
-   * ```js
-   * let stream = fs.createWriteStream( 'MyFile.mp4' )
-   * xdccJS.on('pipe-data', (chunk, r) => {
-   *   stream.write(chunk)
-   *   console.log(`Downloaded ${stream.length} out of ${r}`)
-   * })
-   * ```
-   */
-  static EVENT_PIPE_DATA: (chunk: Buffer, r: received) => void
-  /**
-   * Event triggered when a piped download has failed. Callback returns Error and {@link FileInfo}
-   * @category Pipe
-   * @event pipe-err
-   * @example
-   * ```js
-   * let file = fs.createWriteStream( 'MyFile.mp4' )
-   * xdccJS.on('pipe-err', (e, f) => {
-   *   file.end()
-   *   console.log(`failed to download : ${f.file}`)
-   *   console.error(e)
-   * })
-   * ```
-   */
-  static EVENT_PIPE_ERR: (e: Error, f: FileInfo) => void
-  /**
-   * Event triggered when a pipable download is done. Callback returns {@link FileInfo}
-   * @category Pipe
-   * @event pipe-downloaded
-   * @example
-   * ```js
-   * let file = fs.createWriteStream( 'MyFile.mp4' )
-   * xdccJS.on('pipe-downloaded', (f) => {
-   *   file.end()
-   * })
-   * ```
-   */
-  static EVENT_PIPE_DONE: (f: FileInfo) => void
+  static EVENT_DONE: (failures: Failures | undefined) => void
 }
 
 /**
@@ -1328,35 +1324,103 @@ export default class XDCC extends Client {
  * @asMemberOf XDCC
  */
 declare interface Params {
-  /** IRC server hostname */
-  host: string
-  /** IRC server PORT, default : 6667*/
-  port?: number
-  /** Nickname to use on IRC, default: 'xdccJS' + random number */
-  nick?: string
   /**
-   * Channel(s) to join
+   * @description IRC server's hostname
    * @example
    * ```js
-   * params.chan = '#yay'
-   * // or
-   * params.chan = ['#yay', '#nay']
+   * params.host = 'irc.server.net'
+   * ```
+   */
+  host: string
+  /**
+   * @description IRC server PORT
+   * @default `6667`
+   * @example
+   * ```js
+   * params.port = 6669
+   * ```
+   */
+  port?: number
+  /**
+   * @description Nickname to use on IRC
+   * @default `'xdccJS' + randomInt`
+   * @example
+   * ```js
+   * params.nick = 'JiPaix'
+   * ```
+   */
+  nick?: string
+  /**
+   * @description Channel(s) to join
+   * @remark Hashtags are optional
+   * @example
+   * ```js
+   * params.chan = '#wee'
+   * // can also be an array
+   * params.chan = ['#wee', '#happy']
+   * // in both cases # are optional
+   * params.chan = 'weee'
+   * params.chan = ['#wee', 'happy']
    * ```
    */
   chan?: string | string[]
   /**
-   * Download path (absolute or relative)
-   * @remark can be set to false to use pipes
-   * @see {@link XDCC.download} for example on how to use pipes.
+   * @description Download path
+   * @default `false`
+   * @remark `undefined` or `false` enables piping, see {@link XDCC.download} for example on how to use pipes.
+   * @example
+   * ```js
+   * // absolute path
+   * params.path = '/home/user/downloads
+   * ```
+   * @example
+   * ```js
+   * // relative path
+   * params.path = 'downloads/xdcc' //=> /your/project/folder/downloads/xdcc
+   * ```
+   * @example
+   * ```js
+   * // explicitly enable piping
+   * params.path = false
+   * ```
    * */
-  path?: false | string
-  /** Display information regarding your download in console, default : false */
+  path?: string | false
+  /**
+   * @description Display information regarding your download in console
+   * @default `false`
+   * @example
+   * ```js
+   * params.verbose = true
+   * ```
+   */
   verbose?: boolean
-  /** Add Random numbers to nickname, default: false */
+  /**
+   * @description Add Random numbers to nickname
+   * @default: `true`
+   * @example
+   * ```js
+   * params.randomizeNick = false
+   * ```
+   */
   randomizeNick?: boolean
-  /** Port(s) for passive DCC, default : [5001] */
+  /**
+   * @description Array of ports for passive DCC
+   * @default `[5001]`
+   * @remark Some xdcc bots use passive dcc, this require to have these ports opened on your computer/router/firewall
+   * @example
+   * ```js
+   * params.passivePort = [3833, 2525]
+   */
   passivePort?: number[]
-  /** Number of attempts when a download fails */
+  /**
+   * @description Number of retries when a download fails
+   * @default `1`
+   * @example
+   * ```js
+   * // we've set params.retry = 2
+   * xdccJS.download('xdcc|bot', '20, 25')
+   * // if download of pack '20' fails it will retry twice before skipping to pack '25'
+   */
   retry?: number
 }
 
@@ -1369,7 +1433,7 @@ declare interface FileInfo {
   type: string
   /** Filename */
   file: string
-  /** Filename with absolute path */
+  /** Filename with absolute path, return false if using pipes */
   filePath: string
   /** Transfert IP */
   ip: string
@@ -1382,16 +1446,13 @@ declare interface FileInfo {
   /** Resume Position */
   position?: number
 }
-
 /**
- * Batch information
+ * File informations
  * @asMemberOf XDCC
  */
-declare interface BatchInfo {
-  /** Bot username */
+declare interface Failures {
   target: string
-  /** Array containing requested packs */
-  packet: number[]
+  packets: number[]
 }
 /**
  * Accumulated lenght of data received*
@@ -1403,8 +1464,10 @@ declare type received = number
  */
 declare interface Candidate {
   nick: string
-  pack: string | number | number[]
+  pack: number[]
+  ident?: string
   passive?: number
   retry: number
   timeout?: NodeJS.Timeout
+  now: number
 }
