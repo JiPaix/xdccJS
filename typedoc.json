@@ -1,14 +1,15 @@
 {
     "out": "docs",
     "name": "xdccJS",
-    "inputFiles": ["./index.ts"],
+    "inputFiles": ["./index.ts", "./node_modules/@types/node"],
     "exclude": "**/@types/*,**/test/*,**/bin/*",
     "mode": "file",
     "excludePrivate": true,
     "excludeProtected": true,
     "excludeExternals": true,
+    "includeDeclarations" : true,
     "readme": "none",
     "TOC": "XDCC",
     "plugins": ["@wcardinal/typedoc-plugin-named-event", "typedoc-plugin-no-inherit", "typedoc-plugin-as-member-of"],
-    "theme": "default"
+    "theme": "minimal"
 }

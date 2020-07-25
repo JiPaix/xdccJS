@@ -93,34 +93,61 @@ xdccJS.on('downloaded', (fileInfo) => {
 
 ```js
 xdccJS.on('xdcc-ready', () => {
-  // downloadBatch() accepts 'range strings' and array of numbers
-  xdccJS.downloadBatch('xdcc-bot-nickname', '1-3, 8, 55')
-  xdccJS.downloadBatch('another-bot', [1, 3, 10, 20])
+  // download() also accepts 'range strings' and array of numbers
+  xdccJS.download('xdcc-bot-nickname', '1-3, 8, 55')
+  xdccJS.download('another-bot', [1, 3, 10, 20])
 })
 
+// event triggered everytime a file is downloaded
 xdccJS.on('downloaded', (fileInfo) => {
   console.log(fileInfo.filePath) //=> /home/user/xdccJS/downloads/myfile.pdf
 })
 
-xdccJS.on('batch-complete', (info) => {
-  console.log(info) // => { target: "xdcc-bot-nickname", packet: [1, 2, 3, 8, 55] }
+// event triggered when all downloads are done
+xdccJS.on('done', (failures) => {
+  if(failures) {
+    // print failed download (if any)
+    console.log(failures) 
+  }
 })
 ```
-#### Disconnect from IRC :
+#### Handling connection from IRC :
 
-Simply use `xdccJS.quit()` whenever you need it.
+By default xdccJS stays connected to IRC and is waiting for instruction (downloads)
 
-After a file is downloaded:
+To safely disconnect use the `canQuit` event :
 ```js
-xdccJS.on('downloaded', (fileInfo) =>{
+// event triggered once all your downloads are done
+xdccJS.on('canQuit', (fileInfo) =>{
   xdccJS.quit()
 })
 ```
-or after a batch is completed:
+If you need to disconnect at a specific moment, use `xdccJS.quit()` directly :
 ```js
-xdccJS.on('batch-complete', (fileInfo) =>{
+if(condition1 && condition2) {
   xdccJS.quit()
+}
+```
+
+You can also reconnect later :
+```js
+if(condition1 && condition2) {
+  xdccJS.quit()
+}
+
+something.on('custom-event', () => {
+  xdccJS.reconnect()
 })
+```
+And if at some point you need to connect to another IRC server :
+```js
+if(myconditions) {
+  xdccJS.reconnect({
+    host: 'irc.newserver.net', 
+    port: 6200, // optional (default: 6667) 
+    chan: ['#wee', '#happy'] //optional
+    })
+}
 ```
 
 ## Command-line Interface :
