@@ -2,7 +2,7 @@
     "out": "docs",
     "name": "xdccJS",
     "inputFiles": ["./index.ts"],
-    "exclude": "**/@types/*,**/test/*",
+    "exclude": "**/@types/*,**/test/*,**/bin/*",
     "mode": "file",
     "excludePrivate": true,
     "excludeProtected": true,
