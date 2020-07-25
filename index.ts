@@ -237,9 +237,11 @@ export default class XDCC extends Client {
       return variable
     }
   }
-  public reconnect(
-    info: { host: string; port?: number; chan: string | string[] } | undefined
-  ): void {
+  public reconnect(info?: {
+    host: string
+    port?: number
+    chan: string | string[]
+  }): void {
     this.quit()
     this.connectionTimeout = setTimeout(() => {
       if (info) {
