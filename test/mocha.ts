@@ -42,12 +42,19 @@ describe('initialize', () => {
     start.on('request', (res: { target: string; packets: number[] }) => {
       let check
       for (var i = 0; i < res.packets.length; i++) {
-        check = [1, 2, 3, 200][i] === res.packets[i]
+        check = [1, 2, 5][i] === res.packets[i]
       }
       if (check) {
         done()
       }
     })
-    start.download('JiPaix', '1-3, 200')
+    start.download('JiPaix', '1-2,5')
+  })
+  it('handle connection', function (done) {
+    this.timeout(1000 * 60)
+    start.on('can-quit', () => {
+      start.quit()
+      done()
+    })
   })
 })
