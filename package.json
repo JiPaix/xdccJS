@@ -1,6 +1,6 @@
 {
   "name": "xdccjs",
-  "version": "2.9.0",
+  "version": "3.0.0",
   "description": "download files from XDCC bots on IRC, complete implementation of the XDCC protocol",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -13,7 +13,7 @@
     "xdccJS": "./bin/index.js"
   },
   "scripts": {
-    "test": "node ./node_modules/mocha/bin/mocha -r ts-node/register test/mocha.ts",
+    "test": "snyk test && node ./node_modules/mocha/bin/mocha -r ts-node/register test/mocha.ts",
     "build": "node ./node_modules/rimraf/bin.js dist && node ./node_modules/typescript/bin/tsc && node intellisense.js",
     "prepublishOnly": "npm run build && npm run snyk-wiz",
     "snyk-wiz": "node ./node_modules/snyk/dist/cli/index.js wizard",
@@ -58,7 +58,7 @@
     "postinstall-prepare": "^1.0.1",
     "prettier": "2.0.5",
     "rimraf": "^3.0.2",
-    "snyk": "^1.364.0",
+    "snyk": "^1.366.2",
     "ts-node": "^8.8.2",
     "tslint": "^6.1.0",
     "tslint-config-prettier": "^1.18.0",
