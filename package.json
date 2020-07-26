@@ -71,7 +71,7 @@
     "@types/colors": "^1.2.1",
     "@types/progress": "^2.0.3",
     "colors": "^1.4.0",
-    "commander": "^5.1.0",
+    "commander": "^6.0.0",
     "eventemitter3": "^4.0.0",
     "irc-framework": "^4.7.0",
     "progress": "git://github.com/JiPaix/node-progress.git",

@@ -4,6 +4,8 @@
 import XDCC from '../index'
 import { program } from 'commander'
 import { version } from '../package.json'
+import * as colors from 'colors/safe'
+import * as ProgressBar from 'progress'
 
 program
   .version(version)
@@ -11,66 +13,85 @@ program
   .option('-s, --server <server>', 'irc server address')
   .option('-P, --port <number>', 'irc server port', parseInt, 6667)
   .option('-p, --path <path>', 'download path')
-  .option(
-    '-r, --reverse-port <number>',
-    'port used for passive dccs',
-    parseInt,
-    5001
-  )
+  .option('-r, --reverse-port <numbers...>', 'port used for passive dccs', parseInt, 5001)
   .option('-u, --username <username>', 'irc username', 'xdccJS')
-  .option('--no-randomize', 'add random numbers to nickname')
-  .option('-c, --channel <chan>', 'channel to join (without #)', 'xdccJS')
+  .option('--no-randomize', 'removes random numbers to nickname')
+  .option('-c, --channel [chan...]', 'channel to join (without #)')
   .option('-b, --bot <botname>', 'xdcc bot nickname')
-  .option('-d, --download <pack>', 'pack number to download')
-  .parse(process.argv)
+  .option('-d, --download <packs...>', 'pack number to download')
+  .option('-w, --wait [wait]', 'wait time (in seconds) before sending download request')
+  .parse()
 
 declare interface Params {
-  /** IRC server hostname */
   host: string
-  /** IRC server PORT */
-  port: number
-  /** Nickname to use on IRC */
-  nick: string
-  /** Channel(s) to join */
-  chan: string | string[]
-  /** Download path */
-  path: false | string
-  /** Display download progress in console */
+  port?: number
+  nick?: string
+  chan?: string | string[]
+  path?: string | false
   verbose?: boolean
-  /** Add Random number to nickname */
   randomizeNick?: boolean
-  /** Port(s) for passive DCC */
   passivePort?: number[]
+  retry?: number
 }
 
 if (!program.server) {
-  console.log(`error: option '-s, --server <server>' argument missing`)
+  console.error(`error: option '-s, --server <server>' argument missing`)
 } else if (!program.bot) {
-  console.log(`error: option '-b, --bot <botname>' argument missing`)
+  console.error(`error: option '-b, --bot <botname>' argument missing`)
 } else if (!program.download) {
-  console.log(`error: option '-d, --download <pack>' argument missing`)
+  console.error(`error: option '-d, --download <pack>' argument missing`)
 } else {
   const opts: Params = {
     host: program.server,
     port: program.port,
     nick: program.username,
-    chan: [program.channel],
+    chan: program.channel,
     path: program.path || false,
     randomizeNick: program.randomize,
     passivePort: [program.reversePort],
     verbose: true,
   }
+  const nbOfPack = program.download.length
+  let pack = ''
+  for (const packs of program.download) {
+    pack += packs
+  }
+  program.download = pack
+  program.wait = parseInt(program.wait)
+
   const xdccJS = new XDCC(opts)
-  xdccJS.on('xdcc-ready', () => {
-    xdccJS.download(program.bot, program.download)
-  })
-  xdccJS.on('downloaded', () => {
-    xdccJS.quit()
-  })
-  xdccJS.on('pipe-data', data => {
-    process.stdout.write(data)
-  })
-  xdccJS.on('pipe-downloaded', () => {
+
+  if (program.wait) {
+    xdccJS.on('ready', () => {
+      let wait = program.wait
+      process.stderr.cursorTo(1)
+      --wait
+      process.stderr.write(`\u2937 ` + colors.bold(colors.cyan('\u2139')) + ' waiting: ' + wait)
+      process.stderr.clearLine(1)
+      const interv = setInterval(() => {
+        process.stderr.cursorTo(1)
+        --wait
+        process.stderr.write(`\u2937 ` + colors.bold(colors.cyan('\u2139')) + ' waiting: ' + wait)
+        process.stderr.clearLine(1)
+        if (wait === 0) {
+          process.stderr.clearLine(0)
+          process.stderr.cursorTo(0)
+          clearInterval(interv)
+          xdccJS.download(program.bot, program.download)
+        }
+      }, 1000)
+    })
+  } else {
+    xdccJS.on('ready', () => {
+      xdccJS.download(program.bot, program.download)
+    })
+  }
+  if (nbOfPack > 1) {
+    xdccJS.on('done', f => {
+      console.error(f)
+    })
+  }
+  xdccJS.on('can-quit', () => {
     xdccJS.quit()
   })
 }
