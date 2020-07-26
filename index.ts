@@ -282,7 +282,7 @@ export default class XDCC extends Client {
         channel.join()
       }
       this.verb(0, 'green', `connected to: ${colors.yellow(this.host)}`)
-      this.verb(2, 'green', `joined: ${this.chan.map(e => `${colors.yellow(e)}`)}`)
+      this.verb(2, 'green', `joined: [ ${colors.yellow(this.chan.join(`${colors.white(', ')}`).replace('#', ''))} ]`)
 
       self.emit('ready')
     })
