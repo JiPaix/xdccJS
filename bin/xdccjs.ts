@@ -11,14 +11,14 @@ program
   .name('xdccJS')
   .option('-s, --server <server>', 'irc server address')
   .option('-P, --port <number>', 'irc server port', parseInt, 6667)
-  .option('-p, --path <path>', 'download path')
-  .option('-r, --retry [number]', 'number of attempts before skipping pack', parseInt)
-  .option('-R, --reverse-port <numbers...>', 'port used for passive dccs', parseInt, 5001)
-  .option('-u, --username <username>', 'irc username', 'xdccJS')
-  .option('--no-randomize', 'removes random numbers to nickname')
-  .option('-c, --channel [chan...]', 'channel to join (without #)')
   .option('-b, --bot <botname>', 'xdcc bot nickname')
-  .option('-d, --download <packs...>', 'pack number to download')
+  .option('-d, --download <packs...>', 'pack number(s) to download')
+  .option('-p, --path [path]', 'download path')
+  .option('-u, --username <username>', 'irc username', 'xdccJS')
+  .option('-c, --channel [chan...]', 'channel to join (without #)')
+  .option('-r, --retry [number]', 'number of attempts before skipping pack', parseInt, 0)
+  .option('-R, --reverse-port [number]', 'port used for passive dccs', parseInt, 5001)
+  .option('--no-randomize', 'removes random numbers to nickname')
   .option('-w, --wait [number]', 'wait time (in seconds) before sending download request')
   .parse()
 
@@ -47,6 +47,7 @@ if (!program.server) {
     console.error(`error: option '-r, --retry <number>' must be a number`)
   }
 }
+
 if (check.filter(err => err === false).length === 0) {
   const opts = {
     host: program.server,
