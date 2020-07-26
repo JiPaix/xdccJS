@@ -277,12 +277,13 @@ export default class XDCC extends Client {
     const self = this
     this.on('connected', () => {
       clearTimeout(this.connectionTimeout)
+      this.chan = this.chan.map(c => (c = this.checkHashtag(c, true)))
       for (let index = 0; index < this.chan.length; index++) {
         const channel = this.channel(this.checkHashtag(this.chan[index], true))
         channel.join()
       }
       this.verb(0, 'green', `connected to: ${colors.yellow(this.host)}`)
-      this.verb(2, 'green', `joined: [ ${colors.yellow(this.chan.join(`${colors.white(', ')}`).replace('#', ''))} ]`)
+      this.verb(2, 'green', `joined: [ ${colors.yellow(this.chan.join(`${colors.white(', ')}`))} ]`)
 
       self.emit('ready')
     })
@@ -971,7 +972,7 @@ export default class XDCC extends Client {
           return `#${value}`
         }
       } else if (typeof value === 'number') {
-        return value.toString()
+        return `#${value.toString()}`
       } else {
         throw TypeError(`unexpected type of 'chan': a string|number was expected but got '${typeof value}'`)
       }
