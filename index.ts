@@ -277,7 +277,7 @@ export default class XDCC extends Client {
     const self = this
     this.on('connected', () => {
       clearTimeout(this.connectionTimeout)
-      this.chan = this.chan.map(c => (c = this.checkHashtag(c, true)))
+      this.chan = this.chan.map(c => this.checkHashtag(c, true))
       for (let index = 0; index < this.chan.length; index++) {
         const channel = this.channel(this.checkHashtag(this.chan[index], true))
         channel.join()
