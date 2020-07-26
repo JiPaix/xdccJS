@@ -5,8 +5,7 @@ import XDCC from '../index'
 import { program } from 'commander'
 import { version } from '../package.json'
 import * as colors from 'colors/safe'
-import * as ProgressBar from 'progress'
-import * as path from 'path'
+
 program
   .version(version)
   .name('xdccJS')
