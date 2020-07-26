@@ -282,7 +282,7 @@ export default class XDCC extends Client {
         const channel = this.channel(this.checkHashtag(this.chan[index], true))
         channel.join()
       }
-      this.verb(0, 'green', `connected to: ${colors.yellow(this.host)}`)
+      console.error(colors.bold(colors.green(`\u2713`)), `connected to: ${colors.yellow(this.host)}`)
       this.verb(2, 'green', `joined: [ ${colors.yellow(this.chan.join(`${colors.white(', ')}`))} ]`)
 
       self.emit('ready')
@@ -311,6 +311,7 @@ export default class XDCC extends Client {
       )
       i++
       this.on('next', () => {
+        candidate.retry = 0
         if (i < args.packets.length) {
           candidate.pack = candidate.pack.filter(pending => pending !== candidate.now)
           candidate.now = args.packets[i]
@@ -349,7 +350,6 @@ export default class XDCC extends Client {
         }
       })
       this.on('ctcp request', (resp: { [prop: string]: string }): void => {
-        candidate.retry = 0
         if (this.path) {
           this.downloadToFile(resp, candidate)
         } else {
@@ -1108,7 +1108,8 @@ export default class XDCC extends Client {
         } else {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           clearInterval(candidate.timeout!)
-          this.verb(8, 'red', `skipped pack: ${candidate.now}`)
+          const pad = this.retry > 0 ? 7 : 6
+          this.verb(pad, 'red', `skipped pack: ${candidate.now}`)
           this.emit('error', `skipped pack: ${candidate.now}`, fileInfo)
           candidate.failures.push(candidate.now)
           this.emit('next')
@@ -1117,7 +1118,8 @@ export default class XDCC extends Client {
     } else {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       clearInterval(candidate.timeout!)
-      this.verb(8, 'red', `skipped pack: ${candidate.now}`)
+      const pad = this.retry > 0 ? 7 : 6
+      this.verb(pad, 'red', `skipped pack: ${candidate.now}`)
       this.emit('error', `skipped pack: ${candidate.now}`, fileInfo)
       candidate.failures.push(candidate.now)
       this.emit('next')
