@@ -2831,16 +2831,16 @@ img {
 						<aside class="tsd-sources">
 							<p>Overrides Client.__constructor</p>
 							<ul>
-								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/1a12444/index.ts#L35">index.ts:35</a></li>
+								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/b0a499b/index.ts#L35">index.ts:35</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
 							<dl class="tsd-comment-tags">
 								<dt>description</dt>
-								<dd><p>Initiate IRC connection, see <a href="../interfaces/params.html">Params</a> for a complete description of all parameters</p>
+								<dd><p>Initiate IRC connection</p>
 								</dd>
 								<dt>remark</dt>
-								<dd><p>If you want to use pipes <a href="../interfaces/params.html#path">Params.path</a> must be set to false</p>
+								<dd><p>If you want to use pipes <code>parms.path</code> must be set to false</p>
 								</dd>
 								<dt>example</dt>
 								<dd><pre><code class="language-js"><span class="hljs-keyword">let</span> params = {
@@ -3047,7 +3047,7 @@ xdccJS.download(<span class="hljs-string">&#x27;xdcc|bot&#x27;</span>, <span cla
 				<div class="tsd-signature tsd-kind-icon">can-<wbr>quit<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/1a12444/index.ts#L1185">index.ts:1185</a></li>
+						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/b0a499b/index.ts#L1203">index.ts:1203</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3056,9 +3056,9 @@ xdccJS.download(<span class="hljs-string">&#x27;xdcc|bot&#x27;</span>, <span cla
 						<dd><p>Event triggered when all downloads are done</p>
 						</dd>
 						<dt>example</dt>
-						<dd><p>xdccJS.on(&#39;can-quit&#39;, () =&gt; {
-								xdccJS.quit()
-							})</p>
+						<dd><pre><code class="language-js">xdccJS.on(<span class="hljs-string">&#x27;can-quit&#x27;</span>, <span class="hljs-function">() =&gt;</span> {
+   xdccJS.quit()
+})</code></pre>
 						</dd>
 					</dl>
 				</div>
@@ -3084,7 +3084,7 @@ xdccJS.download(<span class="hljs-string">&#x27;xdcc|bot&#x27;</span>, <span cla
 				<div class="tsd-signature tsd-kind-icon">data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>f<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Buffer</span>, r<span class="tsd-signature-symbol">: </span><a href="../index.html#received" class="tsd-signature-type">received</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/1a12444/index.ts#L1158">index.ts:1158</a></li>
+						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/b0a499b/index.ts#L1173">index.ts:1173</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3093,19 +3093,19 @@ xdccJS.download(<span class="hljs-string">&#x27;xdcc|bot&#x27;</span>, <span cla
 						<dd><p>Event triggered when chunks of data are being received</p>
 						</dd>
 						<dt>remark</dt>
-						<dd><p>Depending on <a href="../interfaces/params.html#path">Params.path</a> value, returns either a Buffer with the acutal data or a <a href="../interfaces/fileinfo.html">FileInfo</a></p>
+						<dd><p>Depending on <code>params.path</code> value, returns either a Buffer with the acutal data or a <code>fileInfo</code> Object</p>
 						</dd>
 						<dt>example</dt>
-						<dd><p><a href="../interfaces/params.html#path">Params.path</a> defined as a path</p>
-							<pre><code class="language-js"><span class="hljs-comment">// use .once to avoid spamming console and throttle download speed)</span>
+						<dd><pre><code class="language-js"><span class="hljs-comment">// example with &#x27;params.path&#x27; defined as a path</span>
 xdccJS.once(<span class="hljs-string">&#x27;data&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">fileInfo, received</span>) =&gt;</span> {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;downloading: &#x27;</span> + fileInfo.file)
-})</code></pre>
+})
+<span class="hljs-comment">// PSA : use .once to avoid spamming console and throttle download speed)</span></code></pre>
 							<p>console output:</p>
 						<pre><code><span class="hljs-attribute">downloading</span>: myfile.mp<span class="hljs-number">4</span></code></pre></dd>
 						<dt>example</dt>
-						<dd><p><a href="../interfaces/params.html#path">Params.path</a> set to false or undefined</p>
-							<pre><code class="language-js">xdccJS.on(<span class="hljs-string">&#x27;data&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">data, received</span>) =&gt;</span> {
+						<dd><pre><code class="language-js"><span class="hljs-comment">// example with &#x27;params.path&#x27; set to false (or undefined)</span>
+xdccJS.on(<span class="hljs-string">&#x27;data&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">data, received</span>) =&gt;</span> {
   stream.write(data)
 })</code></pre>
 						</dd>
@@ -3139,19 +3139,17 @@ xdccJS.once(<span class="hljs-string">&#x27;data&#x27;</span>, <span class="hljs
 			<section class="tsd-panel tsd-member tsd-kind-event tsd-parent-kind-class tsd-is-static">
 				<a name="done" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagStatic">Static</span> done</h3>
-				<div class="tsd-signature tsd-kind-icon">done<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>failures<span class="tsd-signature-symbol">: </span><a href="../interfaces/job.html" class="tsd-signature-type">Job</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+				<div class="tsd-signature tsd-kind-icon">done<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>job<span class="tsd-signature-symbol">: </span><a href="../interfaces/job.html" class="tsd-signature-type">Job</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/1a12444/index.ts#L1228">index.ts:1228</a></li>
+						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/b0a499b/index.ts#L1245">index.ts:1245</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
 					<dl class="tsd-comment-tags">
 						<dt>description</dt>
-						<dd><p>Event triggered when <code>.download()</code> has finished</p>
+						<dd><p>Event triggered when <code>.download()</code> has finished downloading all files</p>
 						</dd>
-						<dt>remark</dt>
-						<dd></dd>
 						<dt>example</dt>
 						<dd><pre><code class="language-js">xdccJS.on(<span class="hljs-string">&#x27;ready&#x27;</span>, <span class="hljs-function">() =&gt;</span> {
  xdccJS.download(<span class="hljs-string">&#x27;XDCC|BLUE&#x27;</span>, <span class="hljs-string">&#x27;23-25, 102, 300&#x27;</span>)
@@ -3182,14 +3180,14 @@ xdccJS.on(<span class="hljs-string">&#x27;done&#x27;</span>, <span class="hljs-f
 					<ul class="tsd-parameters">
 						<li class="tsd-parameter-signature">
 							<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-event">
-								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>failures<span class="tsd-signature-symbol">: </span><a href="../interfaces/job.html" class="tsd-signature-type">Job</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>job<span class="tsd-signature-symbol">: </span><a href="../interfaces/job.html" class="tsd-signature-type">Job</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 							</ul>
 							<ul class="tsd-descriptions">
 								<li class="tsd-description">
 									<h4 class="tsd-parameters-title">Parameters</h4>
 									<ul class="tsd-parameters">
 										<li>
-											<h5>failures: <a href="../interfaces/job.html" class="tsd-signature-type">Job</a></h5>
+											<h5>job: <a href="../interfaces/job.html" class="tsd-signature-type">Job</a></h5>
 										</li>
 									</ul>
 									<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -3205,13 +3203,13 @@ xdccJS.on(<span class="hljs-string">&#x27;done&#x27;</span>, <span class="hljs-f
 				<div class="tsd-signature tsd-kind-icon">downloaded<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>f<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/1a12444/index.ts#L1196">index.ts:1196</a></li>
+						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/b0a499b/index.ts#L1214">index.ts:1214</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
 					<dl class="tsd-comment-tags">
 						<dt>description</dt>
-						<dd><p>Event triggered when a download is completed.</p>
+						<dd><p>Event triggered when a file is downloaded</p>
 						</dd>
 						<dt>example</dt>
 						<dd><pre><code class="language-js">xdccJS.on(<span class="hljs-string">&#x27;downloaded&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">fileInfo</span>) =&gt;</span> {
@@ -3248,16 +3246,19 @@ xdccJS.on(<span class="hljs-string">&#x27;done&#x27;</span>, <span class="hljs-f
 				<div class="tsd-signature tsd-kind-icon">error<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span>, fileInfo<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/1a12444/index.ts#L1176">index.ts:1176</a></li>
+						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/b0a499b/index.ts#L1192">index.ts:1192</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
 					<dl class="tsd-comment-tags">
 						<dt>description</dt>
-						<dd><p>Event triggered when a download fails</p>
+						<dd><p>Event triggered when a download/connection error happens</p>
 						</dd>
 						<dt>remark</dt>
-						<dd><p>This event doesn&#39;t skip <a href="../interfaces/params.html#retry">Params.retry</a></p>
+						<dd><p>This event doesn&#39;t skip retries</p>
+						</dd>
+						<dt>remark</dt>
+						<dd><p><code>fileInfo</code> isn&#39;t provided in case of an error not related to a download</p>
 						</dd>
 						<dt>example</dt>
 						<dd><pre><code class="language-js">xdccJS.on(<span class="hljs-string">&#x27;error&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">error, fileInfo</span>) =&gt;</span> {
@@ -3301,7 +3302,7 @@ timeout: no response from BOT-NICKNAME</code></pre>
 				<div class="tsd-signature tsd-kind-icon">ready<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/1a12444/index.ts#L1135">index.ts:1135</a></li>
+						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/b0a499b/index.ts#L1148">index.ts:1148</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3345,13 +3346,13 @@ timeout: no response from BOT-NICKNAME</code></pre>
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/1a12444/index.ts#L913">index.ts:913</a></li>
+								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/b0a499b/index.ts#L923">index.ts:923</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
 							<dl class="tsd-comment-tags">
 								<dt>description</dt>
-								<dd><p>Method used to download a single packet.<br/><br/></p>
+								<dd><p>Method used to download packet(s).<br/><br/></p>
 								</dd>
 								<dt>example</dt>
 								<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> params = {
@@ -3363,14 +3364,23 @@ timeout: no response from BOT-NICKNAME</code></pre>
 
 xdccJS.on(<span class="hljs-string">&#x27;ready&#x27;</span>, <span class="hljs-function">() =&gt;</span> {
   xdccJS.download(<span class="hljs-string">&#x27;XDCC|Bot&#x27;</span>, <span class="hljs-number">152</span>)
+  xdccJS.download(<span class="hljs-string">&#x27;XDCC|Another-bot&#x27;</span>, <span class="hljs-string">&#x27;1-3, 55, 32-40&#x27;</span>)
 })
 
-xdccJS.on(<span class="hljs-string">&#x27;download-err&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">err, fileInfo</span>) =&gt;</span> {
+xdccJS.on(<span class="hljs-string">&#x27;err&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">err, fileInfo</span>) =&gt;</span> {
  <span class="hljs-built_in">console</span>.error(err)
 })
 
+<span class="hljs-comment">// event triggered everytime a file is downloaded</span>
 xdccJS.on(<span class="hljs-string">&#x27;downloaded&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">fileInfo</span>) =&gt;</span> {
  <span class="hljs-built_in">console</span>.log(fileInfo.filePath) <span class="hljs-comment">//=&gt; &quot;/home/user/downloads/myfile.pdf&quot;</span>
+})
+
+<span class="hljs-comment">// event triggered everytime all files from a .download() are completed</span>
+xdccJS.on(<span class="hljs-string">&#x27;done&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">job</span>) =&gt;</span> {
+  <span class="hljs-built_in">console</span>.log(job.nick) <span class="hljs-comment">//=&gt; XDCC|Another-bot</span>
+  <span class="hljs-built_in">console</span>.log(job.failures) <span class="hljs-comment">//=&gt; [1, 35, 36]</span>
+  <span class="hljs-built_in">console</span>.log(job.success) <span class="hljs-comment">//=&gt; [&#x27;document.pdf&#x27;, &#x27;audio.wav&#x27;]</span>
 })
 </code></pre>
 								</dd>
@@ -3432,7 +3442,7 @@ xdccJS.on(<span class="hljs-string">&#x27;ready&#x27;</span>, <span class="hljs-
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/1a12444/index.ts#L247">index.ts:247</a></li>
+								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/b0a499b/index.ts#L247">index.ts:247</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">

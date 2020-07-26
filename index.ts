@@ -35,8 +35,8 @@ export default class XDCC extends Client {
   private ip!: number
 
   /**
-   * @description Initiate IRC connection, see {@link Params} for a complete description of all parameters
-   * @remark If you want to use pipes {@link Params.path} must be set to false
+   * @description Initiate IRC connection
+   * @remark If you want to use pipes `parms.path` must be set to false
    * @example
    * ```js
    * let params = {
@@ -855,7 +855,7 @@ export default class XDCC extends Client {
     })
   }
   /**
-   * @description Method used to download a single packet.<br/><br/>
+   * @description Method used to download packet(s).<br/><br/>
    * @param target Bot's nickname
    * @param packet Packet
    * @example
@@ -869,14 +869,23 @@ export default class XDCC extends Client {
    *
    * xdccJS.on('ready', () => {
    *   xdccJS.download('XDCC|Bot', 152)
+   *   xdccJS.download('XDCC|Another-bot', '1-3, 55, 32-40')
    * })
    *
-   * xdccJS.on('download-err', (err, fileInfo) => {
+   * xdccJS.on('err', (err, fileInfo) => {
    *  console.error(err)
    * })
    *
+   * // event triggered everytime a file is downloaded
    * xdccJS.on('downloaded', (fileInfo) => {
    *  console.log(fileInfo.filePath) //=> "/home/user/downloads/myfile.pdf"
+   * })
+   *
+   * // event triggered everytime all files from a .download() are completed
+   * xdccJS.on('done', (job) => {
+   *   console.log(job.nick) //=> XDCC|Another-bot
+   *   console.log(job.failures) //=> [1, 35, 36]
+   *   console.log(job.success) //=> ['document.pdf', 'audio.wav']
    * })
    *
    * ```
@@ -1139,21 +1148,23 @@ export default class XDCC extends Client {
   static EVENT_READY: () => void
   /**
    * @description	Event triggered when chunks of data are being received
-   * @remark Depending on {@link Params.path} value, returns either a Buffer with the acutal data or a {@link FileInfo}
+   * @remark Depending on `params.path` value, returns either a `Buffer` with the acutal data or a `fileInfo` object
    * @event data
-   * @example {@link Params.path} defined as a path
+   * @example
    * ```js
-   * // use .once to avoid spamming console and throttle download speed)
+   * // example with 'params.path' defined as a path
    * xdccJS.once('data', (fileInfo, received) => {
    *   console.log('downloading: ' + fileInfo.file)
    * })
+   * // PSA : use .once to avoid spamming console and throttle download speed)
    * ```
    * console output:
    * ```
    * downloading: myfile.mp4
    * ```
-   * @example {@link Params.path} set to false or undefined
+   * @example
    * ```js
+   * // example with 'params.path' set to false (or undefined)
    * xdccJS.on('data', (data, received) => {
    *   stream.write(data)
    * })
@@ -1161,8 +1172,9 @@ export default class XDCC extends Client {
    */
   static EVENT_DATA: (f: FileInfo | Buffer, r: received) => void
   /**
-   * @description Event triggered when a download fails
-   * @remark This event doesn't skip {@link Params.retry}
+   * @description Event triggered when a download/connection error happens
+   * @remark This event doesn't skip retries
+   * @remark `fileInfo` isn't provided in case of an error not related to a download
    * @event error
    * @example
    * ```js
@@ -1182,13 +1194,15 @@ export default class XDCC extends Client {
    * @description Event triggered when all downloads are done
    * @event can-quit
    * @example
+   * ```js
    * xdccJS.on('can-quit', () => {
    *    xdccJS.quit()
    * })
+   * ```
    */
   static EVENT_QUIT: () => void
   /**
-   * @description Event triggered when a download is completed.
+   * @description Event triggered when a file is downloaded
    * @event downloaded
    * @example
    * ```js
@@ -1199,8 +1213,7 @@ export default class XDCC extends Client {
    */
   static EVENT_DOWNLOADED: (f: FileInfo) => void
   /**
-   * @description Event triggered when `.download()` has finished
-   * @remark
+   * @description Event triggered when `.download()` has finished downloading all files
    * @event done
    * @example
    * ```js
@@ -1229,7 +1242,7 @@ export default class XDCC extends Client {
    * }
    * ```
    */
-  static EVENT_DONE: (failures: Job) => void
+  static EVENT_DONE: (job: Job) => void
 }
 
 /**
