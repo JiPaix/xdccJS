@@ -1088,6 +1088,7 @@ export default class XDCC extends Client {
       } else if (color === 'cyan') {
         sign = '\u2139'
       } else if (color === 'green') {
+        pad--
         sign = '\u2713'
       } else {
         throw new Error()
