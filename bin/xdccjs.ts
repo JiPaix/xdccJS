@@ -12,7 +12,8 @@ program
   .option('-s, --server <server>', 'irc server address')
   .option('-P, --port <number>', 'irc server port', parseInt, 6667)
   .option('-p, --path <path>', 'download path')
-  .option('-r, --reverse-port <numbers...>', 'port used for passive dccs', parseInt, 5001)
+  .option('-r, --retry [number]', 'number of attempts before skipping pack', parseInt)
+  .option('-R, --reverse-port <numbers...>', 'port used for passive dccs', parseInt, 5001)
   .option('-u, --username <username>', 'irc username', 'xdccJS')
   .option('--no-randomize', 'removes random numbers to nickname')
   .option('-c, --channel [chan...]', 'channel to join (without #)')
@@ -35,11 +36,16 @@ if (!program.server) {
 } else if (program.port) {
   if (isNaN(parseInt(program.port))) {
     check.push(false)
-    console.error(`error: option '-p, --port <number>' must be number`)
+    console.error(`error: option '-p, --port <number>' must be a number`)
   }
 } else if (isNaN(parseInt(program.wait))) {
   check.push(false)
-  console.error(`error: option '-w, --wait <number>' must be number`)
+  console.error(`error: option '-w, --wait <number>' must be a number`)
+} else if (program.retry) {
+  if (isNaN(program.retry)) {
+    check.push(false)
+    console.error(`error: option '-r, --retry <number>' must be a number`)
+  }
 }
 if (check.filter(err => err === false).length === 0) {
   const opts = {
@@ -51,8 +57,9 @@ if (check.filter(err => err === false).length === 0) {
     randomizeNick: program.randomize,
     passivePort: [program.reversePort],
     verbose: true,
+    retry: program.retry,
   }
-  const nbOfPack = program.download.length
+
   let pack = ''
   for (const packs of program.download) {
     pack += packs
@@ -85,11 +92,6 @@ if (check.filter(err => err === false).length === 0) {
   } else {
     xdccJS.on('ready', () => {
       xdccJS.download(program.bot, program.download)
-    })
-  }
-  if (nbOfPack > 1) {
-    xdccJS.on('done', f => {
-      console.error(f)
     })
   }
   xdccJS.on('can-quit', () => {
