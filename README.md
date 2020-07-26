@@ -166,16 +166,18 @@ xdccJS --server irc.server.net --bot "XDCC-BOT|NICKNAME" --download 110 | ffmpeg
 ```
 Options:
   -V, --version                output the version number
-  -s, --server <server>        irc server address (required)
+  -s, --server <server>        irc server address
   -P, --port <number>          irc server port (default: 6667)
-  -p, --path <path>            download path (optional)
-  -r, --reverse-port <number>  port used for passive dccs (default: 5001)
+  -b, --bot <botname>          xdcc bot nickname
+  -d, --download <packs...>    pack number(s) to download
+  -p, --path [path]            download path
   -u, --username <username>    irc username (default: "xdccJS")
-  --no-randomize               add random numbers to nickname (optional)
-  -c, --channel <chan>         channel to join (without #) (optional)
-  -b, --bot <botname>          xdcc bot nickname (required)
-  -d, --download <pack>        pack number to download (required)
-  -h, --help                   display help for command (required)
+  -c, --channel [chan...]      channel to join (without #)
+  -r, --retry [number]         number of attempts before skipping pack (default: 0)
+  -R, --reverse-port [number]  port used for passive dccs (default: 5001)
+  --no-randomize               removes random numbers to nickname
+  -w, --wait [number]          wait time (in seconds) before sending download request
+  -h, --help                   display help for command
 ```
 #### Additional useful information :
 - `--path` and `--bot` option's values ***MUST*** be either escaped or quoted :  
