@@ -6,7 +6,7 @@ import { program } from 'commander'
 import { version } from '../package.json'
 import * as colors from 'colors/safe'
 import * as ProgressBar from 'progress'
-
+import * as path from 'path'
 program
   .version(version)
   .name('xdccJS')
@@ -19,29 +19,31 @@ program
   .option('-c, --channel [chan...]', 'channel to join (without #)')
   .option('-b, --bot <botname>', 'xdcc bot nickname')
   .option('-d, --download <packs...>', 'pack number to download')
-  .option('-w, --wait [wait]', 'wait time (in seconds) before sending download request')
+  .option('-w, --wait [number]', 'wait time (in seconds) before sending download request')
   .parse()
 
-declare interface Params {
-  host: string
-  port?: number
-  nick?: string
-  chan?: string | string[]
-  path?: string | false
-  verbose?: boolean
-  randomizeNick?: boolean
-  passivePort?: number[]
-  retry?: number
-}
+const check: boolean[] = []
 
 if (!program.server) {
+  check.push(false)
   console.error(`error: option '-s, --server <server>' argument missing`)
 } else if (!program.bot) {
+  check.push(false)
   console.error(`error: option '-b, --bot <botname>' argument missing`)
 } else if (!program.download) {
+  check.push(false)
   console.error(`error: option '-d, --download <pack>' argument missing`)
-} else {
-  const opts: Params = {
+} else if (program.port) {
+  if (isNaN(parseInt(program.port))) {
+    check.push(false)
+    console.error(`error: option '-p, --port <number>' must be number`)
+  }
+} else if (isNaN(parseInt(program.wait))) {
+  check.push(false)
+  console.error(`error: option '-w, --wait <number>' must be number`)
+}
+if (check.filter(err => err === false).length === 0) {
+  const opts = {
     host: program.server,
     port: program.port,
     nick: program.username,
