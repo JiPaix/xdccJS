@@ -1,6 +1,6 @@
 {
   "name": "xdccjs",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "download files from XDCC bots on IRC, complete implementation of the XDCC protocol",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -13,6 +13,7 @@
     "xdccJS": "./bin/index.js"
   },
   "scripts": {
+    "postinstall": "patch-package",
     "test": "snyk test && node ./node_modules/mocha/bin/mocha -r ts-node/register test/mocha.ts",
     "build": "node ./node_modules/rimraf/bin.js dist && node ./node_modules/typescript/bin/tsc && node intellisense.js",
     "prepublishOnly": "npm run build && npm run test",
@@ -68,13 +69,14 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@types/colors": "^1.2.1",
     "@types/progress": "^2.0.3",
     "colors": "^1.4.0",
     "commander": "^6.0.0",
     "eventemitter3": "^4.0.0",
     "irc-framework": "^4.7.0",
-    "progress": "git://github.com/JiPaix/node-progress.git",
+    "patch-package": "^6.2.2",
+    "postinstall-postinstall": "^2.1.0",
+    "progress": "^2.0.3",
     "public-ip": "^4.0.2"
   },
   "snyk": true

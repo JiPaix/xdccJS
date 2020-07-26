@@ -1,40 +1,50 @@
 diff --git a/node_modules/progress/lib/node-progress.js b/node_modules/progress/lib/node-progress.js
-index 8eb0740..8ad8353 100644
+index 8eb0740..519e3ce 100644
 --- a/node_modules/progress/lib/node-progress.js
 +++ b/node_modules/progress/lib/node-progress.js
-@@ -145,7 +145,7 @@ ProgressBar.prototype.render = function (tokens, force) {
-     .replace(':eta', (isNaN(eta) || !isFinite(eta)) ? '0.0' : (eta / 1000)
-       .toFixed(1))
+@@ -142,10 +142,9 @@ ProgressBar.prototype.render = function (tokens, force) {
+     .replace(':current', this.curr)
+     .replace(':total', this.total)
+     .replace(':elapsed', isNaN(elapsed) ? '0.0' : (elapsed / 1000).toFixed(1))
+-    .replace(':eta', (isNaN(eta) || !isFinite(eta)) ? '0.0' : (eta / 1000)
+-      .toFixed(1))
++    .replace(':eta', this.humanETA(eta))
      .replace(':percent', percent.toFixed(0) + '%')
 -    .replace(':rate', Math.round(rate));
-+    .replace(':rate', humanFileSize(rate, true));
++    .replace(':rate', this.humanFileSize(rate));
  
    /* compute the available space (non-zero) for the bar */
    var availableSpace = Math.max(0, this.stream.columns - str.replace(':bar', '').length);
-@@ -234,3 +234,25 @@ ProgressBar.prototype.terminate = function () {
+@@ -234,3 +233,31 @@ ProgressBar.prototype.terminate = function () {
      this.stream.write('\n');
    }
  };
 +
-+function humanFileSize(bytes, si=false, dp=1) {
-+  const thresh = si ? 1000 : 1024;
-+
-+  if (Math.abs(bytes) < thresh) {
-+    return bytes + ' B';
-+  }
-+
-+  const units = si 
-+    ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] 
-+    : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
-+  let u = -1;
-+  const r = 10**dp;
-+
-+  do {
-+    bytes /= thresh;
-+    ++u;
-+  } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
-+
-+
-+  return bytes.toFixed(dp) + ' ' + units[u];
++ProgressBar.prototype.humanFileSize = function(size) {
++  var i = size == 0 ? 0 : Math.floor( Math.log(size) / Math.log(1024) );
++  return ( size / Math.pow(1024, i) ).toFixed(2) + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i] + '/s';
 +}
++
++ProgressBar.prototype.humanETA = function(ms) {
++  if(!isFinite(ms)) return 0+'ms'
++  if (ms < 0) ms = -ms;
++  if(ms===0) return 'done'
++  if(ms<1000) return parseInt(ms)+'ms'
++  const time = {
++    day: Math.floor(ms / 86400000),
++    hour: Math.floor(ms / 3600000) % 24,
++    minute: Math.floor(ms / 60000) % 60,
++    s: Math.floor(ms / 1000) % 60
++  };
++  return Object.entries(time)
++    .filter(val => val[1] !== 0)
++    .map(val => {
++      if(val[0] !== 's') {
++        return val[1] + ' ' + (val[1] !== 1 ? val[0] + 's' : val[0])
++      } else {
++        return val[1] + 's'
++      }
++    })
++    .join(' ');
++  };
 \ No newline at end of file
