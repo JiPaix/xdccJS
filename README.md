@@ -103,12 +103,11 @@ xdccJS.on('downloaded', (fileInfo) => {
   console.log(fileInfo.filePath) //=> /home/user/xdccJS/downloads/myfile.pdf
 })
 
-// event triggered when all downloads are done
-xdccJS.on('done', (failures) => {
-  if(failures) {
-    // print failed download (if any)
-    console.log(failures) 
-  }
+// event triggered when a .download() is finished
+xdccJS.on('done', (job) => {
+  console.log(job.nick) //=> xdcc-bot-nickname
+  console.log(job.failures) //=> [1, 8, 55]
+  console.log(job.success) //=> ['document.pdf', 'audio.wav']
 })
 ```
 #### Handling connection from IRC :
