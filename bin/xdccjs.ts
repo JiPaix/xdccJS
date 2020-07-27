@@ -10,20 +10,19 @@ program
   .version(version)
   .name('xdccJS')
   .option('-s, --server <server>', 'irc server address')
-  .option('-P, --port <number>', 'irc server port', parseInt, 6667)
+  .option('--port <number>', 'irc server port', parseInt, 6667)
   .option('-b, --bot <botname>', 'xdcc bot nickname')
   .option('-d, --download <packs...>', 'pack number(s) to download')
   .option('-p, --path [path]', 'download path')
   .option('-u, --username <username>', 'irc username', 'xdccJS')
   .option('-c, --channel [chan...]', 'channel to join (without #)')
   .option('-r, --retry [number]', 'number of attempts before skipping pack', parseInt, 0)
-  .option('-R, --reverse-port [number]', 'port used for passive dccs', parseInt, 5001)
+  .option('--reverse-port [number]', 'port used for passive dccs', parseInt, 5001)
   .option('--no-randomize', 'removes random numbers to nickname')
-  .option('-w, --wait [number]', 'wait time (in seconds) before sending download request')
+  .option('-w, --wait [number]', 'wait time (in seconds) before sending download request', parseInt, 0)
   .parse()
 
 const check: boolean[] = []
-
 if (!program.server) {
   check.push(false)
   console.error(`error: option '-s, --server <server>' argument missing`)

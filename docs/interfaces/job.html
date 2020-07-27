@@ -2731,17 +2731,16 @@ img {
 			<div class="tsd-comment tsd-typography">
 				<dl class="tsd-comment-tags">
 					<dt>description</dt>
-					<dd><p>Information after .download() is done</p>
+					<dd><p>Using <code>download()</code> starts a Job. It allows you to keep track of what&#39;s going on.</p>
+					</dd>
+					<dt>remark</dt>
+					<dd><p>if you start a <code>download()</code> with a bot name that already has a job then the job gets updated.</p>
+					</dd>
+					<dt>remark</dt>
+					<dd><p>When a Job&#39;s done it&#39;s deleted</p>
 					</dd>
 					<dt>asmemberof</dt>
 					<dd><p>XDCC</p>
-					</dd>
-					<dt>example</dt>
-					<dd><pre><code class="language-sh">{
-   nick: <span class="hljs-string">&#x27;xdcc-bot&#x27;</span>,
-   success: [<span class="hljs-string">&#x27;file.pdf&#x27;</span>, <span class="hljs-string">&#x27;video.mp4&#x27;</span>]
-   failures: [1, 200]
-}</code></pre>
 					</dd>
 				</dl>
 			</div>
@@ -2763,6 +2762,8 @@ img {
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="job.html#failures" class="tsd-kind-icon">failures</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="job.html#nick" class="tsd-kind-icon">nick</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="job.html#now" class="tsd-kind-icon">now</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="job.html#queue" class="tsd-kind-icon">queue</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="job.html#success" class="tsd-kind-icon">success</a></li>
 						</ul>
 					</section>
@@ -2774,16 +2775,16 @@ img {
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="failures" class="tsd-anchor"></a>
 				<h3>failures</h3>
-				<div class="tsd-signature tsd-kind-icon">failures<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></div>
+				<div class="tsd-signature tsd-kind-icon">failures<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/b0a499b/index.ts#L1397">index.ts:1397</a></li>
+						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/0b7d591/index.ts#L1436">index.ts:1436</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
 					<dl class="tsd-comment-tags">
 						<dt>description</dt>
-						<dd><p>Array of pack numbers</p>
+						<dd><p>Array of pack number that failed</p>
 						</dd>
 					</dl>
 				</div>
@@ -2794,7 +2795,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">nick<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/b0a499b/index.ts#L1389">index.ts:1389</a></li>
+						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/0b7d591/index.ts#L1428">index.ts:1428</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2806,18 +2807,58 @@ img {
 				</div>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="success" class="tsd-anchor"></a>
-				<h3>success</h3>
-				<div class="tsd-signature tsd-kind-icon">success<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
+				<a name="now" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> now</h3>
+				<div class="tsd-signature tsd-kind-icon">now<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/b0a499b/index.ts#L1393">index.ts:1393</a></li>
+						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/0b7d591/index.ts#L1441">index.ts:1441</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
 					<dl class="tsd-comment-tags">
 						<dt>description</dt>
-						<dd><p>Array of filenames</p>
+						<dd><p>packet currently downloading</p>
+						</dd>
+						<dt>remark</dt>
+						<dd><p>only present when Job is NOT called from a <code>done</code> event</p>
+						</dd>
+					</dl>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="queue" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> queue</h3>
+				<div class="tsd-signature tsd-kind-icon">queue<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/0b7d591/index.ts#L1446">index.ts:1446</a></li>
+					</ul>
+				</aside>
+				<div class="tsd-comment tsd-typography">
+					<dl class="tsd-comment-tags">
+						<dt>description</dt>
+						<dd><p>packet still in queue</p>
+						</dd>
+						<dt>remark</dt>
+						<dd><p>only present when Job is NOT called from a <code>done</code> event</p>
+						</dd>
+					</dl>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="success" class="tsd-anchor"></a>
+				<h3>success</h3>
+				<div class="tsd-signature tsd-kind-icon">success<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/0b7d591/index.ts#L1432">index.ts:1432</a></li>
+					</ul>
+				</aside>
+				<div class="tsd-comment tsd-typography">
+					<dl class="tsd-comment-tags">
+						<dt>description</dt>
+						<dd><p>Array with filenames of successfully downloaded files</p>
 						</dd>
 					</dl>
 				</div>

@@ -9,6 +9,7 @@ import * as net from 'net'
 import * as ProgressBar from 'progress'
 import * as colors from 'colors/safe'
 import * as ip from 'public-ip'
+import * as _ from 'lodash'
 /**
  * XDCC
  * @noInheritDoc
@@ -16,7 +17,6 @@ import * as ip from 'public-ip'
 export default class XDCC extends Client {
   private host: string
   private port?: number = 6667
-  private canQuit = false
   private retry: number
   private nick: string
   private chan: string[]
@@ -26,7 +26,7 @@ export default class XDCC extends Client {
     length: number
     token: number
   }[] = []
-  private retryCandidates: Candidate[] = []
+  private candidates: Candidate[] = []
   private connectionTimeout: NodeJS.Timeout
   private path: false | string = false
   private verbose: boolean
@@ -282,16 +282,18 @@ export default class XDCC extends Client {
         const channel = this.channel(this.checkHashtag(this.chan[index], true))
         channel.join()
       }
-      console.error(colors.bold(colors.green(`\u2713`)), `connected to: ${colors.yellow(this.host)}`)
+      if (this.verbose) {
+        console.error(colors.bold(colors.green(`\u2713`)), `connected to: ${colors.yellow(this.host)}`)
+      }
       this.verb(2, 'green', `joined: [ ${colors.yellow(this.chan.join(`${colors.white(', ')}`))} ]`)
 
       self.emit('ready')
     })
     this.on('request', (args: { target: string; packets: number[] }) => {
-      let i = 0
       const candidate = this.getCandidate(args.target)
-      candidate.now = args.packets[i]
-      this.say(args.target, `xdcc send ${args.packets[i]}`)
+      candidate.now = args.packets[0]
+      candidate.queue = candidate.queue.filter(pending => pending.toString() !== candidate.now.toString())
+      this.say(args.target, `xdcc send ${candidate.now}`)
       candidate.timeout = this.setupTimeout(
         [true, args.target],
         {
@@ -307,15 +309,14 @@ export default class XDCC extends Client {
       this.verb(
         4,
         'green',
-        `sending command: /MSG ${colors.yellow(args.target)} xdcc send ${colors.yellow(args.packets[i].toString())}`
+        `sending command: /MSG ${colors.yellow(args.target)} xdcc send ${colors.yellow(candidate.now.toString())}`
       )
-      i++
       this.on('next', () => {
         candidate.retry = 0
-        if (i < args.packets.length) {
-          candidate.pack = candidate.pack.filter(pending => pending !== candidate.now)
-          candidate.now = args.packets[i]
-          this.say(args.target, `xdcc send ${args.packets[i]}`)
+        candidate.queue = candidate.queue.filter(pending => pending.toString() !== candidate.now.toString())
+        if (candidate.queue.length) {
+          candidate.now = candidate.queue[0]
+          this.say(args.target, `xdcc send ${candidate.now}`)
           candidate.timeout = this.setupTimeout(
             [true, args.target],
             {
@@ -331,16 +332,12 @@ export default class XDCC extends Client {
           this.verb(
             4,
             'green',
-            `sending command: /MSG ${colors.yellow(args.target)} xdcc send ${colors.yellow(args.packets[i].toString())}`
+            `sending command: /MSG ${colors.yellow(args.target)} xdcc send ${colors.yellow(candidate.now.toString())}`
           )
-          i++
         } else {
-          this.retryCandidates = this.retryCandidates.filter(candidates => candidates.nick !== candidate.nick)
-          if (this.retryCandidates.length) {
-            this.canQuit = false
-          } else {
+          this.candidates = this.candidates.filter(candidates => candidates.nick !== candidate.nick)
+          if (!this.candidates.length) {
             this.emit('can-quit')
-            this.canQuit = true
           }
           this.emit('done', {
             nick: candidate.nick,
@@ -855,9 +852,10 @@ export default class XDCC extends Client {
     })
   }
   /**
-   * @description Method used to download packet(s).<br/><br/>
-   * @param target Bot's nickname
-   * @param packet Packet
+   * @description Method used to download packet(s). <br/>`download()` starts jobs, jobs are used to keep track of what's going on
+   * @remark You can see Jobs by using `.jobs()`
+   * @param target - Bot's nickname
+   * @param packets - Pack number(s)
    * @example
    * ```js
    * const params = {
@@ -868,12 +866,9 @@ export default class XDCC extends Client {
    * const xdccJS = new XDCC(params)
    *
    * xdccJS.on('ready', () => {
-   *   xdccJS.download('XDCC|Bot', 152)
-   *   xdccJS.download('XDCC|Another-bot', '1-3, 55, 32-40')
-   * })
-   *
-   * xdccJS.on('err', (err, fileInfo) => {
-   *  console.error(err)
+   *   xdccJS.download('XDCC|Bot', 152) // Job#1 is started
+   *   xdccJS.download('XDCC|Another-bot', '1-3, 55, 32-40, 999999999') // Job#2 is started
+   *   xdccJS.download('XDCC|Bot', '33-35') // Job#1 is updated
    * })
    *
    * // event triggered everytime a file is downloaded
@@ -881,11 +876,17 @@ export default class XDCC extends Client {
    *  console.log(fileInfo.filePath) //=> "/home/user/downloads/myfile.pdf"
    * })
    *
-   * // event triggered everytime all files from a .download() are completed
+   * // event triggered everytime a job is done
    * xdccJS.on('done', (job) => {
    *   console.log(job.nick) //=> XDCC|Another-bot
-   *   console.log(job.failures) //=> [1, 35, 36]
+   *   console.log(job.failures) //=> [999999999]
    *   console.log(job.success) //=> ['document.pdf', 'audio.wav']
+   *   // Job#2 is deleted
+   * })
+   *
+   * // event triggered when all jobs are done
+   * xdccJS.on('can-quit', () => {
+   *   xdccJS.quit()
    * })
    *
    * ```
@@ -914,7 +915,7 @@ export default class XDCC extends Client {
    * 		xdccJS.on('pipe-data', (data) => {
    * 			res.write(data)
    * 		})
-   * 		xdccJS.on('pipe-downloaded', () => {
+   * 		xdccJS.on('downloaded', () => {
    * 			res.end()
    * 		})
    * 	})
@@ -953,16 +954,18 @@ export default class XDCC extends Client {
       })
     const candidate = this.getCandidate(target)
     if (!candidate) {
-      this.retryCandidates.push({
+      this.candidates.push({
         nick: target,
-        pack: range,
+        queue: range,
         retry: 0,
         now: 0,
         failures: [],
         success: [],
       })
+      this.emit('request', { target: target, packets: range })
+    } else {
+      candidate.queue = candidate.queue.concat(range)
     }
-    this.emit('request', { target: target, packets: range })
   }
 
   private nickRandomizer(nick: string): string {
@@ -1087,7 +1090,7 @@ export default class XDCC extends Client {
     )
   }
   private getCandidate(target: string): Candidate {
-    return this.retryCandidates.filter(candidates => candidates.nick === target || candidates.ident === target)[0]
+    return this.candidates.filter(candidates => candidates.nick === target)[0]
   }
   private verb(pad: number, color: 'red' | 'cyan' | 'green', message: string): void {
     if (this.verbose) {
@@ -1136,7 +1139,41 @@ export default class XDCC extends Client {
     }
   }
   /**
-   * Event triggered when xdccJS is ready to download
+   * @description Returns an array with all jobs currently running
+   * @remark Jobs are removed once `done`
+   * @example
+   * ```js
+   * console.log(xdccJS.jobs())
+   * // CONSOLE OUTPUT
+   * //=>
+   * [
+   *  {
+   *    nick: 'bot',
+   *    queue: [ 5, 9, 21 ], // packs in queue
+   *    now: 4, // pack currently downloading
+   *    failures: [ 1, 2 ], // failed packs
+   *    success: [ 'document.pdf', 'audio.wav', 'video.mp4' ] // successfully downloaded files
+   *  },
+   *  {
+   *    nick: 'another-bot',
+   *    queue: [ 3 ],
+   *    now: 2,
+   *    failures: [ ],
+   *    success: [ ]
+   *  }
+   * ]
+   * ```
+   */
+  public jobs(): Job[] {
+    const clone = _.cloneDeep(this.candidates)
+    return clone.map(candidate => {
+      delete candidate.timeout
+      delete candidate.retry
+      return candidate
+    })
+  }
+  /**
+   * Event triggered when xdccJS is connected to IRC (and has joined channels, if any)
    * @event ready
    * @example
    * ```js
@@ -1156,11 +1193,11 @@ export default class XDCC extends Client {
    * xdccJS.once('data', (fileInfo, received) => {
    *   console.log('downloading: ' + fileInfo.file)
    * })
-   * // PSA : use .once to avoid spamming console and throttle download speed)
-   * ```
-   * console output:
-   * ```
-   * downloading: myfile.mp4
+   * // If you only need a console ouput just run xdccJS with: params.verbose = true.
+   *
+   *
+   * // console output:
+   * //=> downloading: myfile.mp4
    * ```
    * @example
    * ```js
@@ -1174,7 +1211,7 @@ export default class XDCC extends Client {
   /**
    * @description Event triggered when a download/connection error happens
    * @remark This event doesn't skip retries
-   * @remark `fileInfo` isn't provided in case of an error not related to a download
+   * @remark `fileInfo` isn't provided in case of IRC errors
    * @event error
    * @example
    * ```js
@@ -1182,16 +1219,16 @@ export default class XDCC extends Client {
    *   console.log(`failed to download ${fileInfo.file}`)
    *   console.error(error)
    * })
-   * ```
-   * console output:
-   * ```sh
-   * failed to download myfile.mp4
-   * timeout: no response from BOT-NICKNAME
+   *
+   *
+   * // console output:
+   * //=> failed to download myfile.mp4
+   * //=> timeout: no response from BOT-NICKNAME
    * ```
    */
   static EVENT_ERR: (error: Error, fileInfo: FileInfo) => void
   /**
-   * @description Event triggered when all downloads are done
+   * @description Event triggered when their is no more `Job` (all download are completed)
    * @event can-quit
    * @example
    * ```js
@@ -1202,7 +1239,7 @@ export default class XDCC extends Client {
    */
   static EVENT_QUIT: () => void
   /**
-   * @description Event triggered when a file is downloaded
+   * @description Event triggered when a file is completly downloaded
    * @event downloaded
    * @example
    * ```js
@@ -1213,7 +1250,7 @@ export default class XDCC extends Client {
    */
   static EVENT_DOWNLOADED: (f: FileInfo) => void
   /**
-   * @description Event triggered when `.download()` has finished downloading all files
+   * @description Event triggered when a `Job` is done.
    * @event done
    * @example
    * ```js
@@ -1226,9 +1263,9 @@ export default class XDCC extends Client {
    *    console.log(job)
    *    console.log('-----')
    * })
-   * ```
-   * console output:
-   * ```sh
+   *
+   *
+   * // console output:
    * {
    *   nick: 'XDCC|RED',
    *   success: [ 'file.txt' ],
@@ -1240,6 +1277,7 @@ export default class XDCC extends Client {
    *   success: [ 'file.pdf', 'video.mp4', 'audio.wav' ],
    *   failures: [ 24, 300 ]
    * }
+   * -----
    * ```
    */
   static EVENT_DONE: (job: Job) => void
@@ -1371,47 +1409,72 @@ declare interface FileInfo {
   /** Resume Position */
   position?: number
 }
-/**
- * @description Information after .download() is done
- * @asMemberOf XDCC
- * @example
- * ```sh
- * {
- *    nick: 'xdcc-bot',
- *    success: ['file.pdf', 'video.mp4']
- *    failures: [1, 200]
- * }
- */
-declare interface Job {
-  /**
-   * @description Nick of the xdcc bot
-   */
-  nick: string
-  /**
-   * @description Array of filenames
-   */
-  success: string[]
-  /**
-   * @description Array of pack numbers
-   */
-  failures: number[]
-}
+
 /**
  * Accumulated lenght of data received*
  * @asMemberOf XDCC
  */
 declare type received = number
 /**
- * @private
+ * @description Using `download()` starts a Job. It allows you to keep track of what's going on.
+ * @remark if you start a `download()` with a bot name that already has a job then the job gets updated.
+ * @remark When a Job's done it's deleted
+ * @asMemberOf XDCC
+ */
+interface Job {
+  /**
+   * @description Nick of the xdcc bot
+   */
+  nick: string
+  /**
+   * @description Array with filenames of successfully downloaded files
+   */
+  success: string[]
+  /**
+   * @description Array of pack number that failed
+   */
+  failures: (string | number)[]
+  /**
+   * @description packet currently downloading
+   * @remark only present when Job is NOT called from a `done` event
+   */
+  now?: number | string
+  /**
+   * @description packet still in queue
+   * @remark only present when Job is NOT called from a `done` event
+   */
+  queue?: number[]
+}
+/**
+ * @ignore
  */
 declare interface Candidate {
+  /**
+   * @description Nickname of the bot
+   */
   nick: string
-  pack: number[]
-  ident?: string
-  passive?: number
-  retry: number
+  /**
+   * @description Pack number in queue
+   */
+  queue: number[]
+  /**
+   * @ignore
+   */
   timeout?: NodeJS.Timeout
+  /**
+   * @description Package number currently downloading
+   */
   now: number
+  /**
+   * @description Nb of retries on `now`
+   */
+  retry: number
+  /**
+   * @description Array with pack number that failed after x `retry`
+   */
   failures: number[]
+  /**
+   * @description Array of file (filenames) that successfully downloaded
+   */
   success: string[]
 }
