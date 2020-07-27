@@ -1,8 +1,7 @@
 // example covering most of xdccJS basic options
-/**
- * PSA: Do not use as is, this is an example for the sake of showing all functionalities
- * Using "verbose" is a lot more efficient if all you need is to display download status in console
- */
+
+// PSA: Using console.log is not recommended, this example is for the sake of showing xdccJS capabilities
+// FYI: Setting `verbose` to `true` gives the same results as this example (with colors and better formatting).
 
 const XDCC = require('xdccjs').default
 
@@ -18,31 +17,47 @@ let opts = {
   passivePort: [5000, 5001, 5002], // Ports to use with Passive DCC - optional (default: [5001])
 }
 
-// event triggered once xdccJS is connected to irc and all channels are joined
-xdccJS.on('xdcc-ready', () => {
-  xdccJS.download('BOT_NICKNAME', 25) // equivalent of : /MSG BOT_NICKNAME XDCC SEND #25
-
-  // event triggered right before data is being transfered
-  xdccJS.on('download-start', info => {
-    console.log(info.file) //=> file.mp4
-    console.log(info.filePath) //=> /path/to/file.mp4
-    console.log(info.length + ' bytes') //=> 734003200 bytes
-  })
-
-  // event triggered every chunk of bytes received
-  xdccJS.on('downloading', (received, info) => {
-    console.log('received : ' + received + ' / ' + info.length) //  /!\ this will spam your console /!\
-    //=> received : 156078 / 734003200
-  })
-
-  // event triggered once a download is complete
-  xdccJS.on('downloaded', info => {
-    console.log('file download at: ' + info.filePath)
-    //=> File downloaded at: /path/to/file.mp4
-  })
-
-  xdccJS.on('download-err', (err, info) => {
-    console.log('failed to download: ' + info.file) //=> failed to download: file.mp4
-    console.log(err) // displays error informations
-  })
+xdccJS.on('ready', () => {
+  // every .download() starts a job
+  xdccJS.download('XDCC|BLUE', '1-3, 8, 55') // Job#1 is started
+  xdccJS.download('XDCC|RED', [1, 3, 10, 20]) // Job#2 is started
+  xdccJS.download('XDCC|BLUE', 23) // Job#1 is updated
 })
+
+// event triggered everytime a file is downloaded regardless of its job
+xdccJS.on('downloaded', fileInfo => {
+  console.log(fileInfo.filePath) //=> /home/user/xdccJS/downloads/myfile.pdf
+})
+
+// event triggered when a job is done.
+xdccJS.on('done', job => {
+  console.log(job.nick) //=> XDCC|BLUE
+  console.log(job.failures) //=> [1, 8, 55]
+  console.log(job.success) //=> ['document.pdf', 'audio.wav']
+  // Job#1 deleted
+})
+
+// event triggered when all jobs are done.
+xdccJS.on('can-quit', () => {
+  xdccJS.quit() // this is how you disconnect from IRC
+})
+
+// Running jobs can be shown anytime using `.jobs()`
+console.log(xdccJS.jobs())
+//=> CONSOLE OUTPUT :
+// [
+//   {
+//     nick: 'bot',
+//     queue: [5, 9, 21], // packs in queue
+//     now: 4, // pack currently downloading
+//     failures: [1, 2], // failed packs
+//     success: ['document.pdf', 'audio.wav', 'video.mp4'], // successfully downloaded files
+//   },
+//   {
+//     nick: 'another-bot',
+//     queue: [3],
+//     now: 2,
+//     failures: [],
+//     success: [],
+//   }
+// ]

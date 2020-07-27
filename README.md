@@ -56,7 +56,7 @@ List and description of all options avaliable <a href="https://jipaix.github.io/
 PSA: Using console.log is not recommended, this example is for the sake of showing xdccJS capabilities  
 FYI: Setting `verbose` to `true` gives the same results as this example (with colors and better formatting).
 ```js
-xdccJS.on('xdcc-ready', () => {
+xdccJS.on('ready', () => {
   // every .download() starts a job
   xdccJS.download('XDCC|BLUE', '1-3, 8, 55') // Job#1 is started
   xdccJS.download('XDCC|RED', [1, 3, 10, 20]) // Job#2 is started
