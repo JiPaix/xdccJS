@@ -39,7 +39,7 @@ describe('initialize', () => {
     })
   })
   it('download()', function (done) {
-    start.on('request', (res: { target: string; packets: number[] }) => {
+    start.once('request', (res: { target: string; packets: number[] }) => {
       let check
       for (var i = 0; i < res.packets.length; i++) {
         check = [1, 2, 5][i] === res.packets[i]
@@ -50,11 +50,25 @@ describe('initialize', () => {
     })
     start.download('JiPaix', '1-2,5')
   })
-  it('handle connection', function (done) {
-    this.timeout(1000 * 60)
-    start.on('can-quit', () => {
+  it('register job', function (done) {
+    if (start.jobs()[0].queue!.length === 2) {
+      done()
+    }
+  })
+  it('manipulate job', function (done) {
+    start.download('JiPaix', 6)
+    if (start.jobs()[0].queue!.length === 3 && start.jobs()[0].queue![2] === 6) {
+      done()
+    }
+  })
+  it('unregister jobs', function (done) {
+    start.once('can-quit', () => {
       start.quit()
       done()
     })
+    start.emit('next')
+    start.emit('next')
+    start.emit('next')
+    start.emit('next')
   })
 })
