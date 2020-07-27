@@ -16,7 +16,7 @@
     "postinstall": "patch-package",
     "test": "snyk test && node ./node_modules/mocha/bin/mocha -r ts-node/register test/mocha.ts",
     "build": "node ./node_modules/rimraf/bin.js dist && node ./node_modules/typescript/bin/tsc",
-    "prepublishOnly": "npm run build && npm run test",
+    "prepublishOnly": "npm run build && npm run test && node intellisense.js",
     "snyk-wiz": "node ./node_modules/snyk/dist/cli/index.js wizard",
     "doc": "node ./node_modules/typedoc/bin/typedoc && node intellisense.js",
     "intellisense": "node intellisense.js"
