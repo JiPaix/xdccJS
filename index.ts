@@ -1090,7 +1090,9 @@ export default class XDCC extends Client {
     )
   }
   private getCandidate(target: string): Candidate {
-    return this.candidates.filter(candidates => candidates.nick === target)[0]
+    return this.candidates.filter(
+      candidates => candidates.nick.localeCompare(target, 'en', { sensitivity: 'base' }) === 0
+    )[0]
   }
   private verb(pad: number, color: 'red' | 'cyan' | 'green', message: string): void {
     if (this.verbose) {
