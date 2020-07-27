@@ -36,21 +36,21 @@ const xdccJS = new XDCC(opts)
 ```
 But you can also define a set of options to your preference
 ```js
-let opts = {
-  host: 'irc.server.net',
-  port: 6690,
-  nick: 'ItsMeJiPaix',
-  chan: ['#candy', '#fruits'],
-  path: 'my/download/folder',
-  retry: 2,
-  verbose: true,
-  randomizeNick: true,
-  passivePort: [5000, 5001, 5002]
+const opts = {
+  host: 'irc.server.net', // IRC hostname                           - required
+  port: 6660, // IRC port                                           - optional (default: 6667)
+  nick: 'ItsMeJiPaix', // Nickname                                  - optional (default: xdccJS + random)
+  chan: ['#candy', '#fruits'], // Channel(s)                        - optional
+  path: 'downloads', // Download path                               - optional (default: false, which enables piping)
+  retry: 2, // Nb of retries on failed download                     - optional (default: 1)
+  verbose: false, // Display download progress and jobs status      - optioanl (default: false)
+  randomizeNick: false, // Add random numbers at end of nickname    - optional (default: true)
+  passivePort: [5000, 5001, 5002], // Ports to use with Passive DCC - optional (default: [5001])
 }
 
 const xdccJS = new XDCC(opts)
 ```
-List and description of all options avaliable <a href="https://jipaix.github.io/xdccJS/interfaces/params.html">here</a>
+Description of all options avaliable <a href="https://jipaix.github.io/xdccJS/interfaces/params.html">here</a>
 
 #### Usage :
 PSA: Using console.log is not recommended, this example is for the sake of showing xdccJS capabilities  
@@ -75,11 +75,6 @@ xdccJS.on('done', (job) => {
   console.log(job.success) //=> ['document.pdf', 'audio.wav']
   // Job#1 deleted
 })
-
-// event triggered when all jobs are done.
-xdccJS.on('can-quit', () => {
-  xdccJS.quit() // this is how you disconnect from IRC
-})
 ```
 Running jobs can be shown anytime using `.jobs()` 
 ```js
@@ -101,6 +96,50 @@ console.log(xdccJS.jobs())
     success: [ ]
   }
 ]
+```
+#### Disconnect / Reconnect :
+
+```js
+// event triggered when all jobs are done.
+xdccJS.on('can-quit', () => {
+  xdccJS.quit() // this is how you disconnect from IRC
+})
+
+// reconnect to the same server :
+xdccJS.reconnect()
+
+// change server :
+xdccJS.reconnect(
+  {
+    host: 'irc.newserver.net',
+    port: 6669, // optional, default: 6667 
+    chan: ['#one', '#two'] // optional
+  }
+)
+```
+#### Use pipes :
+```js
+// This example will start vlc.exe then play the video while it's downloading.
+const opts = {
+  host: 'irc.server.net',
+  path: false, 
+}
+
+const xdccJS = new XDCC(opts)
+
+// Start VLC
+const { spawn } = require('child_process')
+const vlcPath = path.normalize('C:\\Program Files\\VideoLAN\\VLC\\vlc.exe')
+const vlc = spawn(vlcPath, ['-'])
+
+xdccJS.on('ready', () => {
+  xdccJS.download('bot', 155)
+})
+
+// send data to VLC that directly play the file
+xdccJS.on('data', data => {
+  vlc.stdin.write(data)
+})
 ```
 ## Command-line Interface :
 #### Install xdccJS CLI :  
