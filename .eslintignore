@@ -4,3 +4,4 @@ dist
 *.js
 test.*
 test/
+lib/**
