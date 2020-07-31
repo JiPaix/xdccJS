@@ -85,13 +85,21 @@ if (check.filter(err => err === false).length === 0) {
           process.stderr.clearLine(0)
           process.stderr.cursorTo(0)
           clearInterval(interv)
-          xdccJS.download(program.bot, program.download)
+          const job = xdccJS.download(program.bot, program.download)
+          job.on('pipe', stream => {
+            stream.pipe(process.stdin)
+          })
         }
       }, 1000)
     })
   } else {
     xdccJS.on('ready', () => {
-      xdccJS.download(program.bot, program.download)
+      const job = xdccJS.download(program.bot, program.download)
+      job.on('pipe', stream => {
+        stream.on('data', chunk => {
+          process.stdout.write(chunk)
+        })
+      })
     })
   }
   xdccJS.on('can-quit', () => {

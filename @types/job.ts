@@ -1,5 +1,7 @@
 import { EventEmitter } from 'eventemitter3'
 import * as _ from 'lodash'
+import { PassThrough } from 'stream'
+
 export class Job extends EventEmitter {
   cancel?: () => void
   failures: number[]
@@ -54,7 +56,7 @@ export interface Job {
   on(eventType: 'error', msg: string, cb: (fileInfo: FileInfo) => void): this
   on(eventType: 'done', cb: (endCandidate: { nick: string; success: string[]; failures: number[] }) => void): this
   on(eventType: 'downloaded', cb: (fileInfo: FileInfo) => void): this
-  on(eventType: 'start', cb: (fileInfo: FileInfo) => void): this
+  on(eventType: 'pipe', cb: (stream: PassThrough, fileInfo: FileInfo) => void): this
 }
 
 /**
