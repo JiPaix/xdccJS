@@ -12,20 +12,34 @@ It can also be used as a <a href="#command-line-interface-">command-line</a> dow
 - Batch downloads : `1-3, 5, 32-35, 101`
 - Resume partially downloaded files
 - Auto-retry on fail
-- Pipes!
+- Pipes!  
 
-## API :
-#### Initialize xdccJS :
-With `require`
+## TABLE OF CONTENTS
+- [API](#api)
+  - [install](#install)
+  - [import/require](#import-require)
+  - [initialize](#initialize)
+  - [download](#download)
+    - [jobs](#Jobs)
+    - [events](#Events)
+    - [use pipes](#Pipes)
+  - [IRC connections](#disconnect-reconnect)
+- [CLI](#command-line-interface)
+  - [install](#install)
+  - [options](#options)
+  - [FYI](#fyi)
+
+# API :
+## Install
+`npm i xdccjs`
+## Import/require
 ```js
 const XDCC = require('xdccjs').default
+// or
+import XDCC from 'xdccJS'
 ```
-Or using `import`
-```js
-import XDCC from 'xdccjs'
-```
-#### Connect :
-The simpliest way to connect is :
+## Initialize
+The simpliest way to start xdccJS is :
 ```js
 let opts = {
   host: 'irc.server.net', // will use default port 6667
@@ -52,29 +66,24 @@ const xdccJS = new XDCC(opts)
 ```
 Description of all options avaliable <a href="https://jipaix.github.io/xdccJS/interfaces/params.html">here</a>
 
-#### Usage :
-PSA: Using console.log is not recommended, this example is for the sake of showing xdccJS capabilities  
-FYI: Setting `verbose` to `true` gives the same results as this example (with colors and better formatting).
+## Download
+
 ```js
 xdccJS.on('ready', () => {
   // every .download() starts a job
-  xdccJS.download('XDCC|BLUE', '1-3, 8, 55') // Job#1 is started
-  xdccJS.download('XDCC|RED', [1, 3, 10, 20]) // Job#2 is started
-  xdccJS.download('XDCC|BLUE', 23) // Job#1 is updated
+  const Job1 = xdccJS.download('XDCC|BLUE', '1-3, 8, 55') // Job#1 is started
+  const Job2 = xdccJS.download('XDCC|RED', [1, 3, 10, 20]) // Job#2 is started
+  xdccJS.download('XDCC|BLUE', 23) // Job1 is updated
+  const Job3 = xdccJS.download('XDCC|RED', '55') // Job2 is updated, Job3 === Job2
 })
-
-// event triggered everytime a file is downloaded regardless of its job
-xdccJS.on('downloaded', (fileInfo) => {
-  console.log(fileInfo.filePath) //=> /home/user/xdccJS/downloads/myfile.pdf
-})
-
-// event triggered when a job is done.
-xdccJS.on('done', (job) => {
-  console.log(job.nick) //=> XDCC|BLUE
-  console.log(job.failures) //=> [1, 8, 55]
-  console.log(job.success) //=> ['document.pdf', 'audio.wav']
-  // Job#1 deleted
-})
+```
+### Jobs
+a `Job` is a way to keep track of what's xdccJS is doing :  
+When a download is started it's stored as a `Job`, it contains informations about what's is downloaded/downloading/in queue and also provides events for themselves.
+```js
+const job = xdccJS.download('a-bot', 33)
+console.log(job.show())
+//=> { name: 'a-bot', queue: 33, now: 0, sucess: [], failed: [] }
 ```
 Running jobs can be shown anytime using `.jobs()` 
 ```js
@@ -97,7 +106,66 @@ console.log(xdccJS.jobs())
   }
 ]
 ```
-#### Disconnect / Reconnect :
+### Events
+Some events are accessible globally from `xdccJS` and from `Jobs`  
+
+PSA: Using console.log is not recommended, this example is for the sake of showing xdccJS capabilities  
+FYI: Setting `verbose` to `true` gives the same results as this example (with colors and better formatting).  
+
+- `on('read')` *[global]* : when xdccJS is ready to download
+```js
+xdccJS.on('ready', ()=> {
+  // download() here
+})
+```
+
+- `on('downloaded')` *[global+job]* : When a file is downloaded
+```js
+xdccJS.on('downloaded', (fileInfo) => {
+  console.log(fileInfo.filePath) //=> /home/user/xdccJS/downloads/myfile.pdf
+})
+
+job.on('downloaded', (fileInfo) => {
+  console.log('Job1 has downloaded:' + fileInfo.filePath)
+  //=> Job1 has downloaded: /home/user/xdccJS/downloads/myfile.pdf
+  console.log(fileInfo)
+  //=> { file: 'filename.pdf', filePath: '/home/user/xdccJS/downloads/myfile.pdf', length: 5844849 }
+})
+```
+- `on('done')` *[global+job]* : When a job is done
+```js
+xdccJS.on('done', (job) => {
+  console.log(job.show())
+})
+
+job.on('done', (job) => {
+  console.log('Job2 is done!')
+  console.log(job.show())
+})
+```
+- `on('pipe')` *[global+job]* : When a file is getting piped (see pipe documentation)
+```js
+xdccJS.on('pipe', (stream, fileInfo) => {
+  stream.pipe(somewhere)
+  console.log(fileInfo)
+  //=> { file: 'filename.pdf', filePath: 'pipe', length: 5844849 }
+})
+
+job.on('pipe', (stream, fileInfo) => {
+  stream.pipe(somewhere)
+})
+```
+- `on('error')` *[global+job]* : When something goes wrong
+```js
+xdccJS.on('error', (message) => {
+  // message`includes IRC errors and downloads errors 
+})
+
+job.on('error', (message) => {
+  // message onlmy includes download errors
+})
+```
+#### Disconnect/Reconnect
 
 ```js
 // event triggered when all jobs are done.
@@ -117,7 +185,8 @@ xdccJS.reconnect(
   }
 )
 ```
-#### Use pipes :
+#### Pipes
+To enable piping you must initialize xdccJS with `path` set to false
 ```js
 // This example will start vlc.exe then play the video while it's downloading.
 const opts = {
@@ -133,28 +202,20 @@ const vlcPath = path.normalize('C:\\Program Files\\VideoLAN\\VLC\\vlc.exe')
 const vlc = spawn(vlcPath, ['-'])
 
 xdccJS.on('ready', () => {
-  xdccJS.download('bot', 155)
+  const Job = xdccJS.download('bot', 155)
 })
 
-// send data to VLC that directly play the file
-xdccJS.on('data', data => {
-  vlc.stdin.write(data)
+// send data to VLC that plays the file
+Job.on('pipe', stream => {
+  stream.pipe(vlc.stdin)
 })
 ```
-## Command-line Interface :
-#### Install xdccJS CLI :  
+# Command-line Interface
+## Install
 ```bash
 npm install xdccjs -g
 ```  
-#### Start downloading :  
-```bash
-xdccJS --server irc.server.net --bot "XDCC-BOT|BLUE" --download 1-5,100-105 --path "/home/user/downloads"
-```  
-Alternatively, if you want to pipe the file just ommit the `--path` option  :  
-```bash
-xdccJS --server irc.server.net --bot "XDCC-BOT|RED" --download 110 | ffmpeg -i pipe:0 -c:v copy -c:a copy -f flv rtmp://live/mystream
-```
-### Command line options :
+## Options
 ```
 Options:
   -V, --version              output the version number
@@ -171,7 +232,15 @@ Options:
   -w, --wait [number]        wait time (in seconds) before sending download request (default: 0)
   -h, --help                 display help for command
 ```
-#### Additional useful information :
+### Download 
+```bash
+xdccJS --server irc.server.net --bot "XDCC-BOT|BLUE" --download 1-5,100-105 --path "/home/user/downloads"
+```  
+Alternatively, if you want to pipe the file just ommit the `--path` option  :  
+```bash
+xdccJS --server irc.server.net --bot "XDCC-BOT|RED" --download 110 | ffmpeg -i pipe:0 -c:v copy -c:a copy -f flv rtmp://live/mystream
+```
+## FYI
 - `--path` and `--bot` option's values ***MUST*** be either escaped or quoted.
 - xdccJS uses `stderr` to print download status informations, `stdout` is ***strictly*** used for download data.
 ## Documentation :
