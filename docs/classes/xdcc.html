@@ -2835,7 +2835,7 @@ img {
 						<aside class="tsd-sources">
 							<p>Overrides Client.__constructor</p>
 							<ul>
-								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/af1b61e/index.ts#L100">index.ts:100</a></li>
+								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/71ec5a6/index.ts#L100">index.ts:100</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2844,7 +2844,7 @@ img {
 								<dd><p>Initiate IRC connection</p>
 								</dd>
 								<dt>remark</dt>
-								<dd><p>If you want to use pipes <code>parms.path</code> must be set to false</p>
+								<dd><p>If you want to use pipes <a href="../interfaces/params.html#path">Params.path</a> must be set to false</p>
 								</dd>
 								<dt>example</dt>
 								<dd><pre><code class="language-js"><span class="hljs-keyword">let</span> params = {
@@ -3051,7 +3051,7 @@ xdccJS.download(<span class="hljs-string">&#x27;xdcc|bot&#x27;</span>, <span cla
 				<div class="tsd-signature tsd-kind-icon">can-<wbr>quit<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/af1b61e/index.ts#L1068">index.ts:1068</a></li>
+						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/71ec5a6/index.ts#L1068">index.ts:1068</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3088,7 +3088,7 @@ xdccJS.download(<span class="hljs-string">&#x27;xdcc|bot&#x27;</span>, <span cla
 				<div class="tsd-signature tsd-kind-icon">done<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>cb<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>job<span class="tsd-signature-symbol">: </span><a href="job.html" class="tsd-signature-type">Job</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="job.html" class="tsd-signature-type">Job</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/af1b61e/index.ts#L1146">index.ts:1146</a></li>
+						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/71ec5a6/index.ts#L1146">index.ts:1146</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3107,7 +3107,7 @@ xdccJS.download(<span class="hljs-string">&#x27;xdcc|bot&#x27;</span>, <span cla
 })
 
 xdccJS.on(<span class="hljs-string">&#x27;done&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">job</span>) =&gt;</span> {
-   <span class="hljs-built_in">console</span>.log(job)
+   <span class="hljs-built_in">console</span>.log(job.show())
    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;-----&#x27;</span>)
 })
 
@@ -3205,7 +3205,7 @@ Job2 is done
 				<div class="tsd-signature tsd-kind-icon">downloaded<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>f<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/af1b61e/index.ts#L1083">index.ts:1083</a></li>
+						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/71ec5a6/index.ts#L1083">index.ts:1083</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3254,7 +3254,7 @@ Job2.on(<span class="hljs-string">&#x27;downloaded&#x27;</span>, <span class="hl
 				<div class="tsd-signature tsd-kind-icon">error<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span>, fileInfo<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/af1b61e/index.ts#L1057">index.ts:1057</a></li>
+						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/71ec5a6/index.ts#L1057">index.ts:1057</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3315,7 +3315,7 @@ Job2.on(<span class="hljs-string">&#x27;downloaded&#x27;</span>, <span class="hl
 				<div class="tsd-signature tsd-kind-icon">pipe<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>f<span class="tsd-signature-symbol">?: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Buffer</span>, r<span class="tsd-signature-symbol">?: </span><a href="../index.html#received" class="tsd-signature-type">received</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/af1b61e/index.ts#L1037">index.ts:1037</a></li>
+						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/71ec5a6/index.ts#L1037">index.ts:1037</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3396,7 +3396,7 @@ xdccJS.on(<span class="hljs-string">&#x27;ready&#x27;</span>, <span class="hljs-
 				<div class="tsd-signature tsd-kind-icon">ready<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/af1b61e/index.ts#L994">index.ts:994</a></li>
+						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/71ec5a6/index.ts#L994">index.ts:994</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -3440,7 +3440,7 @@ xdccJS.on(<span class="hljs-string">&#x27;ready&#x27;</span>, <span class="hljs-
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/af1b61e/index.ts#L721">index.ts:721</a></li>
+								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/71ec5a6/index.ts#L721">index.ts:721</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3524,7 +3524,7 @@ xdccJS.on(<span class="hljs-string">&#x27;done&#x27;</span>, <span class="hljs-f
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/af1b61e/index.ts#L977">index.ts:977</a></li>
+								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/71ec5a6/index.ts#L977">index.ts:977</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3578,7 +3578,7 @@ xdccJS.on(<span class="hljs-string">&#x27;done&#x27;</span>, <span class="hljs-f
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/af1b61e/index.ts#L312">index.ts:312</a></li>
+								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/71ec5a6/index.ts#L312">index.ts:312</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">

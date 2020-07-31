@@ -101,7 +101,7 @@ export default class XDCC extends Client {
 
   /**
    * @description Initiate IRC connection
-   * @remark If you want to use pipes `parms.path` must be set to false
+   * @remark If you want to use pipes {@link Params.path} must be set to false
    * @example
    * ```js
    * let params = {
@@ -1093,7 +1093,7 @@ export default class XDCC extends Client {
    * })
    *
    * xdccJS.on('done', (job) => {
-   *    console.log(job)
+   *    console.log(job.show())
    *    console.log('-----')
    * })
    *
