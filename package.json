@@ -1,6 +1,6 @@
 {
   "name": "xdccjs",
-  "version": "3.2.2",
+  "version": "3.2.3",
   "description": "download files from XDCC bots on IRC, complete implementation of the XDCC protocol",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -9,7 +9,7 @@
     "/bin/**"
   ],
   "bin": {
-    "xdccJS": "./dist/bin/index.js"
+    "xdccJS": "./bin/index.js"
   },
   "scripts": {
     "test": "snyk test && node ./node_modules/mocha/bin/mocha -r ts-node/register test/mocha.ts",
