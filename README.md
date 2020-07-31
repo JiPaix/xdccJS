@@ -1,35 +1,34 @@
-<h1 align="center">xdccJS<br><a href="https://travis-ci.com/github/JiPaix/xdccJS"><img src="https://travis-ci.com/JiPaix/xdccJS.svg?branch=master"/></a> <a href="https://www.codefactor.io/repository/github/jipaix/xdccjs"><img src="https://www.codefactor.io/repository/github/jipaix/xdccjs/badge" /></a>  <a href="https://deepscan.io/dashboard#view=project&tid=8945&pid=11179&bid=163106"><img src="https://deepscan.io/api/teams/8945/projects/11179/branches/163106/badge/grade.svg"/> <a href="https://www.npmjs.com/package/xdccjs"><img src='https://img.shields.io/npm/dt/xdccjs'/></a> <a href="https://snyk.io/test/github/JiPaix/xdccJS?targetFile=package.json"><img src="https://snyk.io/test/github/JiPaix/xdccJS/badge.svg?targetFile=package.json" data-canonical-src="https://snyk.io/test/github/JiPaix/xdccJS?targetFile=package.json" style="max-width:100%;"></a> <a href="https://discord.gg/HhhqdUd"><img src='https://img.shields.io/discord/706018150520717403'/></a></h1>
-<h5 align="center">a Node.js module to download files from XDCC bots on IRC</h5>
-
-<h4 align="center"><a href="#api-">API</a> | <a href="#command-line-interface-">CLI</a> | <a href="https://github.com/JiPaix/xdccJS/tree/master/examples/">Advanced Examples</a></h4>
-
+<h1 align="center">xdccJS : download files from XDCC bots on IRC<br><a href="https://travis-ci.com/github/JiPaix/xdccJS"><img src="https://travis-ci.com/JiPaix/xdccJS.svg?branch=master"/></a> <a href="https://www.codefactor.io/repository/github/jipaix/xdccjs"><img src="https://www.codefactor.io/repository/github/jipaix/xdccjs/badge" /></a>  <a href="https://deepscan.io/dashboard#view=project&tid=8945&pid=11179&bid=163106"><img src="https://deepscan.io/api/teams/8945/projects/11179/branches/163106/badge/grade.svg"/> <a href="https://www.npmjs.com/package/xdccjs"><img src='https://img.shields.io/npm/dt/xdccjs'/></a> <a href="https://snyk.io/test/github/JiPaix/xdccJS?targetFile=package.json"><img src="https://snyk.io/test/github/JiPaix/xdccJS/badge.svg?targetFile=package.json" data-canonical-src="https://snyk.io/test/github/JiPaix/xdccJS?targetFile=package.json" style="max-width:100%;"></a> <a href="https://discord.gg/HhhqdUd"><img src='https://img.shields.io/discord/706018150520717403'/></a></h1>
 
 ## Introduction
 ***xdccJS is a complete implementation of the <a href="https://en.wikipedia.org/wiki/XDCC">XDCC protocol</a> for nodejs***.  
-It can also be used as a <a href="#command-line-interface-">command-line</a> downloader !
+It can also be used as a <a href="#command-line-interface">command-line</a> downloader !  
+
 ### Features :
 - <a href="https://en.wikipedia.org/wiki/Direct_Client-to-Client#Passive_DCC">Passive DCC</a>
 - Batch downloads : `1-3, 5, 32-35, 101`
 - Resume partially downloaded files
 - Auto-retry on fail
 - Pipes!  
+- Check [advanced examples](https://github.com/JiPaix/xdccJS/tree/master/examples) and see what else you can do
 
-## TABLE OF CONTENTS
+## Table of contents
 - [API](#api)
   - [install](#install)
-  - [import/require](#import-require)
+  - [import/require](#importrequire)
   - [initialize](#initialize)
   - [download](#download)
     - [jobs](#Jobs)
     - [events](#Events)
     - [use pipes](#Pipes)
-  - [IRC connections](#disconnect-reconnect)
+  - [IRC connections](#disconnectreconnect)
 - [CLI](#command-line-interface)
-  - [install](#install)
+  - [install](#install-1)
   - [options](#options)
+  - [download](download-1)
   - [FYI](#fyi)
 
-# API :
+# API
 ## Install
 `npm i xdccjs`
 ## Import/require
@@ -85,26 +84,19 @@ const job = xdccJS.download('a-bot', 33)
 console.log(job.show())
 //=> { name: 'a-bot', queue: 33, now: 0, sucess: [], failed: [] }
 ```
-Running jobs can be shown anytime using `.jobs()` 
+Running jobs can be shown/used anytime using `.jobs()` 
 ```js
-console.log(xdccJS.jobs())
-//=> CONSOLE OUTPUT
-[
-  {
-    nick: 'bot',
-    queue: [ 5, 9, 21 ], // packs in queue
-    now: 4, // pack currently downloading
-    failures: [ 1, 2 ], // failed packs
-    success: [ 'document.pdf', 'audio.wav', 'video.mp4' ] // successfully downloaded files
-  },
-  {
-    nick: 'another-bot',
-    queue: [ 3 ],
-    now: 2,
-    failures: [ ],
-    success: [ ]
-  }
-]
+// find job by botname
+const job = xdccJS.jobs('bot-name')
+
+// show job information
+console.log(job.show())
+
+// cancel job
+job.cancel()
+
+// get all jobs at once
+const jobArray = xdccJS.jobs()
 ```
 ### Events
 Some events are accessible globally from `xdccJS` and from `Jobs`  
@@ -165,27 +157,7 @@ job.on('error', (message) => {
   // message onlmy includes download errors
 })
 ```
-#### Disconnect/Reconnect
-
-```js
-// event triggered when all jobs are done.
-xdccJS.on('can-quit', () => {
-  xdccJS.quit() // this is how you disconnect from IRC
-})
-
-// reconnect to the same server :
-xdccJS.reconnect()
-
-// change server :
-xdccJS.reconnect(
-  {
-    host: 'irc.newserver.net',
-    port: 6669, // optional, default: 6667 
-    chan: ['#one', '#two'] // optional
-  }
-)
-```
-#### Pipes
+### Pipes
 To enable piping you must initialize xdccJS with `path` set to false
 ```js
 // This example will start vlc.exe then play the video while it's downloading.
@@ -209,6 +181,26 @@ xdccJS.on('ready', () => {
 Job.on('pipe', stream => {
   stream.pipe(vlc.stdin)
 })
+```
+## Disconnect/Reconnect
+
+```js
+// event triggered when all jobs are done.
+xdccJS.on('can-quit', () => {
+  xdccJS.quit() // this is how you disconnect from IRC
+})
+
+// reconnect to the same server :
+xdccJS.reconnect() //=> sends xdccJS 'ready' event AGAIN
+
+// change server :
+xdccJS.reconnect(
+  {
+    host: 'irc.newserver.net',
+    port: 6669, // optional, default: 6667 
+    chan: ['#one', '#two'] // optional
+  }
+)
 ```
 # Command-line Interface
 ## Install
@@ -243,5 +235,5 @@ xdccJS --server irc.server.net --bot "XDCC-BOT|RED" --download 110 | ffmpeg -i p
 ## FYI
 - `--path` and `--bot` option's values ***MUST*** be either escaped or quoted.
 - xdccJS uses `stderr` to print download status informations, `stdout` is ***strictly*** used for download data.
-## Documentation :
+## Documentation
 Full documentation is available <a href="https://jipaix.github.io/xdccJS/classes/xdcc.html">here</a>

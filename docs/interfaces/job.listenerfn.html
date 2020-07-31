@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Params | xdccJS</title>
+	<title>ListenerFn | xdccJS</title>
 	<meta name="description" content="Documentation for xdccJS">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
@@ -2727,272 +2727,43 @@ img {
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
-		<section class="tsd-panel tsd-comment">
-			<div class="tsd-comment tsd-typography">
-				<div class="lead">
-					<p>Parameters for <a href="../classes/xdcc.html#constructor">XDCC.constructor</a></p>
-				</div>
-				<dl class="tsd-comment-tags">
-					<dt>asmemberof</dt>
-					<dd><p>XDCC</p>
-					</dd>
-				</dl>
-			</div>
+		<section class="tsd-panel tsd-type-parameters">
+			<h3>Type parameters</h3>
+			<ul class="tsd-type-parameters">
+				<li>
+					<h4>Args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h4>
+				</li>
+			</ul>
 		</section>
 		<section class="tsd-panel tsd-hierarchy">
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
 				<li>
-					<span class="target">Params</span>
+					<span class="target">ListenerFn</span>
 				</li>
 			</ul>
 		</section>
-		<section class="tsd-panel-group tsd-index-group">
-			<h2>Index</h2>
-			<section class="tsd-panel tsd-index-panel">
-				<div class="tsd-index-content">
-					<section class="tsd-index-section ">
-						<h3>Properties</h3>
-						<ul class="tsd-index-list">
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="params.html#chan" class="tsd-kind-icon">chan</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="params.html#host" class="tsd-kind-icon">host</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="params.html#nick" class="tsd-kind-icon">nick</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="params.html#passiveport" class="tsd-kind-icon">passive<wbr>Port</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="params.html#path" class="tsd-kind-icon">path</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="params.html#port" class="tsd-kind-icon">port</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="params.html#randomizenick" class="tsd-kind-icon">randomize<wbr>Nick</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="params.html#retry" class="tsd-kind-icon">retry</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="params.html#verbose" class="tsd-kind-icon">verbose</a></li>
+		<section class="tsd-panel">
+			<h3 class="tsd-before-signature">Callable</h3>
+			<ul class="tsd-signatures tsd-kind-interface tsd-parent-kind-class tsd-has-type-parameter">
+				<li class="tsd-signature tsd-kind-icon">__call<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Args</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/eventemitter3/index.d.ts:83</li>
 						</ul>
-					</section>
-				</div>
-			</section>
-		</section>
-		<section class="tsd-panel-group tsd-member-group ">
-			<h2>Properties</h2>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="chan" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagOptional">Optional</span> chan</h3>
-				<div class="tsd-signature tsd-kind-icon">chan<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/af1b61e/index.ts#L1192">index.ts:1192</a></li>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>args: <span class="tsd-signature-type">Args</span></h5>
+						</li>
 					</ul>
-				</aside>
-				<div class="tsd-comment tsd-typography">
-					<dl class="tsd-comment-tags">
-						<dt>description</dt>
-						<dd><p>Channel(s) to join</p>
-						</dd>
-						<dt>remark</dt>
-						<dd><p>Hashtags are optional</p>
-						</dd>
-						<dt>example</dt>
-						<dd><pre><code class="language-js">params.chan = <span class="hljs-string">&#x27;#wee&#x27;</span>
-<span class="hljs-comment">// can also be an array</span>
-params.chan = [<span class="hljs-string">&#x27;#wee&#x27;</span>, <span class="hljs-string">&#x27;#happy&#x27;</span>]
-<span class="hljs-comment">// in both cases # are optional</span>
-params.chan = <span class="hljs-string">&#x27;weee&#x27;</span>
-params.chan = [<span class="hljs-string">&#x27;#wee&#x27;</span>, <span class="hljs-string">&#x27;happy&#x27;</span>]</code></pre>
-						</dd>
-					</dl>
-				</div>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="host" class="tsd-anchor"></a>
-				<h3>host</h3>
-				<div class="tsd-signature tsd-kind-icon">host<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/af1b61e/index.ts#L1161">index.ts:1161</a></li>
-					</ul>
-				</aside>
-				<div class="tsd-comment tsd-typography">
-					<dl class="tsd-comment-tags">
-						<dt>description</dt>
-						<dd><p>IRC server&#39;s hostname</p>
-						</dd>
-						<dt>example</dt>
-						<dd><pre><code class="language-js">params.host = <span class="hljs-string">&#x27;irc.server.net&#x27;</span></code></pre>
-						</dd>
-					</dl>
-				</div>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="nick" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagOptional">Optional</span> nick</h3>
-				<div class="tsd-signature tsd-kind-icon">nick<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/af1b61e/index.ts#L1178">index.ts:1178</a></li>
-					</ul>
-				</aside>
-				<div class="tsd-comment tsd-typography">
-					<dl class="tsd-comment-tags">
-						<dt>description</dt>
-						<dd><p>Nickname to use on IRC</p>
-						</dd>
-						<dt>example</dt>
-						<dd><pre><code class="language-js">params.nick = <span class="hljs-string">&#x27;JiPaix&#x27;</span></code></pre>
-						</dd>
-					</dl>
-				</div>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="passiveport" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagOptional">Optional</span> passive<wbr>Port</h3>
-				<div class="tsd-signature tsd-kind-icon">passive<wbr>Port<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/af1b61e/index.ts#L1240">index.ts:1240</a></li>
-					</ul>
-				</aside>
-				<div class="tsd-comment tsd-typography">
-					<dl class="tsd-comment-tags">
-						<dt>description</dt>
-						<dd><p>Array of ports for passive DCC</p>
-						</dd>
-						<dt>default</dt>
-						<dd><p><code>[5001]</code></p>
-						</dd>
-						<dt>remark</dt>
-						<dd><p>Some xdcc bots use passive dcc, this require to have these ports opened on your computer/router/firewall</p>
-						</dd>
-						<dt>example</dt>
-						<dd><pre><code class="language-js">params.passivePort = [<span class="hljs-number">3833</span>, <span class="hljs-number">2525</span>]</code></pre>
-						</dd>
-					</dl>
-				</div>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="path" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagOptional">Optional</span> path</h3>
-				<div class="tsd-signature tsd-kind-icon">path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/af1b61e/index.ts#L1213">index.ts:1213</a></li>
-					</ul>
-				</aside>
-				<div class="tsd-comment tsd-typography">
-					<dl class="tsd-comment-tags">
-						<dt>description</dt>
-						<dd><p>Download path</p>
-						</dd>
-						<dt>default</dt>
-						<dd><p><code>false</code></p>
-						</dd>
-						<dt>remark</dt>
-						<dd><p><code>undefined</code> or <code>false</code> enables piping, see <a href="../classes/xdcc.html#download">XDCC.download</a> for example on how to use pipes.</p>
-						</dd>
-						<dt>example</dt>
-						<dd><pre><code class="language-js"><span class="hljs-comment">// absolute path</span>
-params.path = <span class="hljs-string">&#x27;/home/user/downloads</span></code></pre>
-						</dd>
-						<dt>example</dt>
-						<dd><pre><code class="language-js"><span class="hljs-comment">// relative path</span>
-params.path = <span class="hljs-string">&#x27;downloads/xdcc&#x27;</span> <span class="hljs-comment">//=&gt; /your/project/folder/downloads/xdcc</span></code></pre>
-						</dd>
-						<dt>example</dt>
-						<dd><pre><code class="language-js"><span class="hljs-comment">// explicitly enable piping</span>
-params.path = <span class="hljs-literal">false</span></code></pre>
-						</dd>
-					</dl>
-				</div>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="port" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagOptional">Optional</span> port</h3>
-				<div class="tsd-signature tsd-kind-icon">port<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/af1b61e/index.ts#L1170">index.ts:1170</a></li>
-					</ul>
-				</aside>
-				<div class="tsd-comment tsd-typography">
-					<dl class="tsd-comment-tags">
-						<dt>description</dt>
-						<dd><p>IRC server PORT</p>
-						</dd>
-						<dt>default</dt>
-						<dd><p><code>6667</code></p>
-						</dd>
-						<dt>example</dt>
-						<dd><pre><code class="language-js">params.port = <span class="hljs-number">6669</span></code></pre>
-						</dd>
-					</dl>
-				</div>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="randomizenick" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagOptional">Optional</span> randomize<wbr>Nick</h3>
-				<div class="tsd-signature tsd-kind-icon">randomize<wbr>Nick<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/af1b61e/index.ts#L1231">index.ts:1231</a></li>
-					</ul>
-				</aside>
-				<div class="tsd-comment tsd-typography">
-					<dl class="tsd-comment-tags">
-						<dt>description</dt>
-						<dd><p>Add Random numbers to nickname</p>
-						</dd>
-						<dt>default:</dt>
-						<dd><p><code>true</code></p>
-						</dd>
-						<dt>example</dt>
-						<dd><pre><code class="language-js">params.randomizeNick = <span class="hljs-literal">false</span></code></pre>
-						</dd>
-					</dl>
-				</div>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="retry" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagOptional">Optional</span> retry</h3>
-				<div class="tsd-signature tsd-kind-icon">retry<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/af1b61e/index.ts#L1250">index.ts:1250</a></li>
-					</ul>
-				</aside>
-				<div class="tsd-comment tsd-typography">
-					<dl class="tsd-comment-tags">
-						<dt>description</dt>
-						<dd><p>Number of retries when a download fails</p>
-						</dd>
-						<dt>default</dt>
-						<dd><p><code>1</code></p>
-						</dd>
-						<dt>example</dt>
-						<dd><pre><code class="language-js"><span class="hljs-comment">// we&#x27;ve set params.retry = 2</span>
-xdccJS.download(<span class="hljs-string">&#x27;xdcc|bot&#x27;</span>, <span class="hljs-string">&#x27;20, 25&#x27;</span>)
-<span class="hljs-comment">// if download of pack &#x27;20&#x27; fails it will retry twice before skipping to pack &#x27;25&#x27;</span></code></pre>
-						</dd>
-					</dl>
-				</div>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="verbose" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagOptional">Optional</span> verbose</h3>
-				<div class="tsd-signature tsd-kind-icon">verbose<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/af1b61e/index.ts#L1222">index.ts:1222</a></li>
-					</ul>
-				</aside>
-				<div class="tsd-comment tsd-typography">
-					<dl class="tsd-comment-tags">
-						<dt>description</dt>
-						<dd><p>Display information regarding your download in console</p>
-						</dd>
-						<dt>default</dt>
-						<dd><p><code>false</code></p>
-						</dd>
-						<dt>example</dt>
-						<dd><pre><code class="language-js">params.verbose = <span class="hljs-literal">true</span></code></pre>
-						</dd>
-					</dl>
-				</div>
-			</section>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+				</li>
+			</ul>
 		</section>
 		<footer class="with-border-bottom">
 			<div class="container">

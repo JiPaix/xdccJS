@@ -17,47 +17,36 @@ let opts = {
   passivePort: [5000, 5001, 5002], // Ports to use with Passive DCC - optional (default: [5001])
 }
 
+const xdccJS = new XDCC(opts)
+
 xdccJS.on('ready', () => {
-  // every .download() starts a job
-  xdccJS.download('XDCC|BLUE', '1-3, 8, 55') // Job#1 is started
-  xdccJS.download('XDCC|RED', [1, 3, 10, 20]) // Job#2 is started
-  xdccJS.download('XDCC|BLUE', 23) // Job#1 is updated
-})
+  const Job1 = xdccJS.download('XDCC|BLUE', '1-3, 8, 55')
+  const Job2 = xdccJS.download('XDCC|RED', [1, 3, 10, 20])
+  xdccJS.download('XDCC|BLUE', 23) // job1 is updated
 
-// event triggered everytime a file is downloaded regardless of its job
-xdccJS.on('downloaded', fileInfo => {
-  console.log(fileInfo.filePath) //=> /home/user/xdccJS/downloads/myfile.pdf
-})
+  // event triggered everytime a file is downloaded regardless of its job
+  xdccJS.on('downloaded', fileInfo => {
+    console.log(fileInfo.filePath) //=> /home/user/xdccJS/downloads/myfile.pdf
+  })
+  // same as before but tied to its job
+  Job1.on('downloaded', fileInfo => {
+    console.log(fileInfo.filePath) //=> /home/user/xdccJS/downloads/myfile.pdf
+  })
 
-// event triggered when a job is done.
-xdccJS.on('done', job => {
-  console.log(job.nick) //=> XDCC|BLUE
-  console.log(job.failures) //=> [1, 8, 55]
-  console.log(job.success) //=> ['document.pdf', 'audio.wav']
-  // Job#1 deleted
-})
+  // event triggered when a job is done.
+  xdccJS.on('done', job => {
+    console.log(job)
+  })
+  // same as before but tied to its job
+  Job2.on('done', job => {
+    console.log(job)
+  })
 
-// event triggered when all jobs are done.
-xdccJS.on('can-quit', () => {
-  xdccJS.quit() // this is how you disconnect from IRC
-})
+  // event triggered when all jobs are done.
+  xdccJS.on('can-quit', () => {
+    xdccJS.quit() // this is how you disconnect from IRC
+  })
 
-// Running jobs can be shown anytime using `.jobs()`
-console.log(xdccJS.jobs())
-//=> CONSOLE OUTPUT :
-// [
-//   {
-//     nick: 'bot',
-//     queue: [5, 9, 21], // packs in queue
-//     now: 4, // pack currently downloading
-//     failures: [1, 2], // failed packs
-//     success: ['document.pdf', 'audio.wav', 'video.mp4'], // successfully downloaded files
-//   },
-//   {
-//     nick: 'another-bot',
-//     queue: [3],
-//     now: 2,
-//     failures: [],
-//     success: [],
-//   }
-// ]
+  // cancel a Job
+  Job1.cancel()
+})

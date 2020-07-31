@@ -29,20 +29,20 @@ app.listen(port, () => console.log(`listening on port ${port}!`))
 xdccJS.on('ready', () => {
   app.get('/download', (req, res) => {
     // starts download using url parameters
-    xdccJS.download(req.query.bot, req.query.pack)
+    const webJob = xdccJS.download(req.query.bot, req.query.pack)
     // waiting xdcc bot to send data
-    xdccJS.on('data', chunk => {
+    webJob.on('pipe', (stream, fileInfo) => {
       res.set('Content-Disposition', `attachment;filename=${fileInfo.file}`) // set the filename and avoid browser directly playing the file.
       res.set('Content-Length', fileInfo.length) // set the size so browsers know completion%
       res.set('Content-Type', 'application/octet-stream')
-      res.write(chunk) // redirecting data to client
+      stream.pipe(res) // redirecting data to client
     })
     // listening completion of downloads
-    xdccJS.on('downloaded', () => {
+    webJob.on('downloaded', () => {
       res.end() // stop sending data to client
     })
     // listening to errors
-    xdccJS.on('err', () => {
+    webJob.on('err', () => {
       res.status(500).end() // stop sending data to client and raise a status 500 to make it aware of failure
     })
   })

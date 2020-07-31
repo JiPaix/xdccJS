@@ -1,6 +1,7 @@
 import 'mocha'
 import { expect } from 'chai'
 import XDCC from '../'
+
 const XDCC2 = require('../').default
 let start: XDCC
 
@@ -15,6 +16,10 @@ const args = {
   randomizeNick: true,
   passivePort: [5001],
 }
+interface Job {
+  queue: number[]
+}
+let A: Job
 
 describe('import and require', () => {
   it('import', () => {
@@ -48,27 +53,21 @@ describe('initialize', () => {
         done()
       }
     })
-    start.download('JiPaix', '1-2,5')
+    A = start.download('JiPaix', '1-2,5')
   })
   it('register job', function (done) {
-    if (start.jobs()[0].queue!.length === 2) {
+    if (A.queue!.length === 2) {
       done()
     }
   })
-  it('manipulate job', function (done) {
+  it('add to job', function (done) {
     start.download('JiPaix', 6)
-    if (start.jobs()[0].queue!.length === 3 && start.jobs()[0].queue![2] === 6) {
+    if (A.queue!.length === 3 && A.queue![2] === 6) {
       done()
     }
   })
-  it('unregister jobs', function (done) {
-    start.once('can-quit', () => {
-      start.quit()
-      done()
-    })
-    start.emit('next')
-    start.emit('next')
-    start.emit('next')
-    start.emit('next')
+  it('disconnect', function (done) {
+    done()
+    process.exit(0)
   })
 })
