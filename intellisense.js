@@ -4,14 +4,10 @@ const tsPath = './dist/index.d.ts'
 
 // strings to remove
 const strings = [
-  { match: /```js/gi, replace: '' },
-  { match: /```sh/gi, replace: '' },
-  { match: /```/gi, replace: '' },
-  {
-    match: ', see {@link Params} for a complete description of all parameters',
-    replace: '',
-  },
-  { match: '{@link Params.path}', replace: '`path`' },
+  { match: /\s+\*\s```js/gi, replace: '' },
+  { match: /\s+\*\s```sh/gi, replace: '' },
+  { match: /\s+\*\s```/gi, replace: '' },
+  { match: /{@link (\S+)}/gi, replace: '`$1`' },
 ]
 
 const replace = buffer => {
