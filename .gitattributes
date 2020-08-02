@@ -1,2 +1,2 @@
-docs/** linguist-documentation
-examples/** linguist-documentation
+docs/** linguist-documentation=true
+examples/** linguist-documentation=true
