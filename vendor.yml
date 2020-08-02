@@ -1,5 +1,2 @@
-- (^|/)docs/
-- (^|/)examples/
-- (^|/)docs/
-- (^|/)build/
-- (^|/)intellisense.js
+docs/* linguist-vendored
+examples/* linguist-vendored
