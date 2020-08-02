@@ -14,22 +14,23 @@ It can also be used as a <a href="#command-line-interface">command-line</a> down
 
 ## Table of contents
 - [API](#api)
-  - [install](#install)
-  - [import/require](#importrequire)
-  - [initialize](#initialize)
-  - [download](#download)
+  - [Installation](#installation)
+  - [Import and Require](#importrequire)
+  - [Configuration](#configuration)
+  - [Download](#download)
     - [jobs](#Jobs)
     - [events](#Events)
     - [use pipes](#Pipes)
-  - [IRC connections](#disconnectreconnect)
+  - [Disconnect and Reconnect (IRC)](#disconnectreconnect)
 - [CLI](#command-line-interface)
-  - [install](#install-1)
-  - [options](#options)
-  - [download](download-1)
-  - [FYI](#fyi)
+  - [Installation](#installation-1)
+  - [Options](#options)
+  - [Download](#download-1)
+    - [presets](#presets)
+  - [Important notes](#fyi)
 
 # API
-## Install
+## Installation
 `npm i xdccjs`
 ## Import/require
 ```js
@@ -37,7 +38,7 @@ const XDCC = require('xdccjs').default
 // or
 import XDCC from 'xdccJS'
 ```
-## Initialize
+## Configuration
 The simpliest way to start xdccJS is :
 ```js
 let opts = {
@@ -203,7 +204,7 @@ xdccJS.reconnect(
 )
 ```
 # Command-line Interface
-## Install
+## Installation
 ```bash
 npm install xdccjs -g
 ```  
@@ -221,19 +222,65 @@ Options:
   -r, --retry [number]       number of attempts before skipping pack (default: 0)
   --reverse-port [number]    port used for passive dccs (default: 5001)
   --no-randomize             removes random numbers to nickname
-  -w, --wait [number]        wait time (in seconds) before sending download request (default: 0)
+  -w, --wait [number]        wait time (in seconds) in channel(s) before sending download request (default: 0)
+  --save-preset [string]     save current options as preset
+  --delete-preset [string]   delete preset
+  --set-preset [string]      define preset as default
   -h, --help                 display help for command
 ```
-### Download 
+## Download 
+**I recommend using double quotes between the `bot name` and `download path`** as they often both include unescaped characeters or whitespaces
 ```bash
 xdccJS --server irc.server.net --bot "XDCC-BOT|BLUE" --download 1-5,100-105 --path "/home/user/downloads"
 ```  
 Alternatively, if you want to pipe the file just ommit the `--path` option  :  
 ```bash
-xdccJS --server irc.server.net --bot "XDCC-BOT|RED" --download 110 | ffmpeg -i pipe:0 -c:v copy -c:a copy -f flv rtmp://live/mystream
+xdccJS --server irc.server.net --bot "XDCC-BOT|RED" --download 110 | vlc -
+```
+### Presets
+If you're a bit lazy (like me), you can define presets with the `--save-preset` option.  
+
+```bash
+# YOU decide which options are saved
+xdccJS --save-preset "my_preset" --server "irc.server.net" --port "6669" --path "C:/Users/JiPaix/Desktop"
+```
+Now you have three different way to use xdccJS :
+```bash
+#1 - copy/paste type of laziness
+xdccJS "/msg XDCC|BOT xdcc send 1132-1337" # quotes are important here
+
+#2 - not so lazy
+xdccJS --bot "XDCC|BOT" --download "1132-1137"
+
+#3 - if your preset includes a bot name
+xdccJS --download "1132-1137"
+```
+Load a different preset :
+```bash
+xdccJS --set-preset "another_preset"
 ```
 ## FYI
-- `--path` and `--bot` option's values ***MUST*** be either escaped or quoted.
-- xdccJS uses `stderr` to print download status informations, `stdout` is ***strictly*** used for download data.
+- hashtags for channels and packs are optional :
+  - ```bash
+      --channel "#my-channel" --download "#132"
+      # is the same as
+      --channel "my-channel" --download "132" 
+    ```
+- you can override your preset options :
+  - ```bash
+      xdccJS --save-preset "wait_5seconds" --server "irc.server.net" --channel "#potatoes" --wait 5
+      
+      # use preset "wait_5seconds" and override any option
+      xdccJS --bot "mybot" --download "125-130" --wait 10 --channel "#tomatoes"
+    ```
+  - but trying to override `--server` results in xdccJS ignoring current preset
+- options `--bot` and `--path` often contains special characeters or whitespaces :
+  - ```bash
+      # this wont work
+      --path /home/user/my folder --bot XDCC|BOT --download 123-125
+      # fixed
+      --path "/home/user/my folder" --bot "XDCC|BOT" --download 123-125 
+    ```
+
 ## Documentation
 Full documentation is available <a href="https://jipaix.github.io/xdccJS/classes/xdcc.html">here</a>
