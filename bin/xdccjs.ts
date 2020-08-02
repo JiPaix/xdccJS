@@ -90,7 +90,7 @@ if (program.savePreset) {
   if (typeof program.deletePreset === 'string') {
     if (fs.existsSync(__dirname + '/' + program.deletePreset)) {
       fs.unlinkSync(__dirname + '/' + program.deletePreset)
-      console.log(`deleted: ${program.deletePreset}`)
+      console.error(colors.bold(colors.cyan(`\u2139`)), `deleted ${colors.yellow(program.deletePreset)}`)
     } else {
       console.error(colors.bold(colors.red(`\u0058`)), `preset ${colors.yellow(program.deletePreset)} doesn't exist`)
     }
@@ -241,7 +241,6 @@ if (isNotPreset()) {
       )
     }
   }
-  console.log(program.opts())
   if (!check.length) {
     const opts = {
       host: program.server,
