@@ -11,7 +11,11 @@
   "bin": {
     "xdccJS": "./bin/index.js"
   },
+  "pkg" : {
+    "scripts": "./dist/*"
+  },
   "scripts": {
+    "pkg" : "pkg ./dist/bin/xdccjs.js --out-path executables",
     "test": "snyk test && node ./node_modules/mocha/bin/mocha -r ts-node/register test/mocha.ts",
     "build": "node ./node_modules/rimraf/bin.js dist && node ./node_modules/typescript/bin/tsc && node intellisense.js && node ./build/index.js",
     "prepublishOnly": "npm run build && npm run test && node intellisense.js",
