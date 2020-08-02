@@ -1,5 +1,5 @@
 docs/** linguist-documentation=true
 examples/** linguist-documentation=true
-intellisense.js linguist-vendor=true
-build/index.js linguist-vendor=true
-lib/** linguist-vendore=true
+intellisense.js linguist-vendored=true
+build/index.js linguist-vendored=true
+lib/** linguist-vendored=true
