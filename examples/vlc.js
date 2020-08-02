@@ -16,7 +16,7 @@ const vlcPath = path.normalize('C:\\Program Files\\VideoLAN\\VLC\\vlc.exe')
 const vlc = spawn(vlcPath, ['-'])
 
 xdccJS.on('ready', () => {
-  const Job = xdccJS.download('bot', 155)
+  const Job = xdccJS.download('bot', 156)
   // send data to VLC that plays the file
   Job.on('pipe', stream => {
     stream.pipe(vlc.stdin)

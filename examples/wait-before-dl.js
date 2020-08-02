@@ -8,7 +8,7 @@ let opts = {
   nick: 'ItsMeJiPaix', // Nickname                                  - optional (default: xdccJS)
   chan: ['#candy', '#fruits'], // Channel(s)                        - optional (default: "#xdccJS")
   path: 'downloads', // Download path                               - optional (default: false, which enables piping)
-  retry: 2, // Nb of retries on failed download                     - optional (default: 1)
+  retry: 3, // Nb of retries on failed download                     - optional (default: 1)
   verbose: false, // Display download progress and xdccJS status    - optioanl (default: false)
   randomizeNick: false, // Add random numbers at end of nickname    - optional (default: true)
   passivePort: [5000, 5001, 5002], // Ports to use with Passive DCC - optional (default: [5001])

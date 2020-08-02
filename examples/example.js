@@ -20,7 +20,7 @@ let opts = {
 const xdccJS = new XDCC(opts)
 
 xdccJS.on('ready', () => {
-  const Job1 = xdccJS.download('XDCC|BLUE', '1-3, 8, 55')
+  const Job1 = xdccJS.download('XDCC|BLUE', '1-3, 8, 56')
   const Job2 = xdccJS.download('XDCC|RED', [1, 3, 10, 20])
   xdccJS.download('XDCC|BLUE', 23) // job1 is updated
 

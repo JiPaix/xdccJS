@@ -6,7 +6,7 @@ let opts = {
   host: 'irc.server.net', // IRC hostname                           - required
   port: 6660, // IRC port                                           - optional (default: 6667)
   nick: 'ItsMeJiPaix', // Nickname                                  - optional (default: xdccJS)
-  chan: ['#candy', '#fruits'], // Channel(s)                        - optional (default: "#xdccJS")
+  chan: ['#candy', '#fruit'], // Channel(s)                        - optional (default: "#xdccJS")
   path: 'downloads', // Download path                               - optional (default: false, which enables piping)
   retry: 2, // Nb of retries on failed download                     - optional (default: 1)
   verbose: false, // Display download progress and xdccJS status    - optioanl (default: false)

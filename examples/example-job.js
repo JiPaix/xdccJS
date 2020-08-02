@@ -15,7 +15,7 @@ let opts = {
 const xdccJS = new XDCC(opts)
 
 xdccJS.once('ready', () => {
-  const Job1 = xdccJS.download('a-bot', '1-5, 25')
+  const Job1 = xdccJS.download('a-bot', '1-5, 26')
   xdccJS.download('another-bot', 32)
   xdccJS.download('wow-you-leecher', [22, 150, 20])
 

@@ -2,7 +2,7 @@ const fs = require('fs')
 const jsPath = './dist/index.js'
 const tsPath = './dist/index.d.ts'
 
-// strings to remove
+// pattern to replace
 const strings = [
   { match: /\s+\*\s```js/gi, replace: '' },
   { match: /\s+\*\s```sh/gi, replace: '' },
