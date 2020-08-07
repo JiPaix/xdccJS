@@ -159,8 +159,8 @@ if (program.saveProfile) {
   if (fs.existsSync(__dirname + '/default')) {
     const presetName = fs.readFileSync(__dirname + '/default').toString()
     if (!program.server) {
-      if (fs.existsSync(__dirname + '/' + presetName)) {
-        const file = fs.readFileSync(__dirname + '/' + presetName)
+      if (fs.existsSync(__dirname + '/profiles/' + presetName)) {
+        const file = fs.readFileSync(__dirname + '/profiles/' + presetName)
         const parsed = JSON.parse(file.toString())
         for (const key in parsed) {
           if (Object.prototype.hasOwnProperty.call(parsed, key)) {
