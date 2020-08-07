@@ -37,9 +37,10 @@ program
     parseIfNotInt,
     0
   )
-  .option('--save-preset [string]', 'save current options as preset')
-  .option('--delete-preset [string]', 'delete preset')
-  .option('--set-preset [string]', 'define preset as default')
+  .option('--save-profile [string]', 'save current options as a profile')
+  .option('--delete-profile [string]', 'delete profile')
+  .option('--set-profile [string]', 'set profile as default')
+  .option('--list-profile', 'list all available profiles')
   .parse()
 
 if (program.path) {
@@ -50,76 +51,110 @@ if (program.path) {
   }
 }
 
-const isNotPreset = (key?: string): boolean => {
+const isNotProfile = (key?: string): boolean => {
   if (key) {
-    return key !== 'savePreset' && key !== 'setPreset' && key !== 'deletePreset'
+    return key !== 'saveProfile' && key !== 'setProfile' && key !== 'deleteProfile' && key !== 'listProfile'
   } else {
-    return !program.savePreset && !program.setPreset && !program.deletePreset
+    return !program.saveProfile && !program.setProfile && !program.deleteProfile && !program.listProfile
   }
 }
 
-if (program.savePreset) {
-  if (typeof program.savePreset === 'string') {
-    if (fs.existsSync(__dirname + '/' + program.savePreset)) {
+const showProfiles = (): void => {
+  if (fs.existsSync(__dirname + '/profiles/')) {
+    const profiles = fs.readdirSync(__dirname + '/profiles/')
+    if (profiles.length) {
+      const def = fs.readFileSync(__dirname + '/default').toString()
+      for (const preset of profiles) {
+        if (preset == def) {
+          console.error('-'.padStart(2), colors.cyan(preset), colors.gray('* default'))
+        } else {
+          console.error('-'.padStart(2), colors.cyan(preset))
+        }
+      }
+    } else {
+      console.error(colors.bold(colors.cyan(`\u2139`)), `no presets found`)
+    }
+  } else {
+    console.error(
+      colors.bold(colors.cyan(`\u2139`)),
+      `no presets found, add one : eg. ${colors.gray('--save-profile john')}`
+    )
+  }
+}
+
+if (program.saveProfile) {
+  if (typeof program.saveProfile === 'string') {
+    if (fs.existsSync(__dirname + '/profiles/' + program.saveProfile)) {
       console.error(
         colors.bold(colors.red(`\u0058`)),
-        `preset ${colors.yellow(program.savePreset)} already exists, use ${colors.grey(
-          `--delete-preset ${program.savePreset}`
+        `profile ${colors.yellow(program.saveProfile)} already exists, use ${colors.grey(
+          `--delete-profile ${program.saveProfile}`
         )} first`
       )
     } else {
       if (program.server) {
+        if (!fs.existsSync(__dirname + '/profiles')) {
+          fs.mkdirSync(__dirname + '/profiles')
+        }
         const json = JSON.stringify(program.opts())
-        fs.writeFileSync(__dirname + '/' + program.savePreset, json)
-        fs.writeFileSync(__dirname + '/default', program.savePreset)
+        fs.writeFileSync(__dirname + '/profiles/' + program.saveProfile, json)
+        fs.writeFileSync(__dirname + '/default', program.saveProfile)
         console.error(
           colors.bold(colors.cyan(`\u2139`)),
-          `saved ${colors.yellow(program.savePreset)} and set it as default`
+          `saved ${colors.yellow(program.saveProfile)} and set it as default`
         )
       } else {
         console.error(
           colors.bold(colors.red(`\u0058`)),
-          `presets must at least include a server, eg. ${colors.gray('--save-preset john --server irc.server.net')}`
+          `presets must at least include a server, eg. ${colors.gray('--save-profile john --server irc.server.net')}`
         )
       }
     }
   } else {
-    console.error(colors.bold(colors.red(`\u0058`)), `presets must be named, eg. ${colors.gray('--save-preset john')}`)
+    console.error(colors.bold(colors.red(`\u0058`)), `presets must be named, eg. ${colors.gray('--save-profile john')}`)
   }
-} else if (program.deletePreset) {
-  if (typeof program.deletePreset === 'string') {
-    if (fs.existsSync(__dirname + '/' + program.deletePreset)) {
-      fs.unlinkSync(__dirname + '/' + program.deletePreset)
-      console.error(colors.bold(colors.cyan(`\u2139`)), `deleted ${colors.yellow(program.deletePreset)}`)
+} else if (program.deleteProfile) {
+  if (typeof program.deleteProfile === 'string') {
+    if (fs.existsSync(__dirname + '/profiles/' + program.deleteProfile)) {
+      fs.unlinkSync(__dirname + '/profiles/' + program.deleteProfile)
+      const def = fs.readFileSync(__dirname + '/default').toString()
+      if (def == program.deleteProfile) {
+        fs.unlinkSync(__dirname + '/default')
+      }
+      console.error(colors.bold(colors.cyan(`\u2139`)), `deleted ${colors.yellow(program.deleteProfile)}`)
     } else {
-      console.error(colors.bold(colors.red(`\u0058`)), `preset ${colors.yellow(program.deletePreset)} doesn't exist`)
+      console.error(colors.bold(colors.red(`\u0058`)), `profile ${colors.yellow(program.deleteProfile)} doesn't exist`)
+      showProfiles()
     }
   } else {
     console.error(
       colors.bold(colors.red(`\u0058`)),
-      `presets must be named ${colors.yellow(program.deletePreset)} doesn't exist`
+      `presets must be named, eg. ${colors.gray('--delete-profile john')}`
     )
   }
-} else if (program.setPreset) {
-  if (typeof program.setPreset === 'string') {
-    if (fs.existsSync(__dirname + '/' + program.setPreset)) {
-      const file = fs.readFileSync(__dirname + '/' + program.setPreset)
+} else if (program.setProfile) {
+  if (typeof program.setProfile === 'string') {
+    if (fs.existsSync(__dirname + '/profiles/' + program.setProfile)) {
+      const file = fs.readFileSync(__dirname + '/profiles/' + program.setProfile)
       const parsed = JSON.parse(file.toString())
-      fs.writeFileSync(__dirname + '/default', program.setPreset)
+      fs.writeFileSync(__dirname + '/default', program.setProfile)
       for (const key in parsed) {
         if (Object.prototype.hasOwnProperty.call(parsed, key)) {
-          if (key !== 'version' && isNotPreset(key)) {
+          if (key !== 'version' && isNotProfile(key)) {
             presets[key] = parsed[key]
           }
         }
       }
-      console.error(colors.bold(colors.cyan(`\u2139`)), `${colors.yellow(program.setPreset)} as default preset`)
+      console.error(colors.bold(colors.cyan(`\u2139`)), `${colors.yellow(program.setProfile)} as default profile`)
     } else {
-      console.error(colors.bold(colors.red(`\u0058`)), `preset ${colors.yellow(program.setPreset)} doesn't exist`)
+      console.error(colors.bold(colors.red(`\u0058`)), `profile ${colors.yellow(program.setProfile)} doesn't exist`)
+      showProfiles()
     }
   } else {
-    console.error(colors.bold(colors.red(`\u0058`)), `presets must be named, eg. ${colors.gray('--set-preset john')}`)
+    console.error(colors.bold(colors.red(`\u0058`)), `presets must be named, eg. ${colors.gray('--set-profile john')}`)
   }
+} else if (program.listProfile) {
+  showProfiles()
 } else {
   if (fs.existsSync(__dirname + '/default')) {
     const presetName = fs.readFileSync(__dirname + '/default').toString()
@@ -129,22 +164,23 @@ if (program.savePreset) {
         const parsed = JSON.parse(file.toString())
         for (const key in parsed) {
           if (Object.prototype.hasOwnProperty.call(parsed, key)) {
-            if (key !== 'version' && isNotPreset(key)) {
+            if (key !== 'version' && isNotProfile(key)) {
               if (!program[key]) {
                 program[key] = parsed[key]
               }
             }
           }
         }
-        console.error(colors.bold(colors.cyan(`\u2139`)), `loaded default preset ${colors.yellow(presetName)}`)
+        console.error(colors.bold(colors.cyan(`\u2139`)), `loaded default profile ${colors.yellow(presetName)}`)
       } else {
-        console.error(colors.bold(colors.red(`\u0058`)), `preset ${colors.yellow(presetName)} doesn't exist`)
+        console.error(colors.bold(colors.red(`\u0058`)), `profile ${colors.yellow(presetName)} doesn't exist`)
       }
     } else {
-      console.error(colors.bold(colors.cyan(`\u2139`)), `ignored default preset ${colors.yellow(presetName)}`)
+      console.error(colors.bold(colors.cyan(`\u2139`)), `ignored default profile ${colors.yellow(presetName)}`)
     }
   }
 }
+
 const check: boolean[] = []
 let isLazy = false
 if (typeof process.argv[2] !== 'undefined') {
@@ -183,17 +219,17 @@ if (typeof process.argv[2] !== 'undefined') {
     } else {
       console.error(
         colors.bold(colors.red(`\u0058`)),
-        `preset has no server, you can't use the lazy method.\n change preset or use the "non-lazy" way, see : ${colors.gray(
+        `profile has no server, you can't use the lazy method.\n change profile or use the "non-lazy" way, see : ${colors.gray(
           'xdccJS --help'
         )}`
       )
-      console.error('error: preset has no server')
+      console.error('error: profile has no server')
       check.push(false)
     }
   }
 }
 
-if (isNotPreset()) {
+if (isNotProfile()) {
   if (!program.server) {
     check.push(false)
     console.error(

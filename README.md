@@ -26,7 +26,7 @@ It can also be used as a <a href="#command-line-interface">command-line</a> down
   - [Installation](#installation-1)
   - [Options](#options)
   - [Download](#download-1)
-    - [presets](#presets)
+  - [Profiles](#profiles)
   - [Important notes](#fyi)
 
 # API
@@ -223,9 +223,10 @@ Options:
   --reverse-port [number]    port used for passive dccs (default: 5001)
   --no-randomize             removes random numbers to nickname
   -w, --wait [number]        wait time (in seconds) in channel(s) before sending download request (default: 0)
-  --save-preset [string]     save current options as preset
-  --delete-preset [string]   delete preset
-  --set-preset [string]      define preset as default
+  --save-profile [string]    save current options as profile
+  --del-profile [string]     delete profile
+  --set-profile [string]     define profile as default
+  --list-profile             list all available profiles
   -h, --help                 display help for command
 ```
 ## Download 
@@ -237,27 +238,42 @@ Alternatively, if you want to pipe the file just ommit the `--path` option  :
 ```bash
 xdccJS --server irc.server.net --bot "XDCC-BOT|RED" --download 110 | vlc -
 ```
-### Presets
-If you're a bit lazy (like me), you can define presets with the `--save-preset` option.  
-
+## Profiles
+Profiles are presets of options.
+### Save
+You can save options as a profile with `--save-profile` :
 ```bash
-# YOU decide which options are saved
-xdccJS --save-preset "my_preset" --server "irc.server.net" --port "6669" --path "C:/Users/JiPaix/Desktop"
+# Any option can be included
+xdccJS --save-profile "my_profile" --server "irc.server.net" --port "6669" --path "C:/Users/JiPaix/Desktop"
 ```
-Now you have three different way to use xdccJS :
+### Use
 ```bash
-#1 - copy/paste type of laziness
-xdccJS "/msg XDCC|BOT xdcc send 1132-1337" # quotes are important here
-
-#2 - not so lazy
+#1 - standard
 xdccJS --bot "XDCC|BOT" --download "1132-1137"
 
-#3 - if your preset includes a bot name
+#2 - if your profile includes a bot name
 xdccJS --download "1132-1137"
+
+#3 - use a different path than the one provided by current profile
+xdccJS --bot "XDCC|BOT" --download "1132-1137" --path "E:/external_disk"
+
+#4 - standard + copy/paste
+xdccJS "/msg XDCC|BOT xdcc send 1132-1337" # quotes are important here
 ```
-Load a different preset :
+### Set default
+set default profile :
 ```bash
-xdccJS --set-preset "another_preset"
+xdccJS --set-profile another_profile
+```
+### List
+List all profiles :
+```bash
+xdccJS --list-profile
+```
+### Delete
+Delete a profile :
+```bash
+xdccJS --del-profile my_profile
 ```
 ## FYI
 - hashtags for channels and packs are optional :
@@ -266,15 +282,17 @@ xdccJS --set-preset "another_preset"
       # is the same as
       --channel "my-channel" --download "132" 
     ```
-- you can override your preset options :
-  - ```bash
-      xdccJS --save-preset "wait_5seconds" --server "irc.server.net" --channel "#potatoes" --wait 5
-      
-      # use preset "wait_5seconds" and override any option
-      xdccJS --bot "mybot" --download "125-130" --wait 10 --channel "#tomatoes"
-    ```
-  - but trying to override `--server` results in xdccJS ignoring current preset
-- options `--bot` and `--path` often contains special characeters or whitespaces :
+- given options prevails over the one provided by profiles :
+  - except for `--server`, which results in xdccJS ignoring the current profile
+  - example: 
+    ```bash
+        # current profile has --wait 5, but this time you need --wait 50
+        xdccJS --bot "mybot" --download "125-130" --wait 50
+      ```
+    ```bash
+        # ignores ALL profile options
+        xdccJS --server "irc.mywnewserver.org"
+- options `--bot` and `--path` often contains special characters and/or whitespaces :
   - ```bash
       # this wont work
       --path /home/user/my folder --bot XDCC|BOT --download 123-125
