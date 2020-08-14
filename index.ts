@@ -235,7 +235,7 @@ export default class XDCC extends Client {
   __startListeningEvents(): void {
     EventHandler.onConnect(this)
     EventHandler.onRequest(this)
-    EventHandler.onConnect(this)
+    EventHandler.onCtcpRequest(this)
     EventHandler.onNext(this)
   }
 

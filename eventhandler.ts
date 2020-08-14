@@ -16,6 +16,7 @@ class EventHandler {
       self.emit('ready')
     })
   }
+
   onRequest(self: XDCC): void {
     self.on('request', (args: { target: string; packets: number[] }) => {
       const candidate = self.__getCandidate(args.target)
@@ -25,11 +26,13 @@ class EventHandler {
       this.predefinedVerbose(self, candidate)
     })
   }
+
   onCtcpRequest(self: XDCC): void {
     self.on('ctcp request', (resp: { [prop: string]: string }): void => {
       self.__checkBeforeDL(resp, self.candidates[0])
     })
   }
+
   onNext(self: XDCC): void {
     self.on('next', (candidate: Job) => {
       candidate.timeout ? clearTimeout(candidate.timeout) : false
@@ -54,31 +57,26 @@ class EventHandler {
     })
   }
 
-  private predefinedVerbose(self:XDCC, candidate:Job) {
-    self.__verb(
-        4,
-        'green',
-        `sending command: /MSG ${colors.yellow(candidate.nick)} xdcc send ${colors.yellow(candidate.now.toString())}`
-      )
+  private predefinedVerbose(self: XDCC, candidate: Job): void {
     candidate.timeout = self.__setupTimeout(
-        [true, candidate.nick],
-        {
-          eventname: 'error',
-          message: `timeout: no response from ${colors.yellow(candidate.nick)}`,
-          padding: 6,
-          candidateEvent: candidate,
-        },
-        1000 * 15,
-        () => {
-          self.__redownload(candidate)
-        }
-      )
-      self.__verb(
-        4,
-        'green',
-        `sending command: /MSG ${colors.yellow(candidate.nick)} xdcc send ${colors.yellow(candidate.now.toString())}`
-      )
-    }
+      [true, candidate.nick],
+      {
+        eventname: 'error',
+        message: `timeout: no response from ${colors.yellow(candidate.nick)}`,
+        padding: 6,
+        candidateEvent: candidate,
+      },
+      1000 * 15,
+      () => {
+        self.__redownload(candidate)
+      }
+    )
+    self.__verb(
+      4,
+      'green',
+      `sending command: /MSG ${colors.yellow(candidate.nick)} xdcc send ${colors.yellow(candidate.now.toString())}`
+    )
   }
 }
+
 export default new EventHandler()

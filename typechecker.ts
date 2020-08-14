@@ -6,10 +6,10 @@ import * as fs from 'fs'
 class TypeChecker {
   paramChecker(params: Params, recheck?: boolean): checkedParams {
     let nick: string
-    if (this._is('randomizeNick', params.randomizeNick, 'boolean', true)) {
-      nick = this.__nickRandomizer(params.nick ? params.nick : 'xdccJS')
+    if (params.nick) {
+      nick = params.randomizeNick ? this.__nickRandomizer(params.nick) : params.nick
     } else {
-      nick = params.nick ? params.nick : this.__nickRandomizer('xdccJS')
+      nick = this.__nickRandomizer('xdccJS')
     }
     return {
       verbose: this._is('verbose', params.verbose, 'boolean', false),
@@ -90,6 +90,7 @@ class TypeChecker {
     }
     return nick + Math.floor(Math.random() * 999) + 1
   }
+
   public parsePackets(packets: string | string[] | number | number[]): number[] {
     const range = []
     if (typeof packets === 'string') {
