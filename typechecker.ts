@@ -90,18 +90,23 @@ class TypeChecker {
     }
     return nick + Math.floor(Math.random() * 999) + 1
   }
-
+  private _range(start: number, end: number): number[] {
+    return Array.from(Array(end + 1).keys()).slice(start)
+  }
   private __parsePacketString(packet: string): number[] {
-    const range: number[] = []
-    const splittedPackets = packet.replace(/#/gi, '').split(',')
+    packet = packet.replace(/#/gi, '')
+    const splittedPackets = packet.split(',')
+    const range = []
     for (const packet of splittedPackets) {
-      const minmax = packet.split('-')
-      if (minmax.includes('-')) {
-        for (let i = +minmax[0]; i <= +minmax[1]; i++) {
+      if (packet.includes('-')) {
+        const minmax = packet.split('-')
+        const start = parseInt(minmax[0])
+        const end = parseInt(minmax[1])
+        for (const i of this._range(start, end)) {
           range.push(i)
         }
       } else {
-        range.push(parseInt(minmax[0]))
+        range.push(parseInt(packet))
       }
     }
     return this.__sortPackets(range)
