@@ -2,7 +2,7 @@
     "out": "docs",
     "name": "xdccJS",
     "inputFiles": ["./index.ts", "./@types/candidate.ts", "./@types/jobs.ts", "./@types/params.ts"],
-    "exclude": "**/@types/irc-framework.ts,**/@types/websocket.ts,**/@types/paramsChecked.ts,**/test/*,**/bin/*,**/dist/**",
+    "exclude": "**/@types/irc-framework.ts,**/@types/websocket.ts,**/@types/paramsChecked.ts,typechecker.ts,**/test/*,**/bin/*,**/dist/**",
     "mode": "file",
     "excludePrivate": true,
     "excludeProtected": true,
