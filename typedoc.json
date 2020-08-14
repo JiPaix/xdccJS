@@ -1,8 +1,8 @@
 {
     "out": "docs",
     "name": "xdccJS",
-    "inputFiles": ["./index.ts", "./node_modules/@types/node"],
-    "exclude": "**/@types/*,**/test/*,**/bin/*",
+    "inputFiles": ["./index.ts", "./@types/candidate.ts", "./@types/jobs.ts", "./@types/params.ts"],
+    "exclude": "**/@types/irc-framework.ts,**/@types/websocket.ts,**/test/*,**/bin/*,**/dist/**",
     "mode": "file",
     "excludePrivate": true,
     "excludeProtected": true,

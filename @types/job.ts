@@ -1,7 +1,8 @@
 import { EventEmitter } from 'eventemitter3'
 import * as _ from 'lodash'
 import { PassThrough } from 'stream'
-
+import { Candidate } from './candidate'
+import { FileInfo } from './fileinfo'
 export class Job extends EventEmitter {
   cancel?: () => void
   failures: number[]
@@ -57,64 +58,4 @@ export interface Job {
   on(eventType: 'done', cb: (endCandidate: { nick: string; success: string[]; failures: number[] }) => void): this
   on(eventType: 'downloaded', cb: (fileInfo: FileInfo) => void): this
   on(eventType: 'pipe', cb: (stream: PassThrough, fileInfo: FileInfo) => void): this
-}
-
-/**
- * File informations
- * @asMemberOf XDCC
- */
-declare interface FileInfo {
-  /** Type of transfert (send or resume) */
-  type: string
-  /** Filename */
-  file: string
-  /** Filename with absolute path, return false if using pipes */
-  filePath: string
-  /** Transfert IP */
-  ip: string
-  /** Transfert PORT  */
-  port: number
-  /** File length in bytes */
-  length: number
-  /** Token (passive DCC) */
-  token: number
-  /** Resume Position */
-  position?: number
-}
-/**
- * @ignore
- */
-declare interface Candidate {
-  /**
-   * @ignore
-   */
-  cancel?: () => void
-  /**
-   * @description Nickname of the bot
-   */
-  nick: string
-  /**
-   * @description Pack number in queue
-   */
-  queue: number[]
-  /**
-   * @ignore
-   */
-  timeout?: NodeJS.Timeout
-  /**
-   * @description Package number currently downloading
-   */
-  now: number
-  /**
-   * @description Nb of retries on `now`
-   */
-  retry: number
-  /**
-   * @description Array with pack number that failed after x `retry`
-   */
-  failures: number[]
-  /**
-   * @description Array of file (filenames) that successfully downloaded
-   */
-  success: string[]
 }
