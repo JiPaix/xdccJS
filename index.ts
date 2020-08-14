@@ -4,7 +4,6 @@
 /// <reference path="@types/irc-framework.ts"/>
 import { Client } from 'irc-framework'
 import { Candidate } from './@types/candidate'
-import { Params } from './@types/params'
 import { FileInfo } from './@types/fileinfo'
 import { Job } from './@types/job'
 import { PassThrough } from 'stream'
