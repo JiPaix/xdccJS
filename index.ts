@@ -8,6 +8,7 @@ import { Params } from './@types/params'
 import { FileInfo } from './@types/fileinfo'
 import { Job } from './@types/job'
 import { PassThrough } from 'stream'
+import TypeChecker from './typechecker'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as net from 'net'
@@ -168,15 +169,22 @@ export default class XDCC extends Client {
       const d = res.split('.')
       this.ip = ((+d[0] * 256 + +d[1]) * 256 + +d[2]) * 256 + +d[3]
     })
-    this.__ParametersCheck(parameters)
-    this.path = this.__pathCheck(parameters.path)
-    this.chan = this.__chanCheck(parameters.chan)
+    const checkedParams = TypeChecker.paramChecker(parameters)
+    this.host = checkedParams.host
+    this.nick = checkedParams.nick
+    this.path = checkedParams.path
+    this.verbose = checkedParams.verbose
+    this.chan = checkedParams.chan
+    this.passivePort = checkedParams.passivePort
+    this.retry = checkedParams.retry
+    this.chan = this.chan.map(c => TypeChecker.chanHashtag(c))
     this.connectionTimeout = setTimeout(() => {
       console.error(
         colors.bold(colors.red('\u0058')),
         `couldn't connect to: ${colors.bold(colors.yellow(parameters.host))}`
       )
-    }, 1000 * 10)
+    }, 1000 * 60)
+    console.log(this.host, this.port, this.nick)
     this.connect({
       host: this.host,
       port: this.port,
@@ -186,72 +194,6 @@ export default class XDCC extends Client {
     this.__live()
   }
 
-  private __pathCheck(fpath?: string | false): string | false {
-    if (typeof fpath === 'string') {
-      const tmp = path.normalize(fpath)
-      if (path.isAbsolute(tmp)) {
-        this.__mkdir(tmp)
-        return tmp
-      } else {
-        this.__mkdir(path.join(path.resolve('./'), fpath))
-        return path.join(path.resolve('./'), fpath)
-      }
-    } else {
-      return false
-    }
-  }
-  private __chanCheck(chan?: string | string[]): string[] {
-    if (typeof chan === 'string') {
-      return [this.__checkHashtag(chan, true)]
-    } else if (Array.isArray(chan)) {
-      return chan
-    } else if (!chan) {
-      return []
-    } else {
-      const err = new TypeError()
-      err.name = err.name + ' [ERR_INVALID_ARG_TYPE]'
-      err.message = `unexpected type of 'chan': 'string[] | undefined' was expected'`
-      throw err
-    }
-  }
-
-  private __mkdir(path: string): void {
-    if (!fs.existsSync(path)) {
-      fs.mkdirSync(path, {
-        recursive: true,
-      })
-    }
-  }
-
-  private __ParametersCheck(params: Params, recheck?: boolean): void {
-    this.verbose = this._is('verbose', params.verbose, 'boolean', false)
-    this.host = this._is('host', params.host, 'string')
-    this.port = this._is('port', params.port, 'number', 6667)
-    if (!recheck) {
-      this.retry = this._is('retry', params.retry, 'number', 1)
-      if (this._is('randomizeNick', params.randomizeNick, 'boolean', true)) {
-        this.nick = this.__nickRandomizer(params.nick ? params.nick : 'xdccJS')
-      } else {
-        this.nick = params.nick ? params.nick : this.__nickRandomizer('xdccJS')
-      }
-      this.passivePort = this._is('passivePort', params.passivePort, 'object', [5001])
-    }
-  }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private _is(name: string, variable: any, type: string, def?: any): any {
-    if (typeof variable !== type) {
-      if (typeof def === 'undefined') {
-        const err = new TypeError()
-        err.name = err.name + ' [ERR_INVALID_ARG_TYPE]'
-        err.message = `unexpected type of '${name}': a ${type} was expected but got '${typeof variable}'`
-        throw err
-      } else {
-        return def
-      }
-    } else {
-      return variable
-    }
-  }
   /**
    * @description reconnect to IRC
    * @remark will reconnect to the same server if no parameters are provided
@@ -272,7 +214,10 @@ export default class XDCC extends Client {
     this.quit()
     this.connectionTimeout = setTimeout(() => {
       if (info) {
-        this.__ParametersCheck(info)
+        info = TypeChecker.paramChecker(info, true)
+        this.host = info.host
+        this.port = info.port || 6667
+        this.chan = typeof info.chan === 'string' || !info.chan ? [] : info.chan
       }
       if (!this.connected) {
         this.connect({
@@ -285,15 +230,14 @@ export default class XDCC extends Client {
     }, 2000)
   }
   private __live(): void {
+    this.on('debug', msg => console.log(msg))
     this.on('connected', () => {
       clearTimeout(this.connectionTimeout)
-      this.chan = this.chan.map(c => this.__checkHashtag(c, true))
-      for (let index = 0; index < this.chan.length; index++) {
-        const channel = this.channel(this.__checkHashtag(this.chan[index], true))
-        channel.join()
+      for (const chan of this.chan) {
+        this.join(chan)
       }
       if (this.verbose) {
-        console.error(colors.bold(colors.green(`\u2713`)), `connected to: ${colors.yellow(this.host)}`)
+        console.error(colors.bold(colors.green(`\u2713`)), `connected to: ${colors.yellow(this.host)}:${this.port}`)
       }
       this.__verb(2, 'green', `joined: [ ${colors.yellow(this.chan.join(`${colors.white(', ')}`))} ]`)
       this.emit('ready')
@@ -673,36 +617,7 @@ export default class XDCC extends Client {
    * ```
    */
   public download(target: string, packets: string | string[] | number | number[]): Job {
-    let range = []
-    if (typeof packets === 'string') {
-      const packet = packets.replace(/#/gi, '').split(',')
-      for (const s of packet) {
-        const minmax = s.split('-')
-        if (s.includes('-')) {
-          for (let i = +minmax[0]; i <= +minmax[1]; i++) {
-            range.push(i)
-          }
-        } else {
-          range.push(parseInt(s))
-        }
-      }
-    } else if (Array.isArray(packets)) {
-      for (let pack of packets) {
-        if (typeof pack === 'number') {
-          range.push(pack)
-        } else if (typeof pack === 'string') {
-          pack = pack.replace(/#/gi, '')
-          range.push(parseInt(pack))
-        }
-      }
-    } else if (typeof packets === 'number') {
-      range.push(packets)
-    }
-    range = range
-      .sort((a, b) => a - b)
-      .filter((item, pos, ary) => {
-        return !pos || item != ary[pos - 1]
-      })
+    const range = TypeChecker.parsePackets(packets)
     let candidate = this.__getCandidate(target)
     if (!candidate) {
       const base: Candidate = {
@@ -724,46 +639,6 @@ export default class XDCC extends Client {
       this.emit('request', { target: target, packets: candidate.queue })
     }
     return candidate
-  }
-
-  private __nickRandomizer(nick: string): string {
-    if (nick.length > 6) {
-      nick = nick.substr(0, 6)
-    }
-    return nick + Math.floor(Math.random() * 999) + 1
-  }
-
-  private __checkHashtag(value: string | number, isChannel: boolean): string {
-    if (isChannel) {
-      if (typeof value === 'string') {
-        if (value.charAt(0) === '#') {
-          return value
-        } else {
-          return `#${value}`
-        }
-      } else if (typeof value === 'number') {
-        return `#${value.toString()}`
-      } else {
-        throw TypeError(`unexpected type of 'chan': a string|number was expected but got '${typeof value}'`)
-      }
-    } else {
-      if (typeof value === 'number') {
-        if (value % 1 === 0) {
-          return `#${value.toString()}`
-        } else {
-          throw TypeError(`unexpected 'package': number must be an integer'`)
-        }
-      } else if (typeof value === 'string') {
-        const isPack = RegExp(/^\d+-\d+$|^#\d+-\d+$|^\d+$|^#\d+$/gm).test(value)
-        if (isPack) {
-          return value
-        } else {
-          throw new TypeError(`unexpected 'package': string must be '100' or '#100' or '100-102' or '#102-102'`)
-        }
-      } else {
-        throw new TypeError(`unexpected type of 'package': a string|number was expected but got ${typeof value}`)
-      }
-    }
   }
 
   private __uint32ToIP(n: number): string {
