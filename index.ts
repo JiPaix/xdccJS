@@ -7,6 +7,7 @@ import { Candidate } from './@types/candidate'
 import { FileInfo } from './@types/fileinfo'
 import { Job } from './@types/job'
 import { PassThrough } from 'stream'
+import EventHandler from './eventhandler'
 import TypeChecker from './typechecker'
 import * as fs from 'fs'
 import * as path from 'path'
@@ -20,24 +21,24 @@ import * as ip from 'public-ip'
  * @noInheritDoc
  */
 export default class XDCC extends Client {
-  private host!: string
-  private port = 6667
-  private retry = 1
-  private nick = 'xdccJS'
-  private chan: string[] = []
-  private resumequeue: {
+  host!: string
+  port = 6667
+  retry = 1
+  nick = 'xdccJS'
+  chan: string[] = []
+  resumequeue: {
     nick: string
     ip: string
     length: number
     token: number
   }[] = []
-  private candidates: Job[] = []
-  private connectionTimeout: NodeJS.Timeout
-  private path: false | string = false
-  private verbose!: boolean
-  private passivePort: number[] = [5001]
-  private portInUse: number[] = []
-  private ip!: number
+  candidates: Job[] = []
+  connectionTimeout: NodeJS.Timeout
+  path: false | string = false
+  verbose!: boolean
+  passivePort: number[] = [5001]
+  portInUse: number[] = []
+  ip!: number
 
   /**
    * @description Initiate IRC connection
@@ -190,7 +191,7 @@ export default class XDCC extends Client {
       nick: this.nick,
       encoding: 'utf8',
     })
-    this.__live()
+    this.__startListeningEvents()
   }
 
   /**
@@ -228,87 +229,17 @@ export default class XDCC extends Client {
       }
     }, 2000)
   }
-  private __live(): void {
-    this.on('debug', msg => console.log(msg))
-    this.on('connected', () => {
-      clearTimeout(this.connectionTimeout)
-      for (const chan of this.chan) {
-        this.join(chan)
-      }
-      if (this.verbose) {
-        console.error(colors.bold(colors.green(`\u2713`)), `connected to: ${colors.yellow(this.host)}:${this.port}`)
-      }
-      this.__verb(2, 'green', `joined: [ ${colors.yellow(this.chan.join(`${colors.white(', ')}`))} ]`)
-      this.emit('ready')
-    })
-    this.on('request', (args: { target: string; packets: number[] }) => {
-      const candidate = this.__getCandidate(args.target)
-      candidate.now = args.packets[0]
-      candidate.queue = candidate.queue.filter(pending => pending.toString() !== candidate.now.toString())
-      this.say(args.target, `xdcc send ${candidate.now}`)
-      candidate.timeout = this.__setupTimeout(
-        [true, args.target],
-        {
-          eventname: 'error',
-          message: `timeout: no response from ${colors.yellow(args.target)}`,
-          padding: 6,
-          candidateEvent: candidate,
-        },
-        1000 * 15,
-        () => {
-          this.__redownload(candidate)
-        }
-      )
-      this.__verb(
-        4,
-        'green',
-        `sending command: /MSG ${colors.yellow(args.target)} xdcc send ${colors.yellow(candidate.now.toString())}`
-      )
-    })
-    this.on('ctcp request', (resp: { [prop: string]: string }): void => {
-      this.__checkBeforeDL(resp, this.candidates[0])
-    })
-    this.on('next', (candidate: Job) => {
-      candidate.timeout ? clearTimeout(candidate.timeout) : false
-      candidate.retry = 0
-      candidate.queue = candidate.queue.filter(pending => pending.toString() !== candidate.now.toString())
-      if (candidate.queue.length) {
-        candidate.now = candidate.queue[0]
-        candidate.queue = candidate.queue.filter(pending => pending.toString() !== candidate.now.toString())
-        this.say(candidate.nick, `xdcc send ${candidate.now}`)
-        candidate.timeout = this.__setupTimeout(
-          [true, candidate.nick],
-          {
-            eventname: 'error',
-            message: `timeout: no response from ${colors.yellow(candidate.now.toString())}`,
-            padding: 6,
-            candidateEvent: candidate,
-          },
-          1000 * 15,
-          () => {
-            this.__redownload(candidate)
-          }
-        )
-        this.__verb(
-          4,
-          'green',
-          `sending command: /MSG ${colors.yellow(candidate.nick)} xdcc send ${colors.yellow(candidate.now.toString())}`
-        )
-      } else {
-        this.candidates = this.candidates.filter(c => c.nick !== candidate.nick)
-        candidate.emit('done', candidate.show())
-        this.emit('done', () => candidate.show())
-        if (!this.candidates.length) {
-          this.emit('can-quit')
-        } else {
-          const newcandidate = this.candidates[0]
-          this.emit('request', { target: newcandidate.nick, packets: newcandidate.queue })
-        }
-      }
-    })
+  /**
+   * @ignore
+   */
+  __startListeningEvents(): void {
+    EventHandler.onConnect(this)
+    EventHandler.onRequest(this)
+    EventHandler.onConnect(this)
+    EventHandler.onNext(this)
   }
 
-  private __checkBeforeDL(resp: { [prop: string]: string }, candidate: Job): void {
+  __checkBeforeDL(resp: { [prop: string]: string }, candidate: Job): void {
     let isNotResume = true
     const fileInfo = this.__parseCtcp(resp.message, resp.nick)
     let stream: fs.WriteStream | PassThrough | undefined = undefined
@@ -378,7 +309,7 @@ export default class XDCC extends Client {
     }
   }
 
-  private __prepareDL(
+  __prepareDL(
     stream: fs.WriteStream | PassThrough,
     fileInfo: FileInfo,
     candidate: Job,
@@ -453,7 +384,7 @@ export default class XDCC extends Client {
       this.__processDL(server, client, stream, candidate, fileInfo, pick)
     }
   }
-  private __processDL(
+  __processDL(
     server: net.Server | undefined,
     client: net.Socket,
     stream: fs.WriteStream | PassThrough,
@@ -640,7 +571,7 @@ export default class XDCC extends Client {
     return candidate
   }
 
-  private __uint32ToIP(n: number): string {
+  __uint32ToIP(n: number): string {
     const byte1 = n & 255,
       byte2 = (n >> 8) & 255,
       byte3 = (n >> 16) & 255,
@@ -648,7 +579,7 @@ export default class XDCC extends Client {
     return byte4 + '.' + byte3 + '.' + byte2 + '.' + byte1
   }
 
-  private __parseCtcp(text: string, nick: string): FileInfo | void {
+  __parseCtcp(text: string, nick: string): FileInfo | void {
     const parts = text.match(/(?:[^\s"]+|"[^"]*")+/g)
     if (parts === null) {
       throw new TypeError(`CTCP : received unexpected msg : ${text}`)
@@ -678,7 +609,7 @@ export default class XDCC extends Client {
       }
     }
   }
-  private __setupTimeout(
+  __setupTimeout(
     xdccCancel: [boolean, string],
     errorInfo: {
       eventname: string
@@ -711,7 +642,7 @@ export default class XDCC extends Client {
       }
     }, timeout)
   }
-  private __setupProgressBar(len: number): ProgressBar {
+  __setupProgressBar(len: number): ProgressBar {
     return new ProgressBar(
       `\u2937`.padStart(6) + ` ${colors.bold(colors.green('\u2713'))} downloading [:bar] ETA: :eta @ :rate - :percent `,
       {
@@ -722,12 +653,13 @@ export default class XDCC extends Client {
       }
     )
   }
-  private __getCandidate(target: string): Job {
+  __getCandidate(target: string): Job {
     return this.candidates.filter(
       candidates => candidates.nick.localeCompare(target, 'en', { sensitivity: 'base' }) === 0
     )[0]
   }
-  private __verb(pad: number, color: 'red' | 'cyan' | 'green', message: string): void {
+
+  __verb(pad: number, color: 'red' | 'cyan' | 'green', message: string): void {
     if (this.verbose) {
       let sign
       if (color === 'red') {
@@ -743,7 +675,7 @@ export default class XDCC extends Client {
       console.error(`\u2937`.padStart(pad), colors.bold(colors[color](sign)), message)
     }
   }
-  private __redownload(candidate: Job, fileInfo?: FileInfo): void {
+  __redownload(candidate: Job, fileInfo?: FileInfo): void {
     if (candidate.retry < this.retry) {
       candidate.retry++
       this.say(candidate.nick, `xdcc send ${candidate.now}`)
