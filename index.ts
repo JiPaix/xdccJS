@@ -226,28 +226,32 @@ export default class XDCC extends Client {
     }
   }
 
-  private __ParametersCheck(params: {
-    host?: string | undefined
-    port?: number | undefined
-    nick?: string | undefined
-    chan?: string | string[] | undefined
-    path?: string | false | undefined
-    verbose?: boolean | undefined
-    randomizeNick?: boolean | undefined
-    passivePort?: number[] | undefined
-    retry?: number | undefined
-  }): void {
+  private __ParametersCheck(
+    params: {
+      host?: string | undefined
+      port?: number | undefined
+      nick?: string | undefined
+      chan?: string | string[] | undefined
+      path?: string | false | undefined
+      verbose?: boolean | undefined
+      randomizeNick?: boolean | undefined
+      passivePort?: number[] | undefined
+      retry?: number | undefined
+    },
+    recheck?: boolean
+  ): void {
     this.verbose = this._is('verbose', params.verbose, 'boolean', false)
     this.host = this._is('host', params.host, 'string')
     this.port = this._is('port', params.port, 'number', 6667)
-
-    this.retry = this._is('retry', params.retry, 'number', 1)
-    if (this._is('randomizeNick', params.randomizeNick, 'boolean', true)) {
-      this.nick = this.__nickRandomizer(params.nick ? params.nick : 'xdccJS')
-    } else {
-      this.nick = params.nick ? params.nick : this.__nickRandomizer('xdccJS')
+    if (!recheck) {
+      this.retry = this._is('retry', params.retry, 'number', 1)
+      if (this._is('randomizeNick', params.randomizeNick, 'boolean', true)) {
+        this.nick = this.__nickRandomizer(params.nick ? params.nick : 'xdccJS')
+      } else {
+        this.nick = params.nick ? params.nick : this.__nickRandomizer('xdccJS')
+      }
+      this.passivePort = this._is('passivePort', params.passivePort, 'object', [5001])
     }
-    this.passivePort = this._is('passivePort', params.passivePort, 'object', [5001])
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private _is(name: string, variable: any, type: string, def?: any): any {
@@ -284,20 +288,7 @@ export default class XDCC extends Client {
     this.quit()
     this.connectionTimeout = setTimeout(() => {
       if (info) {
-        this.host = this._is('host', info.host, 'string')
-        this.port = this._is('port', info.port, 'number', 6667)
-        if (typeof info.chan === 'string') {
-          this.chan = [this.__checkHashtag(info.chan, true)]
-        } else if (Array.isArray(info.chan)) {
-          this.chan = info.chan
-        } else if (!info.chan) {
-          this.chan = []
-        } else {
-          const err = new TypeError()
-          err.name = err.name + ' [ERR_INVALID_ARG_TYPE]'
-          err.message = `unexpected type of 'chan': 'string[] | undefined' was expected'`
-          throw err
-        }
+        this.__ParametersCheck(info)
       }
       if (!this.connected) {
         this.connect({
@@ -348,7 +339,7 @@ export default class XDCC extends Client {
       )
     })
     this.on('ctcp request', (resp: { [prop: string]: string }): void => {
-      this.__dl(resp, this.candidates[0])
+      this.__checkBeforeDL(resp, this.candidates[0])
     })
     this.on('next', (candidate: Job) => {
       candidate.timeout ? clearTimeout(candidate.timeout) : false
@@ -390,7 +381,7 @@ export default class XDCC extends Client {
     })
   }
 
-  private __dl(resp: { [prop: string]: string }, candidate: Job): void {
+  private __checkBeforeDL(resp: { [prop: string]: string }, candidate: Job): void {
     let isNotResume = true
     const fileInfo = this.__parseCtcp(resp.message, resp.nick)
     let stream: fs.WriteStream | PassThrough | undefined = undefined
@@ -454,79 +445,82 @@ export default class XDCC extends Client {
           }
         }
       }
-      if (stream && isNotResume) {
-        let server: net.Server | undefined = undefined
-        let client: net.Socket | undefined = undefined
-        let available
-        let pick: number | undefined
-        if (fileInfo.port === 0) {
-          available = this.passivePort.filter(port => !this.portInUse.includes(port))
-          pick = available[Math.floor(Math.random() * available.length)]
-          if (pick) {
-            server = net.createServer(client => {
-              candidate.timeout ? clearTimeout(candidate.timeout) : false
-              candidate.timeout = this.__setupTimeout(
-                [true, resp.nick],
-                {
-                  eventname: 'error',
-                  message: `timeout: no initial connection`,
-                  padding: 6,
-                  fileInfo: fileInfo,
-                  candidateEvent: candidate,
-                },
-                1000 * 10,
-                () => {
-                  if (server) {
-                    server.close(() => {
-                      this.portInUse = this.portInUse.filter(p => p !== pick)
-                      this.__redownload(candidate, fileInfo)
-                    })
-                  }
-                }
-              )
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              this.__processDL(server, client, stream!, candidate, fileInfo, pick)
-            })
-            this.portInUse.push(pick)
-            server.listen(pick, '0.0.0.0', () => {
-              this.raw(
-                `PRIVMSG ${resp.nick} ${String.fromCharCode(1)}DCC SEND ${fileInfo.file} ${this.ip} ${pick} ${
-                  fileInfo.length
-                } ${fileInfo.token}${String.fromCharCode(1)}`
-              )
-              if (this.verbose) {
-                this.__verb(
-                  6,
-                  'cyan',
-                  `waiting for connexion at: ${colors.yellow(`${this.__uint32ToIP(this.ip)}:${pick}`)}`
-                )
-              }
-            })
-          } else {
+      if(stream && isNotResume) {
+        this.__prepareDL(stream, fileInfo, candidate, resp)
+      }
+    }
+  }
+
+  private __prepareDL(stream: fs.WriteStream | PassThrough, fileInfo: FileInfo, candidate: Job, resp: { [ x: string ]: string; }):void {
+      let server: net.Server | undefined = undefined
+      let client: net.Socket | undefined = undefined
+      let available
+      let pick: number | undefined
+      if (fileInfo.port === 0) {
+        available = this.passivePort.filter(port => !this.portInUse.includes(port))
+        pick = available[Math.floor(Math.random() * available.length)]
+        if (pick) {
+          server = net.createServer(client => {
             candidate.timeout ? clearTimeout(candidate.timeout) : false
             candidate.timeout = this.__setupTimeout(
               [true, resp.nick],
               {
                 eventname: 'error',
-                message: `all passive ports are currently used: ${colors.yellow(`${fileInfo.ip}:${fileInfo.port}`)}`,
+                message: `timeout: no initial connection`,
+                padding: 6,
                 fileInfo: fileInfo,
-                padding: 4,
                 candidateEvent: candidate,
               },
-              0,
+              1000 * 10,
               () => {
-                this.__redownload(candidate, fileInfo)
+                if (server) {
+                  server.close(() => {
+                    this.portInUse = this.portInUse.filter(p => p !== pick)
+                    this.__redownload(candidate, fileInfo)
+                  })
+                }
               }
             )
-          }
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            this.__processDL(server, client, stream!, candidate, fileInfo, pick)
+          })
+          this.portInUse.push(pick)
+          server.listen(pick, '0.0.0.0', () => {
+            this.raw(
+              `PRIVMSG ${resp.nick} ${String.fromCharCode(1)}DCC SEND ${fileInfo.file} ${this.ip} ${pick} ${
+                fileInfo.length
+              } ${fileInfo.token}${String.fromCharCode(1)}`
+            )
+            if (this.verbose) {
+              this.__verb(
+                6,
+                'cyan',
+                `waiting for connexion at: ${colors.yellow(`${this.__uint32ToIP(this.ip)}:${pick}`)}`
+              )
+            }
+          })
         } else {
-          client = net.connect(fileInfo.port, fileInfo.ip)
-          this.__processDL(server, client, stream, candidate, fileInfo, pick)
+          candidate.timeout ? clearTimeout(candidate.timeout) : false
+          candidate.timeout = this.__setupTimeout(
+            [true, resp.nick],
+            {
+              eventname: 'error',
+              message: `all passive ports are currently used: ${colors.yellow(`${fileInfo.ip}:${fileInfo.port}`)}`,
+              fileInfo: fileInfo,
+              padding: 4,
+              candidateEvent: candidate,
+            },
+            0,
+            () => {
+              this.__redownload(candidate, fileInfo)
+            }
+          )
         }
+      } else {
+        client = net.connect(fileInfo.port, fileInfo.ip)
+        this.__processDL(server, client, stream, candidate, fileInfo, pick)
       }
-    }
   }
-
   private __processDL(
     server: net.Server | undefined,
     client: net.Socket,
