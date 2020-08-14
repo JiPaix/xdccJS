@@ -22,24 +22,7 @@ class EventHandler {
       candidate.now = args.packets[0]
       candidate.queue = candidate.queue.filter(pending => pending.toString() !== candidate.now.toString())
       self.say(args.target, `xdcc send ${candidate.now}`)
-      candidate.timeout = self.__setupTimeout(
-        [true, args.target],
-        {
-          eventname: 'error',
-          message: `timeout: no response from ${colors.yellow(args.target)}`,
-          padding: 6,
-          candidateEvent: candidate,
-        },
-        1000 * 15,
-        () => {
-          self.__redownload(candidate)
-        }
-      )
-      self.__verb(
-        4,
-        'green',
-        `sending command: /MSG ${colors.yellow(args.target)} xdcc send ${colors.yellow(candidate.now.toString())}`
-      )
+      this.predefinedVerbose(self, candidate)
     })
   }
   onCtcpRequest(self: XDCC): void {
@@ -56,24 +39,7 @@ class EventHandler {
         candidate.now = candidate.queue[0]
         candidate.queue = candidate.queue.filter(pending => pending.toString() !== candidate.now.toString())
         self.say(candidate.nick, `xdcc send ${candidate.now}`)
-        candidate.timeout = self.__setupTimeout(
-          [true, candidate.nick],
-          {
-            eventname: 'error',
-            message: `timeout: no response from ${colors.yellow(candidate.now.toString())}`,
-            padding: 6,
-            candidateEvent: candidate,
-          },
-          1000 * 15,
-          () => {
-            self.__redownload(candidate)
-          }
-        )
-        self.__verb(
-          4,
-          'green',
-          `sending command: /MSG ${colors.yellow(candidate.nick)} xdcc send ${colors.yellow(candidate.now.toString())}`
-        )
+        this.predefinedVerbose(self, candidate)
       } else {
         self.candidates = self.candidates.filter(c => c.nick !== candidate.nick)
         candidate.emit('done', candidate.show())
@@ -86,6 +52,33 @@ class EventHandler {
         }
       }
     })
+  }
+
+  private predefinedVerbose(self:XDCC, candidate:Job) {
+    self.__verb(
+        4,
+        'green',
+        `sending command: /MSG ${colors.yellow(candidate.nick)} xdcc send ${colors.yellow(candidate.now.toString())}`
+      )
+    candidate.timeout = self.__setupTimeout(
+        [true, candidate.nick],
+        {
+          eventname: 'error',
+          message: `timeout: no response from ${colors.yellow(candidate.nick)}`,
+          padding: 6,
+          candidateEvent: candidate,
+        },
+        1000 * 15,
+        () => {
+          self.__redownload(candidate)
+        }
+      )
+      self.__verb(
+        4,
+        'green',
+        `sending command: /MSG ${colors.yellow(candidate.nick)} xdcc send ${colors.yellow(candidate.now.toString())}`
+      )
+    }
   }
 }
 export default new EventHandler()
