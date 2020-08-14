@@ -21,7 +21,7 @@ class EventHandler {
     self.on('request', (args: { target: string; packets: number[] }) => {
       const candidate = self.__getCandidate(args.target)
       candidate.now = args.packets[0]
-      candidate.queue = candidate.queue.filter(pending => pending.toString() !== candidate.now.toString())
+      self.__removeCurrentFromQueue(candidate)
       self.say(args.target, `xdcc send ${candidate.now}`)
       this.predefinedVerbose(self, candidate)
     })
@@ -37,10 +37,10 @@ class EventHandler {
     self.on('next', (candidate: Job) => {
       candidate.timeout ? clearTimeout(candidate.timeout) : false
       candidate.retry = 0
-      candidate.queue = candidate.queue.filter(pending => pending.toString() !== candidate.now.toString())
+      self.__removeCurrentFromQueue(candidate)
       if (candidate.queue.length) {
         candidate.now = candidate.queue[0]
-        candidate.queue = candidate.queue.filter(pending => pending.toString() !== candidate.now.toString())
+        self.__removeCurrentFromQueue(candidate)
         self.say(candidate.nick, `xdcc send ${candidate.now}`)
         this.predefinedVerbose(self, candidate)
       } else {

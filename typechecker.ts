@@ -91,37 +91,49 @@ class TypeChecker {
     return nick + Math.floor(Math.random() * 999) + 1
   }
 
-  public parsePackets(packets: string | string[] | number | number[]): number[] {
-    const range = []
-    if (typeof packets === 'string') {
-      const packet = packets.replace(/#/gi, '').split(',')
-      for (const s of packet) {
-        const minmax = s.split('-')
-        if (s.includes('-')) {
-          for (let i = +minmax[0]; i <= +minmax[1]; i++) {
-            range.push(i)
-          }
-        } else {
-          range.push(parseInt(s))
+  private __parsePacketString(packet: string): number[] {
+    const range: number[] = []
+    const splittedPackets = packet.replace(/#/gi, '').split(',')
+    for (const packet of splittedPackets) {
+      const minmax = packet.split('-')
+      if (minmax.includes('-')) {
+        for (let i = +minmax[0]; i <= +minmax[1]; i++) {
+          range.push(i)
         }
+      } else {
+        range.push(parseInt(minmax[0]))
       }
-    } else if (Array.isArray(packets)) {
-      for (let pack of packets) {
-        if (typeof pack === 'number') {
-          range.push(pack)
-        } else if (typeof pack === 'string') {
-          pack = pack.replace(/#/gi, '')
-          range.push(parseInt(pack))
-        }
-      }
-    } else if (typeof packets === 'number') {
-      range.push(packets)
     }
+    return this.__sortPackets(range)
+  }
+  private __parsePacketArray(packets: string[] | number[]): number[] {
+    const range: number[] = []
+    for (const pack of packets) {
+      if (typeof pack === 'number') {
+        range.push(pack)
+      } else {
+        range.push(parseInt(pack))
+      }
+    }
+    return this.__sortPackets(range)
+  }
+  private __sortPackets(range: number[]): number[] {
     return range
       .sort((a, b) => a - b)
       .filter((item, pos, ary) => {
         return !pos || item != ary[pos - 1]
       })
+  }
+  public parsePackets(packets: string | string[] | number | number[]): number[] {
+    if (typeof packets === 'string') {
+      return this.__parsePacketString(packets)
+    } else if (Array.isArray(packets)) {
+      return this.__parsePacketArray(packets)
+    } else if (typeof packets === 'number') {
+      return [packets]
+    } else {
+      return [0]
+    }
   }
 }
 

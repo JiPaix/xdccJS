@@ -675,6 +675,9 @@ export default class XDCC extends Client {
       console.error(`\u2937`.padStart(pad), colors.bold(colors[color](sign)), message)
     }
   }
+  __removeCurrentFromQueue(candidate: Job): void {
+    candidate.queue = candidate.queue.filter(pending => pending.toString() !== candidate.now.toString())
+  }
   __redownload(candidate: Job, fileInfo?: FileInfo): void {
     if (candidate.retry < this.retry) {
       candidate.retry++
@@ -693,7 +696,7 @@ export default class XDCC extends Client {
           candidate.emit('error', `skipped pack: ${candidate.now}`, fileInfo)
           this.emit('error', `skipped pack: ${candidate.now}`, fileInfo)
           candidate.failures.push(candidate.now)
-          candidate.queue = candidate.queue.filter(pending => pending.toString() !== candidate.now.toString())
+          this.__removeCurrentFromQueue(candidate)
           this.emit('next', candidate)
         }
       }, 1000 * 15)
