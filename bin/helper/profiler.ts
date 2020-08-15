@@ -21,20 +21,23 @@ class Profiler {
       fs.writeFileSync(this.default, '')
     }
   }
+  FuseFileAndEnv(program: commander.Command, json: { [x: string]: unknown }): void {
+    for (const key in json) {
+      if (Object.prototype.hasOwnProperty.call(json, key)) {
+        if (!this.parameters.includes(key) && key !== 'version') {
+          program[key] = json[key]
+        }
+      }
+    }
+  }
+
   LoadDefaultProfile(program: commander.Command): void {
     this.InitFolder()
     const defaultProfileName = fs.readFileSync(this.default).toString()
     if (defaultProfileName.length && this.existProfile(defaultProfileName)) {
       const file = fs.readFileSync(path.resolve(this.dir, defaultProfileName))
       const json = JSON.parse(file.toString())
-      for (const key in json) {
-        if (Object.prototype.hasOwnProperty.call(json, key)) {
-          if (!this.parameters.includes(key) && key !== 'version') {
-            program[key] = json[key]
-          }
-        }
-      }
-
+      this.FuseFileAndEnv(program, json)
       print('%info% loaded default profile %yellow%' + defaultProfileName)
     }
   }
