@@ -6,3 +6,5 @@ test.ts
 test.js
 .jsdoc
 executables/
+coverage/
+.nyc_output/
