@@ -1,6 +1,6 @@
 // import commander from 'commander'
 
-import commander, { Command } from 'commander'
+import commander from 'commander'
 import * as colors from 'colors/safe'
 
 class BinTypeChecker {
@@ -59,7 +59,7 @@ class BinTypeChecker {
         program.download = match[5]
           .normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '')
-          .replace(/[a-zA-z]/g, '')
+          .replace(/[a-zA-Z]/g, '')
           .replace(/\s/g, '')
         return true
       } else {

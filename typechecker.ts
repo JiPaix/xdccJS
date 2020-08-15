@@ -103,10 +103,10 @@ class TypeChecker {
   private __parsePacketString(packet: string): number[] {
     packet = packet.replace(/#/gi, '')
     const splittedPackets = packet.split(',')
-    const range = []
+    let range: number[] = []
     for (const packet of splittedPackets) {
       if (packet.includes('-')) {
-        range.concat(this.__decomposeRange(packet))
+        range = range.concat(this.__decomposeRange(packet))
       } else {
         range.push(parseInt(packet))
       }
