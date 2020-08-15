@@ -1,5 +1,5 @@
 import * as colors from 'colors/safe'
-export default function Print(string: string, padding = 0) {
+export default function Print(string: string, padding = 0): void {
   string = string
     .replace('%bold%', '\x1b[2m')
     .replace('%red%', '\x1b[31m')

@@ -1,5 +1,4 @@
 import commander from 'commander'
-import * as colors from 'colors/safe'
 import print from '../../helpers/printer'
 
 class BinTypeChecker {
