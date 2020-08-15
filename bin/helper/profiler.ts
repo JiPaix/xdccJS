@@ -1,8 +1,8 @@
 import * as path from 'path'
 import * as fs from 'fs'
-import * as colors from 'colors/safe'
 import commander from 'commander'
 import TypeChecker from './typechecker'
+import print from '../../helpers/printer'
 
 class Profiler {
   parameters: string[]
@@ -34,7 +34,8 @@ class Profiler {
           }
         }
       }
-      console.error(colors.bold(colors.cyan(`\u2139`)), `loaded default profile ${colors.yellow(defaultProfileName)}`)
+
+      print('%info% loaded default profile %yellow%' + defaultProfileName)
     }
   }
   ProcessProfile(program: commander.Command): void {
@@ -52,21 +53,19 @@ class Profiler {
   saveProfile(program: commander.Command): void {
     if (this.argsMustbeNamed(program, 'save')) {
       if (this.existProfile(program.saveProfile)) {
-        console.error(
-          colors.bold(colors.red(`\u0058`)),
-          `profile ${colors.yellow(program.saveProfile)} already exists, use ${colors.grey(
-            `--delete-profile ${program.saveProfile}`
-          )} first`
+        print(
+          '%danger% profile %yellow%' +
+            program.saveProfile +
+            '%reset% already exists, use %grey%--delete-profile ' +
+            program.saveProfile +
+            '%reset% first'
         )
       } else {
         if (program.server) {
           const json = JSON.stringify(program.opts())
           fs.writeFileSync(__dirname + '/profiles/' + program.saveProfile, json)
           fs.writeFileSync(__dirname + '/default', program.saveProfile)
-          console.error(
-            colors.bold(colors.cyan(`\u2139`)),
-            `saved ${colors.yellow(program.saveProfile)} and set it as default`
-          )
+          print('%info% saved %yellow%' + program.saveProfile + '%reset% and set it as default')
         } else {
           TypeChecker.missingArg('-s, --server <server>', '-s irc.server.net')
         }
@@ -79,7 +78,7 @@ class Profiler {
       if (this.existProfile(program.setProfile)) {
         fs.writeFileSync(this.default, program.setProfile)
       } else {
-        console.error(colors.bold(colors.red(`\u0058`)), `profile ${colors.yellow(program.setProfile)} doesn't exist`)
+        print('%danger% profile %yellow%' + program.setProfile + "%reset% doesn't exist")
         this.showProfiles()
       }
     }
@@ -93,10 +92,10 @@ class Profiler {
         const defaultProfile = fs.readFileSync(this.default).toString()
         if (defaultProfile == program.deleteProfile) {
           fs.unlinkSync(this.default)
-          console.error(colors.bold(colors.cyan(`\u2139`)), `deleted ${colors.yellow(program.deleteProfile)}`)
+          print('%info% deleted %yellow%' + program.deleteProfile)
         }
       } else {
-        console.error(colors.bold(colors.red(`\u0058`)), `profile ${colors.yellow(program.setProfile)} doesn't exist`)
+        print('%danger% profile %yellow%' + program.setProfile + "%reset% doesn't exists")
         this.showProfiles()
       }
     }
@@ -106,10 +105,7 @@ class Profiler {
     if (typeof program[type + 'Profile'] === 'string') {
       return true
     } else {
-      console.error(
-        colors.bold(colors.red(`\u0058`)),
-        `presets must be named, eg. ${colors.gray(`--${type}-profile john`)}`
-      )
+      print('%danger% presets must be named, eg. %grey%--' + type + '-profile john')
       return false
     }
   }
@@ -118,9 +114,9 @@ class Profiler {
     const defaultProfile = fs.readFileSync(this.default).toString()
     for (const preset of profiles) {
       if (preset == defaultProfile) {
-        console.error('-'.padStart(2), colors.cyan(preset), colors.gray('* default'))
+        print('- %cyan%' + preset + '%reset% %grey%* default', 2)
       } else {
-        console.error('-'.padStart(2), colors.cyan(preset))
+        print('- %cyan%' + preset, 2)
       }
     }
   }

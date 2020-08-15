@@ -1,6 +1,6 @@
-import XDCC from './index'
+import XDCC from '../index'
 import * as colors from 'colors/safe'
-import { Job } from './@types/job'
+import { Job } from '../@types/job'
 
 class EventHandler {
   onConnect(self: XDCC): void {

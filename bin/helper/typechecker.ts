@@ -1,7 +1,6 @@
-// import commander from 'commander'
-
 import commander from 'commander'
 import * as colors from 'colors/safe'
+import print from '../../helpers/printer'
 
 class BinTypeChecker {
   lazyRegex: RegExp
@@ -20,11 +19,8 @@ class BinTypeChecker {
       if (program.server) {
         return true
       } else {
-        console.error(
-          colors.bold(colors.red(`\u0058`)),
-          `profile has no server, you can't use the lazy method.\n change profile or use the "non-lazy" way, see : ${colors.gray(
-            'xdccJS --help'
-          )}`
+        print(
+          '%danger% profile has no server, you can\'t use the lazy method.\n change profile or use the "non-lazy" way, see : %grey%xdccJS --help'
         )
       }
     }
@@ -43,10 +39,7 @@ class BinTypeChecker {
     if (count === 3) {
       return true
     }
-    console.error(
-      colors.bold(colors.red(`\u0058`)),
-      `wrong syntax, eg. ${colors.gray('"/msg bot xdcc send 25-33, 150"')}`
-    )
+    print('%danger% wrong syntax, eg. %grey%/msg My-Bot xdcc send 25-33, 150')
     return false
   }
 
@@ -66,10 +59,7 @@ class BinTypeChecker {
         return false
       }
     } else {
-      console.error(
-        colors.bold(colors.red(`\u0058`)),
-        `wrong syntax, eg. ${colors.gray('"/msg bot xdcc send 25-33, 150"')}`
-      )
+      print('%danger% wrong syntax, eg. %grey%/msg My-Bot xdcc send 25-33, 150')
       return false
     }
   }
@@ -100,21 +90,14 @@ class BinTypeChecker {
       this.wrongArg('-r, --retry <number>', 'number', '-r 3')
       fin.push(false)
     }
-    if (fin.length) {
-      return false
-    } else {
-      return true
-    }
+    return fin.length ? false : true
   }
+
   wrongArg(argument: string, expected: string, example: string): void {
-    const redcross = colors.bold(colors.red('\u0058'))
-    const eg = colors.grey(example)
-    console.error(`${redcross} option '${argument}' must be a ${expected}, eg. ${eg}`)
+    print(`%danger% option '${argument}' must be a ${expected}, eg. %grey%${example}`)
   }
   missingArg(argument: string, example: string): void {
-    const redcross = colors.bold(colors.red('\u0058'))
-    const eg = colors.grey(example)
-    console.error(`${redcross} option '${argument}' argument missing, eg. ${eg}`)
+    print(`%danger% option '${argument}' argument missing, eg. %grey%${example}`)
   }
 }
 
