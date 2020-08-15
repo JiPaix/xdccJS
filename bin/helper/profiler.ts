@@ -41,6 +41,7 @@ class Profiler {
       print('%info% loaded default profile %yellow%' + defaultProfileName)
     }
   }
+
   ProcessProfile(program: commander.Command): void {
     if (this.whichProfile(program) === 'save') {
       this.saveProfile(program)
@@ -135,20 +136,16 @@ class Profiler {
     }
   }
 
-  isProfile(program: commander.Command, key?: string): boolean {
-    if (key) {
-      return this.parameters.includes(key)
-    } else {
-      const args = Object.keys(program.opts())
-      for (const arg of args) {
-        if (program[arg]) {
-          if (this.parameters.includes(arg)) {
-            return true
-          }
+  isProfile(program: commander.Command): boolean {
+    const args = Object.keys(program.opts())
+    for (const arg of args) {
+      if (program[arg]) {
+        if (this.parameters.includes(arg)) {
+          return true
         }
       }
-      return false
     }
+    return false
   }
 
   existProfile(profileName: string): boolean {
