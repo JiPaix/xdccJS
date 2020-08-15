@@ -184,7 +184,6 @@ export default class XDCC extends Client {
         `couldn't connect to: ${colors.bold(colors.yellow(parameters.host))}`
       )
     }, 1000 * 60)
-    console.log(this.host, this.port, this.nick)
     this.connect({
       host: this.host,
       port: this.port,
@@ -404,6 +403,7 @@ export default class XDCC extends Client {
       candidate.timeout ? clearTimeout(candidate.timeout) : false
       if (!this.path) {
         candidate.emit('pipe', stream, fileInfo)
+        this.emit('pipe', stream, fileInfo)
       }
     })
     client.on('data', data => {
