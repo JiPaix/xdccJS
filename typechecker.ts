@@ -90,8 +90,15 @@ class TypeChecker {
     }
     return nick + Math.floor(Math.random() * 999) + 1
   }
-  private _range(start: number, end: number): number[] {
+
+  private __range(start: number, end: number): number[] {
     return Array.from(Array(end + 1).keys()).slice(start)
+  }
+  private __decomposeRange(string: string): number[] {
+    const minmax = string.split('-')
+    const start = parseInt(minmax[0])
+    const end = parseInt(minmax[1])
+    return this.__range(start, end)
   }
   private __parsePacketString(packet: string): number[] {
     packet = packet.replace(/#/gi, '')
@@ -99,12 +106,7 @@ class TypeChecker {
     const range = []
     for (const packet of splittedPackets) {
       if (packet.includes('-')) {
-        const minmax = packet.split('-')
-        const start = parseInt(minmax[0])
-        const end = parseInt(minmax[1])
-        for (const i of this._range(start, end)) {
-          range.push(i)
-        }
+        range.concat(this.__decomposeRange(packet))
       } else {
         range.push(parseInt(packet))
       }
