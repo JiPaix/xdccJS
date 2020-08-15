@@ -2,6 +2,7 @@ import * as path from 'path'
 import * as fs from 'fs'
 import * as colors from 'colors/safe'
 import commander from 'commander'
+import TypeChecker from './typechecker'
 
 class Profiler {
   parameters: string[]
@@ -47,23 +48,45 @@ class Profiler {
       this.showProfiles()
     }
   }
+
+  saveProfile(program: commander.Command): void {
+    if (this.argsMustbeNamed(program, 'save')) {
+      if (this.existProfile(program.saveProfile)) {
+        console.error(
+          colors.bold(colors.red(`\u0058`)),
+          `profile ${colors.yellow(program.saveProfile)} already exists, use ${colors.grey(
+            `--delete-profile ${program.saveProfile}`
+          )} first`
+        )
+      } else {
+        if (program.server) {
+          const json = JSON.stringify(program.opts())
+          fs.writeFileSync(__dirname + '/profiles/' + program.saveProfile, json)
+          fs.writeFileSync(__dirname + '/default', program.saveProfile)
+          console.error(
+            colors.bold(colors.cyan(`\u2139`)),
+            `saved ${colors.yellow(program.saveProfile)} and set it as default`
+          )
+        } else {
+          TypeChecker.missingArg('-s, --server <server>', '-s irc.server.net')
+        }
+      }
+    }
+  }
+
   setProfile(program: commander.Command): void {
-    if (typeof program.setProfile === 'string') {
+    if (this.argsMustbeNamed(program, 'set')) {
       if (this.existProfile(program.setProfile)) {
         fs.writeFileSync(this.default, program.setProfile)
       } else {
         console.error(colors.bold(colors.red(`\u0058`)), `profile ${colors.yellow(program.setProfile)} doesn't exist`)
         this.showProfiles()
       }
-    } else {
-      console.error(
-        colors.bold(colors.red(`\u0058`)),
-        `presets must be named, eg. ${colors.gray('--set-profile john')}`
-      )
     }
   }
+
   deleteProfile(program: commander.Command): void {
-    if (typeof program.deleteProfile === 'string') {
+    if (this.argsMustbeNamed(program, 'delete')) {
       const profilePath = path.resolve(this.dir, program.deleteProfile)
       const profileExists = fs.existsSync(profilePath)
       if (profileExists) {
@@ -73,17 +96,21 @@ class Profiler {
           console.error(colors.bold(colors.cyan(`\u2139`)), `deleted ${colors.yellow(program.deleteProfile)}`)
         }
       } else {
-        console.error(
-          colors.bold(colors.red(`\u0058`)),
-          `profile ${colors.yellow(program.deleteProfile)} doesn't exist`
-        )
+        console.error(colors.bold(colors.red(`\u0058`)), `profile ${colors.yellow(program.setProfile)} doesn't exist`)
         this.showProfiles()
       }
+    }
+  }
+
+  argsMustbeNamed(program: commander.Command, type: string): boolean {
+    if (typeof program[type + 'Profile'] === 'string') {
+      return true
     } else {
       console.error(
         colors.bold(colors.red(`\u0058`)),
-        `presets must be named, eg. ${colors.gray('--delete-profile john')}`
+        `presets must be named, eg. ${colors.gray(`--${type}-profile john`)}`
       )
+      return false
     }
   }
   showProfiles(): void {
@@ -122,40 +149,6 @@ class Profiler {
         }
       }
       return false
-    }
-  }
-
-  saveProfile(program: commander.Command): void {
-    if (typeof program.saveProfile === 'string') {
-      if (this.existProfile(program.saveProfile)) {
-        console.error(
-          colors.bold(colors.red(`\u0058`)),
-          `profile ${colors.yellow(program.saveProfile)} already exists, use ${colors.grey(
-            `--delete-profile ${program.saveProfile}`
-          )} first`
-        )
-      } else {
-        if (program.server) {
-          const json = JSON.stringify(program.opts())
-          fs.writeFileSync(__dirname + '/profiles/' + program.saveProfile, json)
-          fs.writeFileSync(__dirname + '/default', program.saveProfile)
-          console.error(
-            colors.bold(colors.cyan(`\u2139`)),
-            `saved ${colors.yellow(program.saveProfile)} and set it as default`
-          )
-        } else {
-          console.error(
-            colors.bold(colors.red(`\u0058`)),
-            `option '-s, --server <server>' argument missing,`,
-            `eg. ${colors.gray('-s irc.server.net')}`
-          )
-        }
-      }
-    } else {
-      console.error(
-        colors.bold(colors.red(`\u0058`)),
-        `presets must be named, eg. ${colors.gray('--save-profile john')}`
-      )
     }
   }
 
