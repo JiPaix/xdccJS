@@ -1,5 +1,4 @@
 import XDCC from '../index'
-import * as colors from 'colors/safe'
 import { Job } from '../interfaces/job'
 import Timeout from './timeouthandler'
 import ePrint, { colorize } from './printer'
@@ -28,13 +27,11 @@ class EventHandler {
       self.say(args.target, `xdcc send ${candidate.now}`)
       new Timeout(self, candidate)
         .eventType('error')
-        .eventMessage(`timeout: no response from ${colors.yellow(candidate.nick)}`, 6)
+        .eventMessage(`timeout: no response from %yellow%${candidate.nick}`, 6)
         .start(15)
       ePrint(
-        '%success% sending command: /MSG %yellow%' +
-          candidate.nick +
-          '%reset% xdcc send %yellow%' +
-          candidate.now.toString()
+        `%success% sending command: /MSG %yellow%${candidate.nick}%reset% xdcc send %yellow%${candidate.now.toString()}`,
+        4
       )
     })
   }
@@ -50,7 +47,7 @@ class EventHandler {
       candidate.retry = 0
       new Timeout(self, candidate)
         .eventType('error')
-        .eventMessage(`timeout: no response from ${colors.yellow(candidate.nick)}`, 6)
+        .eventMessage(`timeout: no response from %yellow%${candidate.nick}`, 6)
         .start(15)
       self.__removeCurrentFromQueue(candidate)
       if (candidate.queue.length) {
