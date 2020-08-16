@@ -1,10 +1,10 @@
 import { Params } from '../interfaces/params'
-import { checkedParams } from '../interfaces/paramsChecked'
+import { CheckedParams } from '../interfaces/paramsChecked'
 import * as path from 'path'
 import * as fs from 'fs'
 
 class TypeChecker {
-  paramChecker(params: Params, recheck?: boolean): checkedParams {
+  paramChecker(params: Params, recheck?: boolean): CheckedParams {
     let nick: string
     if (params.nick) {
       nick = params.randomizeNick ? this.__nickRandomizer(params.nick) : params.nick

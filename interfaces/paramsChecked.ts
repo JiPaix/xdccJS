@@ -3,7 +3,7 @@
  * @asMemberOf XDCC
  */
 
-export interface checkedParams {
+export interface CheckedParams {
   /**
    * @description IRC server's hostname
    * @example
