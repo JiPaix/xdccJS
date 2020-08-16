@@ -1,5 +1,5 @@
 import commander from 'commander'
-import print from '../../helpers/printer'
+import print from '../printer'
 
 class BinTypeChecker {
   lazyRegex: RegExp

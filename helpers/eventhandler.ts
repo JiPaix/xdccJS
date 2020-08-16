@@ -1,6 +1,8 @@
 import XDCC from '../index'
 import * as colors from 'colors/safe'
-import { Job } from '../@types/job'
+import { Job } from '../interfaces/job'
+import Timeout from './timeouthandler'
+import ePrint, { colorize } from './printer'
 
 class EventHandler {
   onConnect(self: XDCC): void {
@@ -10,9 +12,10 @@ class EventHandler {
         self.join(chan)
       }
       if (self.verbose) {
-        console.error(colors.bold(colors.green(`\u2713`)), `connected to: ${colors.yellow(self.host)}:${self.port}`)
+        const msg = colorize(`%success% connected to : %bold%%yellow%${self.host}%reset%%bold%:%yellow%${self.port}`)
+        console.error(msg)
       }
-      self.__verb(2, 'green', `joined: [ ${colors.yellow(self.chan.join(`${colors.white(', ')}`))} ]`)
+      ePrint('%success% joined: [ %yellow%' + self.chan.join(' ') + '%reset% ]', 2)
       self.emit('ready')
     })
   }
@@ -23,7 +26,16 @@ class EventHandler {
       candidate.now = args.packets[0]
       self.__removeCurrentFromQueue(candidate)
       self.say(args.target, `xdcc send ${candidate.now}`)
-      this.predefinedVerbose(self, candidate)
+      new Timeout(self, candidate)
+        .eventType('error')
+        .eventMessage(`timeout: no response from ${colors.yellow(candidate.nick)}`, 6)
+        .start(15)
+      ePrint(
+        '%success% sending command: /MSG %yellow%' +
+          candidate.nick +
+          '%reset% xdcc send %yellow%' +
+          candidate.now.toString()
+      )
     })
   }
 
@@ -35,14 +47,16 @@ class EventHandler {
 
   onNext(self: XDCC): void {
     self.on('next', (candidate: Job) => {
-      candidate.timeout ? clearTimeout(candidate.timeout) : false
       candidate.retry = 0
+      new Timeout(self, candidate)
+        .eventType('error')
+        .eventMessage(`timeout: no response from ${colors.yellow(candidate.nick)}`, 6)
+        .start(15)
       self.__removeCurrentFromQueue(candidate)
       if (candidate.queue.length) {
         candidate.now = candidate.queue[0]
         self.__removeCurrentFromQueue(candidate)
         self.say(candidate.nick, `xdcc send ${candidate.now}`)
-        this.predefinedVerbose(self, candidate)
       } else {
         self.candidates = self.candidates.filter(c => c.nick !== candidate.nick)
         candidate.emit('done', candidate.show())
@@ -55,27 +69,6 @@ class EventHandler {
         }
       }
     })
-  }
-
-  private predefinedVerbose(self: XDCC, candidate: Job): void {
-    candidate.timeout = self.__setupTimeout(
-      [true, candidate.nick],
-      {
-        eventname: 'error',
-        message: `timeout: no response from ${colors.yellow(candidate.nick)}`,
-        padding: 6,
-        candidateEvent: candidate,
-      },
-      1000 * 15,
-      () => {
-        self.__redownload(candidate)
-      }
-    )
-    self.__verb(
-      4,
-      'green',
-      `sending command: /MSG ${colors.yellow(candidate.nick)} xdcc send ${colors.yellow(candidate.now.toString())}`
-    )
   }
 }
 

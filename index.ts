@@ -3,10 +3,12 @@
 /* eslint-disable @typescript-eslint/triple-slash-reference */
 /// <reference path="@types/irc-framework.ts"/>
 import { Client } from 'irc-framework'
-import { Candidate } from './@types/candidate'
-import { FileInfo } from './@types/fileinfo'
-import { Job } from './@types/job'
+import { Candidate } from './interfaces/candidate'
+import { FileInfo } from './interfaces/fileinfo'
+import { Job } from './interfaces/job'
 import { PassThrough } from 'stream'
+import ePrint, { colorize } from './helpers/printer'
+import Timeout from './helpers/timeouthandler'
 import EventHandler from './helpers/eventhandler'
 import TypeChecker from './helpers/typechecker'
 import * as fs from 'fs'
@@ -179,10 +181,8 @@ export default class XDCC extends Client {
     this.retry = checkedParams.retry
     this.chan = this.chan.map(c => TypeChecker.chanHashtag(c))
     this.connectionTimeout = setTimeout(() => {
-      console.error(
-        colors.bold(colors.red('\u0058')),
-        `couldn't connect to: ${colors.bold(colors.yellow(parameters.host))}`
-      )
+      const msg = colorize(`%danger% couldn't connect to : %bold%%yellow%${parameters.host}`)
+      console.error(msg)
     }, 1000 * 60)
     this.connect({
       host: this.host,
@@ -243,20 +243,10 @@ export default class XDCC extends Client {
     const fileInfo = this.__parseCtcp(resp.message, resp.nick)
     let stream: fs.WriteStream | PassThrough | undefined = undefined
     if (fileInfo) {
-      candidate.timeout ? clearTimeout(candidate.timeout) : false
-      candidate.timeout = this.__setupTimeout(
-        [true, resp.nick],
-        {
-          eventname: 'error',
-          message: `couldn't connect to: ${colors.yellow(`${fileInfo.ip}:${fileInfo.port}`)}`,
-          padding: 6,
-          candidateEvent: candidate,
-        },
-        1000 * 10,
-        () => {
-          this.__redownload(candidate, fileInfo)
-        }
-      )
+      new Timeout(this, candidate, fileInfo)
+        .eventType('error')
+        .eventMessage(`%danger% couldn't connect to %yellow%` + fileInfo.ip + ':' + fileInfo.port, 6)
+        .start(15)
       if (!this.path) {
         stream = new PassThrough()
       } else {
@@ -283,21 +273,11 @@ export default class XDCC extends Client {
               length: fileInfo.length,
               token: fileInfo.token,
             })
-            candidate.timeout = this.__setupTimeout(
-              [true, resp.nick],
-              {
-                eventname: 'error',
-                message: `couldn't resume download of ${colors.yellow(fileInfo.file)}`,
-                padding: 6,
-                candidateEvent: candidate,
-              },
-              1000 * 10,
-              () => {
-                this.__redownload(candidate, fileInfo)
-              }
-            )
+            new Timeout(this, candidate, fileInfo)
+              .eventType('error')
+              .eventMessage(`%danger% couldn't resume download of %cyan%` + fileInfo.file, 6)
+              .start(15)
           } else {
-            candidate.timeout ? clearTimeout(candidate.timeout) : false
             stream = fs.createWriteStream(fileInfo.filePath)
           }
         }
@@ -323,26 +303,11 @@ export default class XDCC extends Client {
       pick = available[Math.floor(Math.random() * available.length)]
       if (pick) {
         server = net.createServer(client => {
-          candidate.timeout ? clearTimeout(candidate.timeout) : false
-          candidate.timeout = this.__setupTimeout(
-            [true, resp.nick],
-            {
-              eventname: 'error',
-              message: `timeout: no initial connection`,
-              padding: 6,
-              fileInfo: fileInfo,
-              candidateEvent: candidate,
-            },
-            1000 * 10,
-            () => {
-              if (server) {
-                server.close(() => {
-                  this.portInUse = this.portInUse.filter(p => p !== pick)
-                  this.__redownload(candidate, fileInfo)
-                })
-              }
-            }
-          )
+          new Timeout(this, candidate, fileInfo)
+            .eventType('error')
+            .eventMessage('%danger% Timeout: no initial connnection', 6)
+            .disconnectAfter(stream, client, server)
+            .start(15)
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           this.__processDL(server, client, stream!, candidate, fileInfo, pick)
         })
@@ -354,29 +319,14 @@ export default class XDCC extends Client {
             } ${fileInfo.token}${String.fromCharCode(1)}`
           )
           if (this.verbose) {
-            this.__verb(
-              6,
-              'cyan',
-              `waiting for connexion at: ${colors.yellow(`${this.__uint32ToIP(this.ip)}:${pick}`)}`
-            )
+            ePrint(`%info% waiting for connexion on port: %yellow%${pick}`, 6)
           }
         })
       } else {
-        candidate.timeout ? clearTimeout(candidate.timeout) : false
-        candidate.timeout = this.__setupTimeout(
-          [true, resp.nick],
-          {
-            eventname: 'error',
-            message: `all passive ports are currently used: ${colors.yellow(`${fileInfo.ip}:${fileInfo.port}`)}`,
-            fileInfo: fileInfo,
-            padding: 4,
-            candidateEvent: candidate,
-          },
-          0,
-          () => {
-            this.__redownload(candidate, fileInfo)
-          }
-        )
+        new Timeout(this, candidate, fileInfo)
+          .eventType('error')
+          .eventMessage('%danger% all passive ports are currently used %yellow' + this.portInUse.join(', '), 4)
+          .start(0)
       }
     } else {
       client = net.connect(fileInfo.port, fileInfo.ip)
@@ -418,33 +368,16 @@ export default class XDCC extends Client {
       if (received === fileInfo.length) {
         client.end()
       } else {
-        candidate.timeout = this.__setupTimeout(
-          [true, candidate.nick],
-          {
-            eventname: 'error',
-            message: `timeout: not receiving data`,
-            padding: 6,
-            fileInfo: fileInfo,
-            bar: bar,
-            candidateEvent: candidate,
-          },
-          1000 * 2,
-          () => {
-            client.end()
-            stream.end()
-            if (server) {
-              server.close(() => {
-                this.portInUse = this.portInUse.filter(p => p !== pick)
-              })
-            }
-            this.__redownload(candidate, fileInfo)
-          }
-        )
+        new Timeout(this, candidate, fileInfo, bar)
+          .eventType('error')
+          .eventMessage('%danger% Timeout: Not receiving data', 6)
+          .disconnectAfter(stream, client, server)
+          .start(2)
       }
     })
     client.on('end', () => {
       candidate.timeout ? clearTimeout(candidate.timeout) : false
-      this.__verb(8, 'green', `done: \x1b[36m${fileInfo.file}\x1b[0m`)
+      ePrint('%success% done : %cyan%' + fileInfo.file, 8)
       candidate.success.push(fileInfo.file)
       if (server) {
         server.close(() => {
@@ -457,34 +390,20 @@ export default class XDCC extends Client {
       candidate.emit('downloaded', fileInfo)
       this.emit('next', candidate)
     })
+
     client.on('error', (e: { message: string }) => {
       candidate.timeout ? clearTimeout(candidate.timeout) : false
       const msg =
         e.message === 'cancel'
-          ? `Job cancelled: ${colors.cyan(candidate.nick)}`
-          : `connection error: ${colors.bold(colors.red(e.message))}`
+          ? '%danger% Job cancelled: %cyan%' + candidate.nick
+          : '%danger% Connection error: %yellow%' + e.message
       const event = e.message === 'cancel' ? 'cancel' : 'error'
-      candidate.timeout = this.__setupTimeout(
-        [true, candidate.nick],
-        {
-          eventname: event,
-          message: msg,
-          bar: bar,
-          padding: 6,
-          fileInfo: fileInfo,
-          candidateEvent: candidate,
-        },
-        0,
-        () => {
-          if (server) {
-            server.close(() => {
-              this.portInUse = this.portInUse.filter(p => p !== pick)
-            })
-          }
-          stream.end()
-          client.end()
+      new Timeout(this, candidate, fileInfo, bar)
+        .eventType(event)
+        .eventMessage(msg)
+        .disconnectAfter(stream, client, server)
+        .executeLater(() => {
           if (e.message === 'cancel') {
-            candidate.timeout ? clearTimeout(candidate.timeout) : false
             candidate.failures.push(candidate.now)
             candidate.queue = []
             if (fs.existsSync(fileInfo.filePath)) {
@@ -494,8 +413,8 @@ export default class XDCC extends Client {
           } else {
             this.__redownload(candidate, fileInfo)
           }
-        }
-      )
+        })
+        .start(0)
     })
   }
 
@@ -609,39 +528,7 @@ export default class XDCC extends Client {
       }
     }
   }
-  __setupTimeout(
-    xdccCancel: [boolean, string],
-    errorInfo: {
-      eventname: string
-      message: string
-      padding: number
-      fileInfo?: FileInfo
-      bar?: ProgressBar
-      candidateEvent: Job
-    },
-    timeout: number,
-    /* eslint-disable @typescript-eslint/ban-types */
-    exec?: Function
-  ): NodeJS.Timeout {
-    return setTimeout(() => {
-      if (xdccCancel[0]) {
-        this.say(xdccCancel[1], 'XDCC CANCEL')
-      }
-      const error = new Error(errorInfo.message)
-      this.emit(errorInfo.eventname, error, errorInfo.fileInfo)
-      if (this.verbose) {
-        const msg = `\u2937 `.padStart(errorInfo.padding) + colors.bold(colors.red('\u0058 ')) + errorInfo.message
-        if (errorInfo.bar) {
-          errorInfo.bar.interrupt(msg, false)
-        } else {
-          console.error(msg)
-        }
-      }
-      if (exec) {
-        exec()
-      }
-    }, timeout)
-  }
+
   __setupProgressBar(len: number): ProgressBar {
     return new ProgressBar(
       `\u2937`.padStart(6) + ` ${colors.bold(colors.green('\u2713'))} downloading [:bar] ETA: :eta @ :rate - :percent `,
@@ -659,22 +546,6 @@ export default class XDCC extends Client {
     )[0]
   }
 
-  __verb(pad: number, color: 'red' | 'cyan' | 'green', message: string): void {
-    if (this.verbose) {
-      let sign
-      if (color === 'red') {
-        sign = '\u0058'
-      } else if (color === 'cyan') {
-        sign = '\u2139'
-      } else if (color === 'green') {
-        pad--
-        sign = '\u2713'
-      } else {
-        throw new Error()
-      }
-      console.error(`\u2937`.padStart(pad), colors.bold(colors[color](sign)), message)
-    }
-  }
   __removeCurrentFromQueue(candidate: Job): void {
     candidate.queue = candidate.queue.filter(pending => pending.toString() !== candidate.now.toString())
   }
@@ -682,17 +553,17 @@ export default class XDCC extends Client {
     if (candidate.retry < this.retry) {
       candidate.retry++
       this.say(candidate.nick, `xdcc send ${candidate.now}`)
-      this.__verb(6, 'cyan', `retrying: ${candidate.retry}/${this.retry}`)
+      ePrint(`%info% retrying: ${candidate.retry}/${this.retry}`, 6)
       candidate.timeout = setInterval(() => {
         if (candidate.retry < this.retry) {
           this.say(candidate.nick, `xdcc send ${candidate.now}`)
           candidate.retry++
-          this.__verb(6, 'cyan', `retrying: ${candidate.retry}/${this.retry}`)
+          ePrint(`%info% retrying: ${candidate.retry}/${this.retry}`, 6)
         } else {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           clearInterval(candidate.timeout!)
           const pad = this.retry > 0 ? 7 : 6
-          this.__verb(pad, 'red', `skipped pack: ${candidate.now}`)
+          ePrint(`%danger% skipped pack: ${candidate.now}`, pad)
           candidate.emit('error', `skipped pack: ${candidate.now}`, fileInfo)
           this.emit('error', `skipped pack: ${candidate.now}`, fileInfo)
           candidate.failures.push(candidate.now)
@@ -704,7 +575,7 @@ export default class XDCC extends Client {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       clearInterval(candidate.timeout!)
       const pad = this.retry > 0 ? 7 : 6
-      this.__verb(pad, 'red', `skipped pack: ${candidate.now}`)
+      ePrint(`%danger% skipped pack: ${candidate.now}`, pad)
       candidate.emit('error', `skipped pack: ${candidate.now}`, fileInfo)
       this.emit('error', `skipped pack: ${candidate.now}`, fileInfo)
       candidate.failures.push(candidate.now)

@@ -4,10 +4,12 @@
 import XDCC from '../index'
 import { program } from 'commander'
 import { version } from '../package.json'
-import Profiler from './helper/profiler'
-import TypeChecker from './helper/typechecker'
+import Profiler from '../helpers/bin-helpers/profiler'
+import TypeChecker from '../helpers/bin-helpers/typechecker'
 import * as path from 'path'
 import * as colors from 'colors/safe'
+
+Profiler.InitFolder()
 
 program
   .version(version)

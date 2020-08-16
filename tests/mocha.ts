@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import 'mocha'
 import { expect } from 'chai'
-import XDCC from '../'
+import XDCC from '..'
 
 const XDCC2 = require('../').default
 let start: XDCC
@@ -46,7 +47,7 @@ describe('initialize', () => {
   it('download()', function (done) {
     start.once('request', (res: { target: string; packets: number[] }) => {
       let check
-      for (var i = 0; i < res.packets.length; i++) {
+      for (let i = 0; i < res.packets.length; i++) {
         check = [1, 2, 5][i] === res.packets[i]
       }
       if (check) {

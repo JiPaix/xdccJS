@@ -1,5 +1,5 @@
-import { Params } from '../@types/params'
-import { checkedParams } from '../@types/paramsChecked'
+import { Params } from '../interfaces/params'
+import { checkedParams } from '../interfaces/paramsChecked'
 import * as path from 'path'
 import * as fs from 'fs'
 

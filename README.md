@@ -105,7 +105,7 @@ Some events are accessible globally from `xdccJS` and from `Jobs`
 PSA: Using console.log is not recommended, this example is for the sake of showing xdccJS capabilities  
 FYI: Setting `verbose` to `true` gives the same results as this example (with colors and better formatting).  
 
-- `on('read')` *[global]* : when xdccJS is ready to download
+- `on('ready')` *[global]* : when xdccJS is ready to download
 ```js
 xdccJS.on('ready', ()=> {
   // download() here

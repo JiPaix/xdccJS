@@ -1,16 +1,31 @@
-import * as colors from 'colors/safe'
-export default function Print(string: string, padding = 0): void {
+export default function ePrint(string: string, padding = 0): void {
   string = string
-    .replace('%bold%', '\x1b[2m')
-    .replace('%red%', '\x1b[31m')
-    .replace('%cyan%', '\x1b[36m')
-    .replace('%green%', '\x1b[32m')
-    .replace('%reset%', '\x1b[0m')
-    .replace('%grey%', '\x1b[90m')
-    .replace('%yellow%', '\x1b[33')
-    .replace('%danger%', colors.bold(colors.red('\u0058')))
-    .replace('%info%', colors.bold(colors.cyan('\u2139')))
-    .replace('%success%', colors.bold(colors.green('\u2713')))
+    .replace(/%bold%/g, '\x1b[2m')
+    .replace(/%red%/g, '\x1b[31m')
+    .replace(/%cyan%/g, '\x1b[36m')
+    .replace(/%green%/g, '\x1b[32m')
+    .replace(/%reset%/g, '\x1b[0m')
+    .replace(/%grey%/g, '\x1b[90m')
+    .replace(/%yellow%/g, '\x1b[33m')
+    .replace(/%danger%/g, '\x1b[1m\x1b[31m\u0058\x1b[0m')
+    .replace(/%info%/g, '\x1b[1m\x1b[36m\u2139\x1b[0m')
+    .replace(/%success%/g, '\x1b[1m\x1b[32m\u2713\x1b[0m')
   string = string + '\x1b[0m'
-  console.error(string.padStart(padding))
+  console.error(`\u2937`.padStart(padding), string)
+}
+
+export function colorize(string: string): string {
+  string = string
+    .replace(/%bold%/g, '\x1b[2m')
+    .replace(/%red%/g, '\x1b[31m')
+    .replace(/%cyan%/g, '\x1b[36m')
+    .replace(/%green%/g, '\x1b[32m')
+    .replace(/%reset%/g, '\x1b[0m')
+    .replace(/%grey%/g, '\x1b[90m')
+    .replace(/%yellow%/g, '\x1b[33')
+    .replace(/%danger%/g, '\x1b[1m\x1b[31m\u0058\x1b[0m')
+    .replace(/%info%/g, '\x1b[1m\x1b[36m\u2139\x1b[0m')
+    .replace(/%success%/g, '\x1b[1m\x1b[32m\u2713\x1b[0m')
+  string = string + '\x1b[0m'
+  return string
 }
