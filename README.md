@@ -39,6 +39,7 @@ const XDCC = require('xdccjs').default
 import XDCC from 'xdccJS'
 ```
 ## Configuration
+
 The simpliest way to start xdccJS is :
 ```js
 let opts = {
@@ -64,7 +65,10 @@ const opts = {
 
 const xdccJS = new XDCC(opts)
 ```
-Description of all options avaliable <a href="https://jipaix.github.io/xdccJS/interfaces/params.html">here</a>
+**xdccJS includes (and extends) [@kiwiirc/irc-framework](https://github.com/kiwiirc/irc-framework)**, if you need more advanced (IRC) features check their [documentation](https://github.com/kiwiirc/irc-framework/blob/master/docs/clientapi.md) and some [examples](/examples) on how its used with xdccJS
+
+
+
 
 ## Download
 
