@@ -17,6 +17,7 @@ import * as net from 'net'
 import * as ProgressBar from './lib/progress'
 import * as colors from 'colors/safe'
 import * as ip from 'public-ip'
+import { Params } from './interfaces/params'
 
 /**
  * XDCC
@@ -209,24 +210,28 @@ export default class XDCC extends Client {
    *    host: 'irc.newserver.net'
    * })
    */
-  public reconnect(info?: { host: string; port?: number; chan?: string | string[] }): void {
+  public reconnect(info?: Params): void {
     this.quit()
-    this.connectionTimeout = setTimeout(() => {
+    setTimeout(() => {
       if (info) {
-        info = TypeChecker.paramChecker(info, true)
-        this.host = info.host
-        this.port = info.port || 6667
-        this.chan = typeof info.chan === 'string' || !info.chan ? [] : info.chan
+        const checkedParams = TypeChecker.paramChecker(info)
+        this.host = checkedParams.host
+        this.nick = checkedParams.nick
+        this.path = checkedParams.path
+        this.verbose = checkedParams.verbose
+        this.chan = checkedParams.chan
+        this.passivePort = checkedParams.passivePort
+        this.retry = checkedParams.retry
+        this.chan = this.chan.map(c => TypeChecker.chanHashtag(c))
       }
-      if (!this.connected) {
-        this.connect({
-          host: this.host,
-          port: this.port,
-          nick: this.nick,
-          encoding: 'utf8',
-        })
-      }
-    }, 2000)
+      this.connect({
+        host: this.host,
+        port: this.port,
+        nick: this.nick,
+        encoding: 'utf8',
+      })
+      console.log('connect!')
+    }, 1000 * 5)
   }
   /**
    * @ignore
@@ -503,29 +508,25 @@ export default class XDCC extends Client {
     if (parts === null) {
       throw new TypeError(`CTCP : received unexpected msg : ${text}`)
     }
+    const fileInfo: FileInfo = {
+      type: `${parts[0]} ${parts[1]}`,
+      file: parts[2].replace(/"/g, ''),
+      filePath: this.path ? path.normalize(this.path + '/' + parts[2].replace(/"/g, '')) : 'pipe',
+      ip: this.__uint32ToIP(parseInt(parts[3], 10)),
+      port: parseInt(parts[4], 10),
+      length: parseInt(parts[5], 10),
+      token: parseInt(parts[6], 10),
+    }
     if (parts[1] === 'SEND') {
-      return {
-        type: `${parts[0]} ${parts[1]}`,
-        file: parts[2].replace(/"/g, ''),
-        filePath: this.path ? path.normalize(this.path + '/' + parts[2].replace(/"/g, '')) : 'pipe',
-        ip: this.__uint32ToIP(parseInt(parts[3], 10)),
-        port: parseInt(parts[4], 10),
-        length: parseInt(parts[5], 10),
-        token: parseInt(parts[6], 10),
-      }
-    } else if (parts[1] === 'ACCEPT') {
+      return fileInfo
+    }
+    if (parts[1] === 'ACCEPT') {
       const resume = this.resumequeue.filter(q => q.nick == nick)
       this.resumequeue = this.resumequeue.filter(q => q.nick !== nick)
-      return {
-        type: `${parts[0]} ${parts[1]}`,
-        file: parts[2].replace(/"/g, ''),
-        filePath: path.normalize(this.path + '/' + parts[2].replace(/"/g, '')),
-        ip: resume[0].ip,
-        port: parseInt(parts[3], 10),
-        length: resume[0].length,
-        position: parseInt(parts[4], 10),
-        token: resume[0].token,
-      }
+      fileInfo.ip = resume[0].ip
+      fileInfo.length = resume[0].length
+      fileInfo.token = resume[0].token
+      return fileInfo
     }
   }
 
@@ -549,28 +550,12 @@ export default class XDCC extends Client {
   __removeCurrentFromQueue(candidate: Job): void {
     candidate.queue = candidate.queue.filter(pending => pending.toString() !== candidate.now.toString())
   }
+
   __redownload(candidate: Job, fileInfo?: FileInfo): void {
     if (candidate.retry < this.retry) {
-      candidate.retry++
       this.say(candidate.nick, `xdcc send ${candidate.now}`)
+      candidate.retry++
       ePrint(`%info% retrying: ${candidate.retry}/${this.retry}`, 6)
-      candidate.timeout = setInterval(() => {
-        if (candidate.retry < this.retry) {
-          this.say(candidate.nick, `xdcc send ${candidate.now}`)
-          candidate.retry++
-          ePrint(`%info% retrying: ${candidate.retry}/${this.retry}`, 6)
-        } else {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          clearInterval(candidate.timeout!)
-          const pad = this.retry > 0 ? 7 : 6
-          ePrint(`%danger% skipped pack: ${candidate.now}`, pad)
-          candidate.emit('error', `skipped pack: ${candidate.now}`, fileInfo)
-          this.emit('error', `skipped pack: ${candidate.now}`, fileInfo)
-          candidate.failures.push(candidate.now)
-          this.__removeCurrentFromQueue(candidate)
-          this.emit('next', candidate)
-        }
-      }, 1000 * 15)
     } else {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       clearInterval(candidate.timeout!)
@@ -579,6 +564,7 @@ export default class XDCC extends Client {
       candidate.emit('error', `skipped pack: ${candidate.now}`, fileInfo)
       this.emit('error', `skipped pack: ${candidate.now}`, fileInfo)
       candidate.failures.push(candidate.now)
+      this.__removeCurrentFromQueue(candidate)
       this.emit('next', candidate)
     }
   }

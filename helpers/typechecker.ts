@@ -4,7 +4,7 @@ import * as path from 'path'
 import * as fs from 'fs'
 
 class TypeChecker {
-  paramChecker(params: Params, recheck?: boolean): CheckedParams {
+  paramChecker(params: Params): CheckedParams {
     let nick: string
     if (params.nick) {
       nick = params.randomizeNick ? this.__nickRandomizer(params.nick) : params.nick
@@ -17,7 +17,7 @@ class TypeChecker {
       port: this._is('port', params.port, 'number', 6667),
       path: this.__pathCheck(params.path),
       chan: this.__chanCheck(params.chan),
-      retry: recheck ? this._is('retry', params.retry, 'number', 1) : params.retry,
+      retry: this._is('retry', params.retry, 'number', 1),
       nick: nick,
       passivePort: this._is('passivePort', params.passivePort, 'object', [5001]),
     }
