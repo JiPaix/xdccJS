@@ -17,7 +17,7 @@ export interface Candidate {
   /**
    * @ignore
    */
-  timeout: {}
+  timeout: { [prop: string]: string }
   /**
    * @description Package number currently downloading
    */
