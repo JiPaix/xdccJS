@@ -1,8 +1,3 @@
-import { FileInfo } from './fileinfo'
-import { PassThrough } from 'stream'
-import * as net from 'net'
-import * as fs from 'fs'
-
 /**
  * @ignore
  */
@@ -24,18 +19,6 @@ export interface Candidate {
    * @ignore
    */
   timeout: {
-    bar?: ProgressBar
-    fileInfo?: FileInfo
-    to?: NodeJS.Timeout
-    eventType?: string
-    message?: string
-    padding?: number
-    delay?: number
-    fn?: () => void
-    stream?: fs.WriteStream | PassThrough
-    server?: net.Server
-    socket?: net.Socket
-    pick?: number
     clear: () => void
   }
   /**

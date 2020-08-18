@@ -47,6 +47,7 @@ export class Job extends EventEmitter {
       now: _.clone(this.now),
       success: _.clone(this.success),
       failed: _.clone(this.failures),
+      cancel: this.cancel,
     }
     return info
   }

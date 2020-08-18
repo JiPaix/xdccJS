@@ -13,11 +13,11 @@ export class Connect extends Client {
     super()
     let nick = params.nick || 'xdccJS'
     if (params.randomizeNick) {
-      nick = this.__nickRandomizer(nick)
+      nick = this.nickRandomizer(nick)
     }
     this.host = this._is('host', params.host, 'string')
     this._is('port', params.port, 'number', 6667)
-    this.chan = this.__chanCheck(params.chan)
+    this.chan = this.chanCheck(params.chan)
     this.verbose = this._is('verbose', params.verbose, 'boolean', false)
     this.connect({
       host: params.host,
@@ -37,7 +37,7 @@ export class Connect extends Client {
       this.emit('ready')
     })
   }
-  private __nickRandomizer(nick: string): string {
+  private nickRandomizer(nick: string): string {
     if (nick) {
       if (nick.length > 6) {
         nick = nick.substr(0, 6)
@@ -62,7 +62,7 @@ export class Connect extends Client {
       return variable
     }
   }
-  private __chanCheck(chan?: string | string[]): string[] {
+  private chanCheck(chan?: string | string[]): string[] {
     if (typeof chan === 'string') {
       return [this.chanHashtag(chan)]
     } else if (Array.isArray(chan)) {

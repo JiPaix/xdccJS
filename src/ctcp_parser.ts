@@ -26,7 +26,7 @@ export interface ParamsCTCP extends ParamsTimeout {
    * params.path = false
    * ```
    * */
-  path?: string | boolean
+  path?: string | false
 }
 export class CtcpParser extends AddJob {
   path: string | boolean
@@ -38,41 +38,41 @@ export class CtcpParser extends AddJob {
   }[] = []
   constructor(params: ParamsCTCP) {
     super(params)
-    this.path = this.__pathCheck(params.path)
+    this.path = this.pathCheck(params.path)
     this.on('ctcp request', (resp: { [prop: string]: string }): void => {
-      const isDownloadRequest = this.__checkBeforeDL(resp, this.candidates[0])
+      const isDownloadRequest = this.checkBeforeDL(resp, this.candidates[0])
       if (isDownloadRequest) {
         this.emit('prepareDL', isDownloadRequest)
       }
     })
   }
 
-  private __pathCheck(fpath?: ParamsCTCP['path']): string | false {
+  private pathCheck(fpath?: ParamsCTCP['path']): string | false {
     if (typeof fpath === 'string') {
       const tmp = path.normalize(fpath)
       if (path.isAbsolute(tmp)) {
-        this.__mkdir(tmp)
+        this.mkdir(tmp)
         return tmp
       } else {
-        this.__mkdir(path.join(path.resolve('./'), fpath))
+        this.mkdir(path.join(path.resolve('./'), fpath))
         return path.join(path.resolve('./'), fpath)
       }
     } else {
       return false
     }
   }
-  private __mkdir(path: string): void {
+  private mkdir(path: string): void {
     if (!fs.existsSync(path)) {
       fs.mkdirSync(path, {
         recursive: true,
       })
     }
   }
-  private __checkBeforeDL(
+  private checkBeforeDL(
     resp: { [prop: string]: string },
     candidate: Job
   ): { fileInfo: FileInfo; candidate: Job } | void {
-    const fileInfo = this.__parseCtcp(resp.message, resp.nick)
+    const fileInfo = this.parseCtcp(resp.message, resp.nick)
     let isResume = false
     if (fileInfo) {
       this.TOeventMessage(candidate, `couldn't connect to %yellow%` + fileInfo.ip + ':' + fileInfo.port, 6)
@@ -121,7 +121,7 @@ export class CtcpParser extends AddJob {
     }
   }
 
-  protected __parseCtcp(text: string, nick: string): FileInfo | void {
+  protected parseCtcp(text: string, nick: string): FileInfo | void {
     const parts = text.match(/(?:[^\s"]+|"[^"]*")+/g)
     if (parts === null) {
       throw new TypeError(`CTCP : received unexpected msg : ${text}`)
@@ -130,7 +130,7 @@ export class CtcpParser extends AddJob {
       type: `${parts[0]} ${parts[1]}`,
       file: parts[2].replace(/"/g, ''),
       filePath: this.path ? path.normalize(this.path + '/' + parts[2].replace(/"/g, '')) : 'pipe',
-      ip: this.__uint32ToIP(parseInt(parts[3], 10)),
+      ip: this.uint32ToIP(parseInt(parts[3], 10)),
       port: parseInt(parts[4], 10),
       length: parseInt(parts[5], 10),
       token: parseInt(parts[6], 10),
@@ -150,7 +150,7 @@ export class CtcpParser extends AddJob {
     }
   }
 
-  protected __uint32ToIP(n: number): string {
+  protected uint32ToIP(n: number): string {
     const byte1 = n & 255,
       byte2 = (n >> 8) & 255,
       byte3 = (n >> 16) & 255,

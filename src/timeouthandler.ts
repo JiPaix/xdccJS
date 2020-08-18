@@ -40,7 +40,9 @@ export class TimeOut extends Connect {
     candidate.timeout.delay = delay
     return this
   }
-
+  /**
+   * @ignore
+   */
   protected TOdisconnectAfter(
     candidate: Job,
     stream: fs.WriteStream | PassThrough,
@@ -78,7 +80,7 @@ export class TimeOut extends Connect {
       if (candidate.timeout.fn) {
         candidate.timeout.fn()
       } else {
-        this.__redownload(candidate)
+        this.redownload(candidate)
       }
     }, delay * 1000)
   }
@@ -100,11 +102,11 @@ export class TimeOut extends Connect {
     }
   }
 
-  protected __removeNowFromQueue(candidate: Job): void {
+  protected removeNowFromQueue(candidate: Job): void {
     candidate.queue = candidate.queue.filter(pending => pending.toString() !== candidate.now.toString())
   }
 
-  protected __redownload(candidate: Job, fileInfo?: FileInfo): void {
+  protected redownload(candidate: Job, fileInfo?: FileInfo): void {
     if (candidate.retry < this.retry) {
       candidate.retry++
       this.say(candidate.nick, `xdcc send ${candidate.now}`)
@@ -116,7 +118,7 @@ export class TimeOut extends Connect {
       candidate.emit('error', `skipped pack: ${candidate.now}`, fileInfo)
       this.emit('error', `skipped pack: ${candidate.now}`, fileInfo)
       candidate.failures.push(candidate.now)
-      this.__removeNowFromQueue(candidate)
+      this.removeNowFromQueue(candidate)
       this.emit('next', candidate)
     }
   }

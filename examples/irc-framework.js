@@ -1,7 +1,7 @@
 /**
  * How to use IRC-FRAMEWORK within xdccJS :
  *
- * Basically everything in their documentation can be used in xdccJS
+ * everything in their documentation can be used in xdccJS
  * https://github.com/kiwiirc/irc-framework/blob/master/docs/clientapi.md
  */
 
@@ -62,13 +62,13 @@ xdccJS.on('ready', () => {
    * Join password protected channels
    * https://github.com/kiwiirc/irc-framework/blob/master/docs/clientapi.md#joinchannel--key
    */
-  xdccJS.join('#channel', 'password')
+  xdccJS.irc.join('#channel', 'password')
 
   /**
    * Join channels in TOPIC
    * https://github.com/kiwiirc/irc-framework/blob/master/docs/events.md#channels
    */
-  xdccJS.on('topic', info => {
+  xdccJS.irc.on('topic', info => {
     const channels = info.topic.match(/#\w*/g)
     for (const chan of channels) {
       xdccJS.join(chan)
@@ -79,14 +79,14 @@ xdccJS.on('ready', () => {
    * Send Messages
    * https://github.com/kiwiirc/irc-framework/blob/master/docs/clientapi.md#saytarget-message
    */
-  xdccJS.say('#channel', 'hello everyone')
-  xdccJS.say('someone', 'hello!')
+  xdccJS.irc.say('#channel', 'hello everyone')
+  xdccJS.irc.say('someone', 'hello!')
 
   /**
    * Read Messages
    * https://github.com/kiwiirc/irc-framework/blob/master/docs/events.md#messaging
    */
-  xdccJS.on('message', data => {
+  xdccJS.irc.on('message', data => {
     // if message is sent to me
     if (data.target == xdccJS.user.nick) {
       do_something_with(data.nick, data.message)

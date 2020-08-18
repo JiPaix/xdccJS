@@ -112,6 +112,7 @@ Each `Job` can :
   ```js
   job.cancel()
   ```
+- Emit events (see event documentation below)
 
 ### Events
 Some events are accessible globally from `xdccJS` and from `Jobs`  
@@ -152,7 +153,7 @@ Some events are accessible globally from `xdccJS` and from `Jobs`
       //=> { name: 'a-bot', queue: [98], now: 62, sucess: ['file.txt'], failed: [50] }
   })
   ```
-- >[<span style="color:#37bd80">xdccJS</span> | <span style="color:#37bd80">Job</span>].<span style="color:#9865a3">on</span>(<span style="color:#1a3ea1">'pipe'</span>) : <span style="color:black">When a file is getting piped (see <a href="#Pipes">Pipe documentation</a>)</span>
+- >[<span style="color:#37bd80">xdccJS</span> | <span style="color:#37bd80">Job</span>].<span style="color:#9865a3">on</span>(<span style="color:#1a3ea1">'pipe'</span>) : <span style="color:black">When a file is getting piped (see <a href="#pipes">Pipe documentation</a>)</span>
   ```js
   xdccJS.on('pipe', (stream, fileInfo) => {
     stream.pipe(somewhere)
