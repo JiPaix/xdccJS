@@ -71,40 +71,46 @@ export class CtcpParser extends AddJob {
   private __checkBeforeDL(
     resp: { [prop: string]: string },
     candidate: Job
-  ): { fileInfo: FileInfo; candidate: Job } | false {
+  ): { fileInfo: FileInfo; candidate: Job } | void {
     const fileInfo = this.__parseCtcp(resp.message, resp.nick)
-    let isNotResume = true
+    let isResume = false
     if (fileInfo) {
-      this.TOeventType(candidate, 'error')
-        .TOeventMessage(candidate, `couldn't connect to %yellow%` + fileInfo.ip + ':' + fileInfo.port, 6)
+      this.TOeventMessage(candidate, `couldn't connect to %yellow%` + fileInfo.ip + ':' + fileInfo.port, 6)
+        .TOeventType(candidate, 'error')
         .TOstart(candidate, 15, fileInfo)
       if (fileInfo.type === 'DCC SEND') {
-        if (fs.existsSync(fileInfo.filePath) && this.path) {
-          isNotResume = false
-          let position = fs.statSync(fileInfo.filePath).size
-          if (fileInfo.length === position) {
-            position = position - 8192
-          }
-          const quotedFilename = /\s/.test(fileInfo.file) ? `"${fileInfo.file}"` : fileInfo.file
-          this.ctcpRequest(resp.nick, 'DCC RESUME', quotedFilename, fileInfo.port, position, fileInfo.token)
-          this.resumequeue.push({
-            nick: resp.nick,
-            ip: fileInfo.ip,
-            length: fileInfo.length,
-            token: fileInfo.token,
-          })
-          this.TOeventType(candidate, 'error')
-            .TOeventMessage(candidate, `couldn't resume download of %cyan%` + fileInfo.file, 6)
-            .TOstart(candidate, 30, fileInfo)
-        }
+        isResume = this.checkExistingFiles(fileInfo, candidate, resp)
       }
-      if (isNotResume) {
+      if (!isResume) {
         return { fileInfo: fileInfo, candidate: candidate }
-      } else {
-        return false
       }
     }
-    return false
+  }
+  private checkExistingFiles(
+    fileInfo: FileInfo,
+    candidate: Job,
+    resp: {
+      [prop: string]: string
+    }
+  ): boolean {
+    if (fs.existsSync(fileInfo.filePath) && this.path) {
+      let position = fs.statSync(fileInfo.filePath).size
+      fileInfo.length === position ? (position = position - 8192) : false
+      const quotedFilename = /\s/.test(fileInfo.file) ? `"${fileInfo.file}"` : fileInfo.file
+      this.ctcpRequest(resp.nick, 'DCC RESUME', quotedFilename, fileInfo.port, position, fileInfo.token)
+      this.resumequeue.push({
+        nick: resp.nick,
+        ip: fileInfo.ip,
+        length: fileInfo.length,
+        token: fileInfo.token,
+      })
+      this.TOeventType(candidate, 'error')
+        .TOeventMessage(candidate, `couldn't resume download of %cyan%` + fileInfo.file, 6)
+        .TOstart(candidate, 30, fileInfo)
+      return true
+    } else {
+      return false
+    }
   }
   protected __parseCtcp(text: string, nick: string): FileInfo | void {
     const parts = text.match(/(?:[^\s"]+|"[^"]*")+/g)
@@ -134,6 +140,7 @@ export class CtcpParser extends AddJob {
       return fileInfo
     }
   }
+
   protected __uint32ToIP(n: number): string {
     const byte1 = n & 255,
       byte2 = (n >> 8) & 255,
