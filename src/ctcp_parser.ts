@@ -86,6 +86,7 @@ export class CtcpParser extends AddJob {
       }
     }
   }
+
   private checkExistingFiles(
     fileInfo: FileInfo,
     candidate: Job,
@@ -94,9 +95,8 @@ export class CtcpParser extends AddJob {
     }
   ): boolean {
     if (fs.existsSync(fileInfo.filePath) && this.path) {
-      let position = fs.statSync(fileInfo.filePath).size
-      fileInfo.length === position ? (position = position - 8192) : false
-      const quotedFilename = /\s/.test(fileInfo.file) ? `"${fileInfo.file}"` : fileInfo.file
+      const position = fs.statSync(fileInfo.filePath).size - 8192
+      const quotedFilename = this.fileNameWithQuotes(fileInfo.file)
       this.ctcpRequest(resp.nick, 'DCC RESUME', quotedFilename, fileInfo.port, position, fileInfo.token)
       this.resumequeue.push({
         nick: resp.nick,
@@ -112,6 +112,15 @@ export class CtcpParser extends AddJob {
       return false
     }
   }
+
+  private fileNameWithQuotes(string: string): string {
+    if (/\s/.test(string)) {
+      return `"${string}"`
+    } else {
+      return string
+    }
+  }
+
   protected __parseCtcp(text: string, nick: string): FileInfo | void {
     const parts = text.match(/(?:[^\s"]+|"[^"]*")+/g)
     if (parts === null) {
