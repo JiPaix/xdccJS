@@ -48,7 +48,7 @@ export class Connect extends Client {
     return nick + Math.floor(Math.random() * 999) + 1
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected _is(name: string, variable: any, type: string, def?: any): any {
+  protected _is(name: string, variable: unknown, type: string, def?: unknown): any {
     if (typeof variable !== type) {
       if (typeof def === 'undefined') {
         const err = new TypeError()
