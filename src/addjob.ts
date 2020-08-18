@@ -15,7 +15,7 @@ export class AddJob extends TimeOut {
     this.on('request', (args: { target: string; packets: number[] }) => {
       const candidate = this.__getCandidate(args.target)
       candidate.now = args.packets[0]
-      this.__removeCurrentFromQueue(candidate)
+      this.__removeNowFromQueue(candidate)
       this.say(args.target, `xdcc send ${candidate.now}`)
       this.TOeventType(candidate, 'error')
         .TOeventMessage(candidate, `timeout: no response from %yellow%${candidate.nick}`, 6)
@@ -28,9 +28,7 @@ export class AddJob extends TimeOut {
       )
     })
   }
-  protected __removeCurrentFromQueue(candidate: Job): void {
-    candidate.queue = candidate.queue.filter(pending => pending.toString() !== candidate.now.toString())
-  }
+
   public download(target: string, packets: string | string[] | number | number[]): Job {
     const range = this.parsePackets(packets)
     let candidate = this.__getCandidate(target)
@@ -115,10 +113,10 @@ export class AddJob extends TimeOut {
   protected onNext(): void {
     this.on('next', (candidate: Job) => {
       candidate.retry = 0
-      this.__removeCurrentFromQueue(candidate)
+      this.__removeNowFromQueue(candidate)
       if (candidate.queue.length) {
         candidate.now = candidate.queue[0]
-        this.__removeCurrentFromQueue(candidate)
+        this.__removeNowFromQueue(candidate)
         this.say(candidate.nick, `xdcc send ${candidate.now}`)
       } else {
         this.candidates = this.candidates.filter(c => c.nick !== candidate.nick)

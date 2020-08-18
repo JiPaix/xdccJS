@@ -100,6 +100,10 @@ export class TimeOut extends Connect {
     }
   }
 
+  protected __removeNowFromQueue(candidate: Job): void {
+    candidate.queue = candidate.queue.filter(pending => pending.toString() !== candidate.now.toString())
+  }
+
   protected __redownload(candidate: Job, fileInfo?: FileInfo): void {
     if (candidate.retry < this.retry) {
       this.say(candidate.nick, `xdcc send ${candidate.now}`)
@@ -112,7 +116,7 @@ export class TimeOut extends Connect {
       candidate.emit('error', `skipped pack: ${candidate.now}`, fileInfo)
       this.emit('error', `skipped pack: ${candidate.now}`, fileInfo)
       candidate.failures.push(candidate.now)
-      candidate.queue = candidate.queue.filter(pending => pending.toString() !== candidate.now.toString())
+      this.__removeNowFromQueue(candidate)
       this.emit('next', candidate)
     }
   }
