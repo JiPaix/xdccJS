@@ -40,7 +40,11 @@ export class AddJob extends TimeOut {
         now: 0,
         failures: [],
         success: [],
-        timeout: {},
+        timeout: {
+          clear: (): void => {
+            throw Error('calling clear too soon')
+          },
+        },
       }
       const newCand = new Job(base)
       this.candidates.push(newCand)

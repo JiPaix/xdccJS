@@ -108,7 +108,7 @@ export default class XDCC extends CtcpParser {
       }
     })
     client.on('end', () => {
-      candidate.timeout.to ? clearTimeout(candidate.timeout.to) : false
+      candidate.timeout.clear()
       this.print('%success% done : %cyan%' + fileInfo.file, 8)
       candidate.success.push(fileInfo.file)
       if (server && pick) {
@@ -123,7 +123,7 @@ export default class XDCC extends CtcpParser {
       this.emit('next', candidate)
     })
     client.on('error', (e: { message: string }) => {
-      candidate.timeout.to ? clearTimeout(candidate.timeout.to) : false
+      candidate.timeout.clear()
       const msg =
         e.message === 'cancel'
           ? '%danger% Job cancelled: %cyan%' + candidate.nick
@@ -150,7 +150,7 @@ export default class XDCC extends CtcpParser {
 
   private __makeCancelable(candidate: Job, client: net.Socket): () => void {
     const fn = (): void => {
-      candidate.timeout.to ? clearTimeout(candidate.timeout.to) : false
+      candidate.timeout.clear()
       const cancel = new Error('cancel')
       client.destroy(cancel)
     }

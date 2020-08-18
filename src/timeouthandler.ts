@@ -70,7 +70,8 @@ export class TimeOut extends Connect {
   protected TOstart(candidate: Job, delay: number, fileInfo?: FileInfo, bar?: ProgressBar): void {
     candidate.timeout.fileInfo = fileInfo
     candidate.timeout.bar = bar
-    candidate.timeout.to ? clearTimeout(candidate.timeout.to) : false
+    this.makeClearable(candidate)
+    candidate.timeout.clear()
     candidate.timeout.to = setTimeout(() => {
       this.routine(candidate)
       this.TOendStreams(candidate)
@@ -106,18 +107,24 @@ export class TimeOut extends Connect {
 
   protected __redownload(candidate: Job, fileInfo?: FileInfo): void {
     if (candidate.retry < this.retry) {
-      this.say(candidate.nick, `xdcc send ${candidate.now}`)
       candidate.retry++
+      this.say(candidate.nick, `xdcc send ${candidate.now}`)
       this.print(`%info% retrying: ${candidate.retry}/${this.retry}`, 6)
     } else {
-      candidate.timeout.to ? clearTimeout(candidate.timeout.to) : false
-      const pad = this.retry > 0 ? 7 : 6
+      candidate.timeout.clear()
+      const pad = candidate.retry + 5
       this.print(`%danger% skipped pack: ${candidate.now}`, pad)
       candidate.emit('error', `skipped pack: ${candidate.now}`, fileInfo)
       this.emit('error', `skipped pack: ${candidate.now}`, fileInfo)
       candidate.failures.push(candidate.now)
       this.__removeNowFromQueue(candidate)
       this.emit('next', candidate)
+    }
+  }
+
+  private makeClearable(candidate: Job): void {
+    candidate.timeout.clear = (): void => {
+      candidate.timeout.to ? clearTimeout(candidate.timeout.to) : false
     }
   }
 }

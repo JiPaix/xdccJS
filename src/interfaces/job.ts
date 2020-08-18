@@ -27,6 +27,7 @@ export class Job extends EventEmitter {
     server?: net.Server
     socket?: net.Socket
     pick?: number
+    clear: () => void
   }
   constructor(candidate: Candidate) {
     super()
