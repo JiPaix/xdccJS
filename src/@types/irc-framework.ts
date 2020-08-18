@@ -1,5 +1,6 @@
 /* eslint-disable */
 /// <reference path="websocket.ts"/>
+
 declare module 'irc-framework' {
   import { EventEmitter } from 'eventemitter3'
   import * as DuplexStream from 'stream'
@@ -8,13 +9,13 @@ declare module 'irc-framework' {
   export class Client extends EventEmitter {
     constructor(options?: ClientConstructorParameters)
 
-    static setDefaultTransport(transport: any): void
+    private setDefaultTransport(transport: any): void
 
     // get Message(): ClassDecorator;//TODO
     /** Applies the default options to the options object given as impot, and returns it. */
-    _applyDefaultOptions(user_options: ClientConstructorParameters): ClientConstructorParameters
+    private _applyDefaultOptions(user_options: ClientConstructorParameters): ClientConstructorParameters
 
-    createStructure(): void
+    private createStructure(): void
 
     /** Is connected to the IRC network and successfully registered. */
     connected: boolean
@@ -23,7 +24,7 @@ declare module 'irc-framework' {
     /** The object for the connected message, as long as the client is connected. */ user: IrcUser
 
     // TODO
-    /** Request */ requestCap(capability: string): void
+    /** Request */ private requestCap(capability: string): void
 
     use(a: any): any
 
@@ -37,11 +38,11 @@ declare module 'irc-framework' {
      * 3. Routed through middleware
      * 4. Emitted from the client instance
      */
-    proxyIrcEvents(): void
+    private proxyIrcEvents(): void
 
-    addCommandHandlerListeners(): void
+    private addCommandHandlerListeners(): void
 
-    registerToNetwork(): void
+    private registerToNetwork(): void
 
     startPeriodicPing(): void
 
@@ -69,14 +70,14 @@ declare module 'irc-framework' {
 
     mode(channel: string, mode: string, extra_args?: string[]): void
 
-    inviteList(channel: string, cb: (e: Event) => any): void
+    private inviteList(channel: string, cb: (e: Event) => any): void
 
     // TODO: typeof e?
     invite(channel: string, nick: string): void
 
-    addInvite(channel: String, mask: string): void
+    private addInvite(channel: String, mask: string): void
 
-    removeInvite(channel: string, mask: string): void
+    private removeInvite(channel: string, mask: string): void
 
     banlist(channel: string, cb: (e: Event) => any): void
 
@@ -103,19 +104,19 @@ declare module 'irc-framework' {
      */
     who(target: string, cb: (event: any) => void): void
 
-    list(/* params: Array<string> */): void
+    private list(/* params: Array<string> */): void
 
     channel(channel_name: string): IrcChannel
 
-    match(match_regex: string, cb: (event: Event) => any, message_type: string): { stop: () => void }
+    private match(match_regex: string, cb: (event: Event) => any, message_type: string): { stop: () => void }
 
-    matchNotice(match_regex: string, cb: (event: Event) => any): void
+    private matchNotice(match_regex: string, cb: (event: Event) => any): void
 
-    matchMessage(match_regex: string, cb: (event: Event) => any): void
+    private matchMessage(match_regex: string, cb: (event: Event) => any): void
 
-    matchAction(match_regex: string, cb: (event: Event) => any): void
+    private matchAction(match_regex: string, cb: (event: Event) => any): void
 
-    stringToBlocks(str: string, block_size?: number): string[]
+    private stringToBlocks(str: string, block_size?: number): string[]
 
     on(eventType: string | symbol, cb: (event?: any, another?: any) => void): this
 

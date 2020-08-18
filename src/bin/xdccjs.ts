@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 /* eslint-disable @typescript-eslint/triple-slash-reference */
-/// <reference path="../@types/irc-framework.ts"/>
-import XDCC from '../index'
+/// <reference path="../src/@types/irc-framework.ts"/>
+import XDCC from '../../index'
 import { program } from 'commander'
-import { version } from '../package.json'
+import { version } from '../../package.json'
 import Profiler from '../helpers/bin-helpers/profiler'
 import TypeChecker from '../helpers/bin-helpers/typechecker'
 import * as path from 'path'
 import * as colors from 'colors/safe'
+import { Params } from '../interfaces/params'
 
 Profiler.InitFolder()
 
@@ -45,7 +46,7 @@ if (Profiler.isProfile(program)) {
   }
 
   if (TypeChecker.checkArgs(program)) {
-    const opts = {
+    const opts:Params = {
       host: program.server,
       port: program.port,
       nick: program.username,

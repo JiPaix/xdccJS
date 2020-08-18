@@ -49,21 +49,20 @@ let opts = {
 
 const xdccJS = new XDCC(opts)
 ```
-But you can also define a set of options to your preference
+But you can also define a set of options to your preference : a full description of these parameters [here](docs/interfaces/params.html)
 ```js
 const opts = {
-  host: 'irc.server.net', // IRC hostname                           - required
-  port: 6660, // IRC port                                           - optional (default: 6667)
-  nick: 'ItsMeJiPaix', // Nickname                                  - optional (default: xdccJS + random)
-  chan: ['#candy', '#fruits'], // Channel(s)                        - optional
-  path: 'downloads', // Download path                               - optional (default: false, which enables piping)
-  retry: 2, // Nb of retries on failed download                     - optional (default: 1)
-  verbose: false, // Display download progress and jobs status      - optioanl (default: false)
-  randomizeNick: false, // Add random numbers at end of nickname    - optional (default: true)
-  passivePort: [5000, 5001, 5002], // Port to use with Passive DCC                - optional (default: [5001])
+  host: 'irc.server.net', // IRC hostname                                       - required
+  port: 6660, // IRC port                                                       - optional (default: 6667)
+  nick: 'ItsMeJiPaix', // Nickname                                              - optional (default: xdccJS + random)
+  chan: ['#candy', '#fruits'], // channel or array of channels                  - optional
+  path: 'downloads', // Download path or 'false'                                - optional (default: false, which enables piping)
+  retry: 2, // Nb of retries on failed download                                 - optional (default: 1)
+  verbose: false, // Display download progress and jobs status                  - optioanl (default: false)
+  randomizeNick: false, // Add random numbers at end of nickname                - optional (default: true)
+  passivePort: [5000, 5001, 5002], // Array of port(s) to use with Passive DCC  - optional (default: [5001])
 }
 
-const xdccJS = new XDCC(opts)
 ```
 **xdccJS includes (and extends) [@kiwiirc/irc-framework](https://github.com/kiwiirc/irc-framework)**, if you need more advanced (IRC) features check their [documentation](https://github.com/kiwiirc/irc-framework/blob/master/docs/clientapi.md) and some [examples](/examples) on how its used with xdccJS
 
@@ -117,17 +116,17 @@ Each `Job` can :
 ### Events
 Some events are accessible globally from `xdccJS` and from `Jobs`  
 
-<p stlye="font-size:smaller;">FYI: this example is for the sake of showing xdccJS capabilities, if you need download status to be displayed in a nice way just start xdccJS with parameter `verbose = true`</p>
+<p style="font-size:smaller;">FYI: this example is for the sake of showing xdccJS capabilities, if you need download status to be displayed in a nice way just start xdccJS with parameter `verbose = true`</p>
  
 
-- >[<span style="color:black">xdcc</span> | <span style="color:black">job</span>].<span style="color:#9865a3">on</span>('ready') : when xdccJS is ready to download
+- >[<span style="color:#37bd80">xdccJS</span>].<span style="color:#9865a3">on</span>(<span style="color:#1a3ea1">'ready'</span>) : <span style="color:black">when xdccJS is ready to download</span>
   ```js
   xdccJS.on('ready', ()=> {
     // download() here
   })
   ```
 
-- `on('downloaded')` *[global+job]* : When a file is downloaded
+- >[<span style="color:#37bd80">xdccJS</span> | <span style="color:#37bd80">Job</span>].<span style="color:#9865a3">on</span>(<span style="color:#1a3ea1">'downloaded'</span>) : <span style="color:black">When a file successfully is downloaded</span>
   ```js
   xdccJS.on('downloaded', (fileInfo) => {
     console.log(fileInfo.filePath) //=> /home/user/xdccJS/downloads/myfile.pdf
@@ -140,18 +139,20 @@ Some events are accessible globally from `xdccJS` and from `Jobs`
     //=> { file: 'filename.pdf', filePath: '/home/user/xdccJS/downloads/myfile.pdf', length: 5844849 }
   })
   ```
-- `on('done')` *[global+job]* : When a job is done
+- >[<span style="color:#37bd80">xdccJS</span> | <span style="color:#37bd80">Job</span>].<span style="color:#9865a3">on</span>(<span style="color:#1a3ea1">'done'</span>) : <span style="color:black">When a job has no remaining package in queue</span>
   ```js
   xdccJS.on('done', (job) => {
     console.log(job.show())
+      //=> { name: 'a-bot', queue: [98], now: 62, sucess: ['file.txt'], failed: [50] }
   })
 
   job.on('done', (job) => {
     console.log('Job2 is done!')
     console.log(job.show())
+      //=> { name: 'a-bot', queue: [98], now: 62, sucess: ['file.txt'], failed: [50] }
   })
   ```
-- `on('pipe')` *[global+job]* : When a file is getting piped (see pipe documentation)
+- >[<span style="color:#37bd80">xdccJS</span> | <span style="color:#37bd80">Job</span>].<span style="color:#9865a3">on</span>(<span style="color:#1a3ea1">'pipe'</span>) : <span style="color:black">When a file is getting piped (see <a href="#Pipes">Pipe documentation</a>)</span>
   ```js
   xdccJS.on('pipe', (stream, fileInfo) => {
     stream.pipe(somewhere)
@@ -161,16 +162,19 @@ Some events are accessible globally from `xdccJS` and from `Jobs`
 
   job.on('pipe', (stream, fileInfo) => {
     stream.pipe(somewhere)
+    console.log(fileInfo)
+    //=> { file: 'filename.pdf', filePath: 'pipe', length: 5844849 }
   })
   ```
-- `on('error')` *[global+job]* : When something goes wrong
+- >[<span style="color:#37bd80">xdccJS</span> | <span style="color:#37bd80">Job</span>].<span style="color:#9865a3">on</span>(<span style="color:#1a3ea1">'error'</span>) : <span style="color:black">When something goes wrong</span>
   ```js
   xdccJS.on('error', (message) => {
-    // message`includes IRC errors and downloads errors 
+    console.log(message)
+    //=> timeout: no response from XDCC|BLUE
   })
 
   job.on('error', (message) => {
-    // message onlmy includes download errors
+    //=> timeout: no response from XDCC|BLUE
   })
   ```
 ### Pipes

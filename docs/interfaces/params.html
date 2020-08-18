@@ -2743,7 +2743,12 @@ img {
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
 				<li>
-					<span class="target">Params</span>
+					<a href="paramsctcp.html" class="tsd-signature-type">ParamsCTCP</a>
+					<ul class="tsd-hierarchy">
+						<li>
+							<span class="target">Params</span>
+						</li>
+					</ul>
 				</li>
 			</ul>
 		</section>
@@ -2754,15 +2759,15 @@ img {
 					<section class="tsd-index-section ">
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="params.html#chan" class="tsd-kind-icon">chan</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="params.html#host" class="tsd-kind-icon">host</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="params.html#nick" class="tsd-kind-icon">nick</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="params.html#chan" class="tsd-kind-icon">chan</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="params.html#host" class="tsd-kind-icon">host</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="params.html#nick" class="tsd-kind-icon">nick</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="params.html#passiveport" class="tsd-kind-icon">passive<wbr>Port</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="params.html#path" class="tsd-kind-icon">path</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="params.html#port" class="tsd-kind-icon">port</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="params.html#randomizenick" class="tsd-kind-icon">randomize<wbr>Nick</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="params.html#retry" class="tsd-kind-icon">retry</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="params.html#verbose" class="tsd-kind-icon">verbose</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="params.html#path" class="tsd-kind-icon">path</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="params.html#port" class="tsd-kind-icon">port</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="params.html#randomizenick" class="tsd-kind-icon">randomize<wbr>Nick</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="params.html#retry" class="tsd-kind-icon">retry</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="params.html#verbose" class="tsd-kind-icon">verbose</a></li>
 						</ul>
 					</section>
 				</div>
@@ -2770,13 +2775,15 @@ img {
 		</section>
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Properties</h2>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 				<a name="chan" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> chan</h3>
 				<div class="tsd-signature tsd-kind-icon">chan<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
+					<p>Inherited from <a href="paramsirc.html">ParamsIRC</a>.<a href="paramsirc.html#chan">chan</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/params.ts#L45">@types/params.ts:45</a></li>
+						<li>Defined in src/connect.ts:153</li>
+						<li>Defined in src/interfaces/params.ts:45</li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2795,16 +2802,32 @@ params.chan = [<span class="hljs-string">&#x27;#wee&#x27;</span>, <span class="h
 params.chan = <span class="hljs-string">&#x27;weee&#x27;</span>
 params.chan = [<span class="hljs-string">&#x27;#wee&#x27;</span>, <span class="hljs-string">&#x27;happy&#x27;</span>]</code></pre>
 						</dd>
+						<dt>description</dt>
+						<dd><p>Channel(s) to join</p>
+						</dd>
+						<dt>remark</dt>
+						<dd><p>Hashtags are optional</p>
+						</dd>
+						<dt>example</dt>
+						<dd><pre><code class="language-js">params.chan = <span class="hljs-string">&#x27;#wee&#x27;</span>
+<span class="hljs-comment">// can also be an array</span>
+params.chan = [<span class="hljs-string">&#x27;#wee&#x27;</span>, <span class="hljs-string">&#x27;#happy&#x27;</span>]
+<span class="hljs-comment">// in both cases # are optional</span>
+params.chan = <span class="hljs-string">&#x27;weee&#x27;</span>
+params.chan = [<span class="hljs-string">&#x27;#wee&#x27;</span>, <span class="hljs-string">&#x27;happy&#x27;</span>]</code></pre>
+						</dd>
 					</dl>
 				</div>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 				<a name="host" class="tsd-anchor"></a>
 				<h3>host</h3>
 				<div class="tsd-signature tsd-kind-icon">host<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
+					<p>Inherited from <a href="paramsirc.html">ParamsIRC</a>.<a href="paramsirc.html#host">host</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/params.ts#L14">@types/params.ts:14</a></li>
+						<li>Defined in src/connect.ts:121</li>
+						<li>Defined in src/interfaces/params.ts:14</li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2815,20 +2838,37 @@ params.chan = [<span class="hljs-string">&#x27;#wee&#x27;</span>, <span class="h
 						<dt>example</dt>
 						<dd><pre><code class="language-js">params.host = <span class="hljs-string">&#x27;irc.server.net&#x27;</span></code></pre>
 						</dd>
+						<dt>description</dt>
+						<dd><p>IRC server&#39;s hostname</p>
+						</dd>
+						<dt>example</dt>
+						<dd><pre><code class="language-js">params.host = <span class="hljs-string">&#x27;irc.server.net&#x27;</span></code></pre>
+						</dd>
 					</dl>
 				</div>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 				<a name="nick" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> nick</h3>
 				<div class="tsd-signature tsd-kind-icon">nick<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
+					<p>Inherited from <a href="paramsirc.html">ParamsIRC</a>.<a href="paramsirc.html#nick">nick</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/params.ts#L31">@types/params.ts:31</a></li>
+						<li>Defined in src/connect.ts:139</li>
+						<li>Defined in src/interfaces/params.ts:31</li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
 					<dl class="tsd-comment-tags">
+						<dt>description</dt>
+						<dd><p>Nickname to use on IRC</p>
+						</dd>
+						<dt>default</dt>
+						<dd><p><code>&#39;xdccJS&#39; + randomInt</code></p>
+						</dd>
+						<dt>example</dt>
+						<dd><pre><code class="language-js">params.nick = <span class="hljs-string">&#x27;JiPaix&#x27;</span></code></pre>
+						</dd>
 						<dt>description</dt>
 						<dd><p>Nickname to use on IRC</p>
 						</dd>
@@ -2844,11 +2884,24 @@ params.chan = [<span class="hljs-string">&#x27;#wee&#x27;</span>, <span class="h
 				<div class="tsd-signature tsd-kind-icon">passive<wbr>Port<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/params.ts#L93">@types/params.ts:93</a></li>
+						<li>Defined in src/index.ts:19</li>
+						<li>Defined in src/interfaces/params.ts:93</li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
 					<dl class="tsd-comment-tags">
+						<dt>description</dt>
+						<dd><p>Array of ports for passive DCC</p>
+						</dd>
+						<dt>default</dt>
+						<dd><p><code>5001</code></p>
+						</dd>
+						<dt>remark</dt>
+						<dd><p>Some xdcc bots use passive dcc, this require to have these ports opened on your computer/router/firewall</p>
+						</dd>
+						<dt>example</dt>
+						<dd><pre><code class="language-js">params.passivePort = [<span class="hljs-number">3213</span>, <span class="hljs-number">3214</span>]</code></pre>
+						</dd>
 						<dt>description</dt>
 						<dd><p>Array of ports for passive DCC</p>
 						</dd>
@@ -2864,13 +2917,15 @@ params.chan = [<span class="hljs-string">&#x27;#wee&#x27;</span>, <span class="h
 					</dl>
 				</div>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 				<a name="path" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> path</h3>
 				<div class="tsd-signature tsd-kind-icon">path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span></div>
 				<aside class="tsd-sources">
+					<p>Inherited from <a href="paramsctcp.html">ParamsCTCP</a>.<a href="paramsctcp.html#path">path</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/params.ts#L66">@types/params.ts:66</a></li>
+						<li>Defined in src/ctcp_parser.ts:29</li>
+						<li>Defined in src/interfaces/params.ts:66</li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2896,16 +2951,39 @@ params.path = <span class="hljs-string">&#x27;downloads/xdcc&#x27;</span> <span 
 						<dd><pre><code class="language-js"><span class="hljs-comment">// explicitly enable piping</span>
 params.path = <span class="hljs-literal">false</span></code></pre>
 						</dd>
+						<dt>description</dt>
+						<dd><p>Download path</p>
+						</dd>
+						<dt>default</dt>
+						<dd><p><code>false</code></p>
+						</dd>
+						<dt>remark</dt>
+						<dd><p><code>undefined</code> or <code>false</code> enables piping, see <a href="../classes/xdcc.html#download">XDCC.download</a> for example on how to use pipes.</p>
+						</dd>
+						<dt>example</dt>
+						<dd><pre><code class="language-js"><span class="hljs-comment">// absolute path</span>
+params.path = <span class="hljs-string">&#x27;/home/user/downloads</span></code></pre>
+						</dd>
+						<dt>example</dt>
+						<dd><pre><code class="language-js"><span class="hljs-comment">// relative path</span>
+params.path = <span class="hljs-string">&#x27;downloads/xdcc&#x27;</span> <span class="hljs-comment">//=&gt; /your/project/folder/downloads/xdcc</span></code></pre>
+						</dd>
+						<dt>example</dt>
+						<dd><pre><code class="language-js"><span class="hljs-comment">// explicitly enable piping</span>
+params.path = <span class="hljs-literal">false</span></code></pre>
+						</dd>
 					</dl>
 				</div>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 				<a name="port" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> port</h3>
 				<div class="tsd-signature tsd-kind-icon">port<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
+					<p>Inherited from <a href="paramsirc.html">ParamsIRC</a>.<a href="paramsirc.html#port">port</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/params.ts#L23">@types/params.ts:23</a></li>
+						<li>Defined in src/connect.ts:130</li>
+						<li>Defined in src/interfaces/params.ts:23</li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2919,16 +2997,27 @@ params.path = <span class="hljs-literal">false</span></code></pre>
 						<dt>example</dt>
 						<dd><pre><code class="language-js">params.port = <span class="hljs-number">6669</span></code></pre>
 						</dd>
+						<dt>description</dt>
+						<dd><p>IRC server PORT</p>
+						</dd>
+						<dt>default</dt>
+						<dd><p><code>6667</code></p>
+						</dd>
+						<dt>example</dt>
+						<dd><pre><code class="language-js">params.port = <span class="hljs-number">6669</span></code></pre>
+						</dd>
 					</dl>
 				</div>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 				<a name="randomizenick" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> randomize<wbr>Nick</h3>
 				<div class="tsd-signature tsd-kind-icon">randomize<wbr>Nick<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></div>
 				<aside class="tsd-sources">
+					<p>Inherited from <a href="paramsirc.html">ParamsIRC</a>.<a href="paramsirc.html#randomizenick">randomizeNick</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/params.ts#L84">@types/params.ts:84</a></li>
+						<li>Defined in src/connect.ts:162</li>
+						<li>Defined in src/interfaces/params.ts:84</li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2942,16 +3031,27 @@ params.path = <span class="hljs-literal">false</span></code></pre>
 						<dt>example</dt>
 						<dd><pre><code class="language-js">params.randomizeNick = <span class="hljs-literal">false</span></code></pre>
 						</dd>
+						<dt>description</dt>
+						<dd><p>Add Random numbers to nickname</p>
+						</dd>
+						<dt>default:</dt>
+						<dd><p><code>true</code></p>
+						</dd>
+						<dt>example</dt>
+						<dd><pre><code class="language-js">params.randomizeNick = <span class="hljs-literal">false</span></code></pre>
+						</dd>
 					</dl>
 				</div>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 				<a name="retry" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> retry</h3>
 				<div class="tsd-signature tsd-kind-icon">retry<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
+					<p>Inherited from <a href="paramstimeout.html">ParamsTimeout</a>.<a href="paramstimeout.html#retry">retry</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/params.ts#L103">@types/params.ts:103</a></li>
+						<li>Defined in src/timeouthandler.ts:18</li>
+						<li>Defined in src/interfaces/params.ts:103</li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2967,20 +3067,42 @@ params.path = <span class="hljs-literal">false</span></code></pre>
 xdccJS.download(<span class="hljs-string">&#x27;xdcc|bot&#x27;</span>, <span class="hljs-string">&#x27;20, 25&#x27;</span>)
 <span class="hljs-comment">// if download of pack &#x27;20&#x27; fails it will retry twice before skipping to pack &#x27;25&#x27;</span></code></pre>
 						</dd>
+						<dt>description</dt>
+						<dd><p>Number of retries when a download fails</p>
+						</dd>
+						<dt>default</dt>
+						<dd><p><code>1</code></p>
+						</dd>
+						<dt>example</dt>
+						<dd><pre><code class="language-js"><span class="hljs-comment">// we&#x27;ve set params.retry = 2</span>
+xdccJS.download(<span class="hljs-string">&#x27;xdcc|bot&#x27;</span>, <span class="hljs-string">&#x27;20, 25&#x27;</span>)
+<span class="hljs-comment">// if download of pack &#x27;20&#x27; fails it will retry twice before skipping to pack &#x27;25&#x27;</span></code></pre>
+						</dd>
 					</dl>
 				</div>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 				<a name="verbose" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> verbose</h3>
 				<div class="tsd-signature tsd-kind-icon">verbose<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></div>
 				<aside class="tsd-sources">
+					<p>Inherited from <a href="paramsirc.html">ParamsIRC</a>.<a href="paramsirc.html#verbose">verbose</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/params.ts#L75">@types/params.ts:75</a></li>
+						<li>Defined in src/connect.ts:171</li>
+						<li>Defined in src/interfaces/params.ts:75</li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
 					<dl class="tsd-comment-tags">
+						<dt>description</dt>
+						<dd><p>Display information regarding your download in console</p>
+						</dd>
+						<dt>default</dt>
+						<dd><p><code>false</code></p>
+						</dd>
+						<dt>example</dt>
+						<dd><pre><code class="language-js">params.verbose = <span class="hljs-literal">true</span></code></pre>
+						</dd>
 						<dt>description</dt>
 						<dd><p>Display information regarding your download in console</p>
 						</dd>
@@ -3004,10 +3126,11 @@ xdccJS.download(<span class="hljs-string">&#x27;xdcc|bot&#x27;</span>, <span cla
 						<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
 					</ul>
 					<ul class="tsd-legend">
-						<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
 					</ul>
 					<ul class="tsd-legend">
-						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 					</ul>
 					<ul class="tsd-legend">
 						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>

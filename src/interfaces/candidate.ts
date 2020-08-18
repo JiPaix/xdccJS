@@ -17,7 +17,7 @@ export interface Candidate {
   /**
    * @ignore
    */
-  timeout?: NodeJS.Timeout
+  timeout: {}
   /**
    * @description Package number currently downloading
    */

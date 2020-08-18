@@ -2913,7 +2913,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/job.ts#L14">@types/job.ts:14</a></li>
+								<li>Defined in src/interfaces/job.ts:30</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2935,7 +2935,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">cancel<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/job.ts#L7">@types/job.ts:7</a></li>
+						<li>Defined in src/interfaces/job.ts:10</li>
 					</ul>
 				</aside>
 			</section>
@@ -2945,7 +2945,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">failures<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/job.ts#L8">@types/job.ts:8</a></li>
+						<li>Defined in src/interfaces/job.ts:11</li>
 					</ul>
 				</aside>
 			</section>
@@ -2955,7 +2955,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">nick<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/job.ts#L9">@types/job.ts:9</a></li>
+						<li>Defined in src/interfaces/job.ts:12</li>
 					</ul>
 				</aside>
 			</section>
@@ -2965,7 +2965,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">now<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/job.ts#L10">@types/job.ts:10</a></li>
+						<li>Defined in src/interfaces/job.ts:13</li>
 					</ul>
 				</aside>
 			</section>
@@ -2975,7 +2975,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">queue<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/job.ts#L11">@types/job.ts:11</a></li>
+						<li>Defined in src/interfaces/job.ts:14</li>
 					</ul>
 				</aside>
 			</section>
@@ -2985,7 +2985,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">retry<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/job.ts#L12">@types/job.ts:12</a></li>
+						<li>Defined in src/interfaces/job.ts:15</li>
 					</ul>
 				</aside>
 			</section>
@@ -2995,19 +2995,60 @@ img {
 				<div class="tsd-signature tsd-kind-icon">success<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/job.ts#L13">@types/job.ts:13</a></li>
+						<li>Defined in src/interfaces/job.ts:16</li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 				<a name="timeout" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagOptional">Optional</span> timeout</h3>
-				<div class="tsd-signature tsd-kind-icon">timeout<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Timeout</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></div>
+				<h3>timeout</h3>
+				<div class="tsd-signature tsd-kind-icon">timeout<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>bar<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ProgressBar</span><span class="tsd-signature-symbol">; </span>delay<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>eventType<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>fileInfo<span class="tsd-signature-symbol">?: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">; </span>fn<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">; </span>message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>padding<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>pick<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>server<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">net.Server</span><span class="tsd-signature-symbol">; </span>socket<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">net.Socket</span><span class="tsd-signature-symbol">; </span>stream<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">WriteStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">PassThrough</span><span class="tsd-signature-symbol">; </span>to<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">NodeJS.Timeout</span><span class="tsd-signature-symbol"> }</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/job.ts#L14">@types/job.ts:14</a></li>
+						<li>Defined in src/interfaces/job.ts:17</li>
 					</ul>
 				</aside>
+				<div class="tsd-type-declaration">
+					<h4>Type declaration</h4>
+					<ul class="tsd-parameters">
+						<li class="tsd-parameter">
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> bar<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ProgressBar</span></h5>
+						</li>
+						<li class="tsd-parameter">
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> delay<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
+						</li>
+						<li class="tsd-parameter">
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> event<wbr>Type<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+						</li>
+						<li class="tsd-parameter">
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> file<wbr>Info<span class="tsd-signature-symbol">?: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a></h5>
+						</li>
+						<li class="tsd-parameter">
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> fn<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span></h5>
+						</li>
+						<li class="tsd-parameter">
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+						</li>
+						<li class="tsd-parameter">
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> padding<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
+						</li>
+						<li class="tsd-parameter">
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> pick<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
+						</li>
+						<li class="tsd-parameter">
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> server<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">net.Server</span></h5>
+						</li>
+						<li class="tsd-parameter">
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> socket<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">net.Socket</span></h5>
+						</li>
+						<li class="tsd-parameter">
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> stream<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">WriteStream</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">PassThrough</span></h5>
+						</li>
+						<li class="tsd-parameter">
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> to<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">NodeJS.Timeout</span></h5>
+						</li>
+					</ul>
+				</div>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
 				<a name="eventemitter" class="tsd-anchor"></a>
@@ -3078,6 +3119,10 @@ img {
 					<li class="tsd-signature tsd-kind-icon">emit<span class="tsd-signature-symbol">(</span>eventType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"error"</span>, msg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, fileInfo<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
 					<li class="tsd-signature tsd-kind-icon">emit<span class="tsd-signature-symbol">(</span>eventType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"done"</span>, endCandidate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>failures<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>nick<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>success<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
 					<li class="tsd-signature tsd-kind-icon">emit<span class="tsd-signature-symbol">(</span>eventType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"downloaded"</span>, fileInfo<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+					<li class="tsd-signature tsd-kind-icon">emit<span class="tsd-signature-symbol">(</span>eventType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span>, <span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					<li class="tsd-signature tsd-kind-icon">emit<span class="tsd-signature-symbol">(</span>eventType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"error"</span>, msg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, fileInfo<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+					<li class="tsd-signature tsd-kind-icon">emit<span class="tsd-signature-symbol">(</span>eventType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"done"</span>, endCandidate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>failures<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>nick<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>success<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+					<li class="tsd-signature tsd-kind-icon">emit<span class="tsd-signature-symbol">(</span>eventType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"downloaded"</span>, fileInfo<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
@@ -3113,7 +3158,7 @@ img {
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="job.html">Job</a>.<a href="job.html#emit">emit</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/job.ts#L45">@types/job.ts:45</a></li>
+								<li>Defined in src/interfaces/job.ts:61</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -3131,7 +3176,7 @@ img {
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="job.html">Job</a>.<a href="job.html#emit">emit</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/job.ts#L46">@types/job.ts:46</a></li>
+								<li>Defined in src/interfaces/job.ts:62</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -3152,7 +3197,7 @@ img {
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="job.html">Job</a>.<a href="job.html#emit">emit</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/job.ts#L47">@types/job.ts:47</a></li>
+								<li>Defined in src/interfaces/job.ts:63</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -3181,7 +3226,93 @@ img {
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="job.html">Job</a>.<a href="job.html#emit">emit</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/job.ts#L55">@types/job.ts:55</a></li>
+								<li>Defined in src/interfaces/job.ts:71</li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>eventType: <span class="tsd-signature-type">"downloaded"</span></h5>
+							</li>
+							<li>
+								<h5>fileInfo: <a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
+					</li>
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Inherited from <a href="job.html">Job</a>.<a href="job.html#emit">emit</a></p>
+							<ul>
+								<li>Defined in src/interfaces/job.ts:80</li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>eventType: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span></h5>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>args: <span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">[]</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+					</li>
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Inherited from <a href="job.html">Job</a>.<a href="job.html#emit">emit</a></p>
+							<ul>
+								<li>Defined in src/interfaces/job.ts:81</li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>eventType: <span class="tsd-signature-type">"error"</span></h5>
+							</li>
+							<li>
+								<h5>msg: <span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5>fileInfo: <a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
+					</li>
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Inherited from <a href="job.html">Job</a>.<a href="job.html#emit">emit</a></p>
+							<ul>
+								<li>Defined in src/interfaces/job.ts:82</li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>eventType: <span class="tsd-signature-type">"done"</span></h5>
+							</li>
+							<li>
+								<h5>endCandidate: <span class="tsd-signature-symbol">{ </span>failures<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>nick<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>success<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter">
+										<h5>failures<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h5>
+									</li>
+									<li class="tsd-parameter">
+										<h5>nick<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+									</li>
+									<li class="tsd-parameter">
+										<h5>success<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+									</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
+					</li>
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Inherited from <a href="job.html">Job</a>.<a href="job.html#emit">emit</a></p>
+							<ul>
+								<li>Defined in src/interfaces/job.ts:90</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -3231,7 +3362,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/job.ts#L36">@types/job.ts:36</a></li>
+								<li>Defined in src/interfaces/job.ts:52</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -3351,6 +3482,11 @@ img {
 					<li class="tsd-signature tsd-kind-icon">on<span class="tsd-signature-symbol">(</span>eventType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"done"</span>, cb<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>endCandidate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>failures<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>nick<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>success<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
 					<li class="tsd-signature tsd-kind-icon">on<span class="tsd-signature-symbol">(</span>eventType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"downloaded"</span>, cb<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>fileInfo<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
 					<li class="tsd-signature tsd-kind-icon">on<span class="tsd-signature-symbol">(</span>eventType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"pipe"</span>, cb<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>stream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PassThrough</span>, fileInfo<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+					<li class="tsd-signature tsd-kind-icon">on<span class="tsd-signature-symbol">(</span>eventType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span>, cb<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">unknown</span>, <span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+					<li class="tsd-signature tsd-kind-icon">on<span class="tsd-signature-symbol">(</span>eventType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"error"</span>, msg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, cb<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>fileInfo<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+					<li class="tsd-signature tsd-kind-icon">on<span class="tsd-signature-symbol">(</span>eventType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"done"</span>, cb<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>endCandidate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>failures<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>nick<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>success<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+					<li class="tsd-signature tsd-kind-icon">on<span class="tsd-signature-symbol">(</span>eventType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"downloaded"</span>, cb<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>fileInfo<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
+					<li class="tsd-signature tsd-kind-icon">on<span class="tsd-signature-symbol">(</span>eventType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"pipe"</span>, cb<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>stream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PassThrough</span>, fileInfo<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
@@ -3389,7 +3525,7 @@ img {
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="job.html">Job</a>.<a href="job.html#on">on</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/job.ts#L56">@types/job.ts:56</a></li>
+								<li>Defined in src/interfaces/job.ts:72</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -3428,7 +3564,7 @@ img {
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="job.html">Job</a>.<a href="job.html#on">on</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/job.ts#L57">@types/job.ts:57</a></li>
+								<li>Defined in src/interfaces/job.ts:73</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -3467,7 +3603,7 @@ img {
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="job.html">Job</a>.<a href="job.html#on">on</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/job.ts#L58">@types/job.ts:58</a></li>
+								<li>Defined in src/interfaces/job.ts:74</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -3514,7 +3650,7 @@ img {
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="job.html">Job</a>.<a href="job.html#on">on</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/job.ts#L59">@types/job.ts:59</a></li>
+								<li>Defined in src/interfaces/job.ts:75</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -3550,7 +3686,207 @@ img {
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="job.html">Job</a>.<a href="job.html#on">on</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/job.ts#L60">@types/job.ts:60</a></li>
+								<li>Defined in src/interfaces/job.ts:76</li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>eventType: <span class="tsd-signature-type">"pipe"</span></h5>
+							</li>
+							<li>
+								<h5>cb: <span class="tsd-signature-symbol">(</span>stream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PassThrough</span>, fileInfo<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter-signature">
+										<ul class="tsd-signatures tsd-kind-type-literal">
+											<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>stream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PassThrough</span>, fileInfo<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+										</ul>
+										<ul class="tsd-descriptions">
+											<li class="tsd-description">
+												<h4 class="tsd-parameters-title">Parameters</h4>
+												<ul class="tsd-parameters">
+													<li>
+														<h5>stream: <span class="tsd-signature-type">PassThrough</span></h5>
+													</li>
+													<li>
+														<h5>fileInfo: <a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a></h5>
+													</li>
+												</ul>
+												<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+											</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
+					</li>
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Inherited from <a href="job.html">Job</a>.<a href="job.html#on">on</a></p>
+							<ul>
+								<li>Defined in src/interfaces/job.ts:91</li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>eventType: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span></h5>
+							</li>
+							<li>
+								<h5>cb: <span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">unknown</span>, <span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter-signature">
+										<ul class="tsd-signatures tsd-kind-type-literal">
+											<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">unknown</span>, <span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+										</ul>
+										<ul class="tsd-descriptions">
+											<li class="tsd-description">
+												<h4 class="tsd-parameters-title">Parameters</h4>
+												<ul class="tsd-parameters">
+													<li>
+														<h5><span class="tsd-flag ts-flagOptional">Optional</span> event: <span class="tsd-signature-type">unknown</span></h5>
+													</li>
+													<li>
+														<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>args: <span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">[]</span></h5>
+													</li>
+												</ul>
+												<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+											</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
+					</li>
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Inherited from <a href="job.html">Job</a>.<a href="job.html#on">on</a></p>
+							<ul>
+								<li>Defined in src/interfaces/job.ts:92</li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>eventType: <span class="tsd-signature-type">"error"</span></h5>
+							</li>
+							<li>
+								<h5>msg: <span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5>cb: <span class="tsd-signature-symbol">(</span>fileInfo<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter-signature">
+										<ul class="tsd-signatures tsd-kind-type-literal">
+											<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>fileInfo<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+										</ul>
+										<ul class="tsd-descriptions">
+											<li class="tsd-description">
+												<h4 class="tsd-parameters-title">Parameters</h4>
+												<ul class="tsd-parameters">
+													<li>
+														<h5>fileInfo: <a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a></h5>
+													</li>
+												</ul>
+												<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+											</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
+					</li>
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Inherited from <a href="job.html">Job</a>.<a href="job.html#on">on</a></p>
+							<ul>
+								<li>Defined in src/interfaces/job.ts:93</li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>eventType: <span class="tsd-signature-type">"done"</span></h5>
+							</li>
+							<li>
+								<h5>cb: <span class="tsd-signature-symbol">(</span>endCandidate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>failures<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>nick<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>success<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter-signature">
+										<ul class="tsd-signatures tsd-kind-type-literal">
+											<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>endCandidate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>failures<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>nick<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>success<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+										</ul>
+										<ul class="tsd-descriptions">
+											<li class="tsd-description">
+												<h4 class="tsd-parameters-title">Parameters</h4>
+												<ul class="tsd-parameters">
+													<li>
+														<h5>endCandidate: <span class="tsd-signature-symbol">{ </span>failures<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>nick<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>success<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span></h5>
+														<ul class="tsd-parameters">
+															<li class="tsd-parameter">
+																<h5>failures<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h5>
+															</li>
+															<li class="tsd-parameter">
+																<h5>nick<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+															</li>
+															<li class="tsd-parameter">
+																<h5>success<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+															</li>
+														</ul>
+													</li>
+												</ul>
+												<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+											</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
+					</li>
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Inherited from <a href="job.html">Job</a>.<a href="job.html#on">on</a></p>
+							<ul>
+								<li>Defined in src/interfaces/job.ts:94</li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>eventType: <span class="tsd-signature-type">"downloaded"</span></h5>
+							</li>
+							<li>
+								<h5>cb: <span class="tsd-signature-symbol">(</span>fileInfo<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter-signature">
+										<ul class="tsd-signatures tsd-kind-type-literal">
+											<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>fileInfo<span class="tsd-signature-symbol">: </span><a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+										</ul>
+										<ul class="tsd-descriptions">
+											<li class="tsd-description">
+												<h4 class="tsd-parameters-title">Parameters</h4>
+												<ul class="tsd-parameters">
+													<li>
+														<h5>fileInfo: <a href="../interfaces/fileinfo.html" class="tsd-signature-type">FileInfo</a></h5>
+													</li>
+												</ul>
+												<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+											</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">this</span></h4>
+					</li>
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Inherited from <a href="job.html">Job</a>.<a href="job.html#on">on</a></p>
+							<ul>
+								<li>Defined in src/interfaces/job.ts:95</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -3705,33 +4041,16 @@ img {
 				<a name="show" class="tsd-anchor"></a>
 				<h3>show</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">show<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>failed<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>nick<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>now<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>queue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>success<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span></li>
+					<li class="tsd-signature tsd-kind-icon">show<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../index.html#displayedjob" class="tsd-signature-type">displayedJob</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/JiPaix/xdccJS/blob/305fd99/@types/job.ts#L26">@types/job.ts:26</a></li>
+								<li>Defined in src/interfaces/job.ts:42</li>
 							</ul>
 						</aside>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">{ </span>failed<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>nick<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>now<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>queue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>success<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span></h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter">
-								<h5>failed<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h5>
-							</li>
-							<li class="tsd-parameter">
-								<h5>nick<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
-							</li>
-							<li class="tsd-parameter">
-								<h5>now<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-							</li>
-							<li class="tsd-parameter">
-								<h5>queue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h5>
-							</li>
-							<li class="tsd-parameter">
-								<h5>success<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
-							</li>
-						</ul>
+						<h4 class="tsd-returns-title">Returns <a href="../index.html#displayedjob" class="tsd-signature-type">displayedJob</a></h4>
 					</li>
 				</ul>
 			</section>
@@ -3746,10 +4065,11 @@ img {
 						<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
 					</ul>
 					<ul class="tsd-legend">
-						<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
 					</ul>
 					<ul class="tsd-legend">
-						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 					</ul>
 					<ul class="tsd-legend">
 						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>

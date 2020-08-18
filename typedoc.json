@@ -1,15 +1,16 @@
 {
     "out": "docs",
     "name": "xdccJS",
-    "inputFiles": ["./index.ts", "./@types/candidate.ts", "./@types/jobs.ts", "./@types/params.ts"],
-    "exclude": "**/@types/irc-framework.ts,**/@types/websocket.ts,**/@types/paramsChecked.ts,typechecker.ts,**/test/*,**/bin/*,**/dist/**",
     "mode": "file",
+    "inputFiles": "./src",
+    "stripInternal": true,
     "excludePrivate": true,
     "excludeProtected": true,
     "excludeExternals": true,
     "includeDeclarations" : false,
     "readme": "none",
     "TOC": "XDCC",
-    "plugins": ["@wcardinal/typedoc-plugin-named-event", "typedoc-plugin-no-inherit", "typedoc-plugin-as-member-of"],
-    "theme": "minimal"
+    "theme": "minimal",
+    "plugins": ["@wcardinal/typedoc-plugin-named-event", "typedoc-plugin-no-inherit", "typedoc-plugin-as-member-of"]
+
 }

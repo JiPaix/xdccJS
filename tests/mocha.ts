@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import 'mocha'
 import { expect } from 'chai'
-import XDCC from '..'
+import XDCC, { Params } from '../src/index'
 
 const XDCC2 = require('../').default
 let start: XDCC
 
-const args = {
+const args: Params = {
   host: 'irc.rizon.net',
   nick: 'tester',
-  chan: '#jipaix',
+  chan: ['#jipaix'],
   path: 'downloads',
   port: 6660,
   retry: 0,

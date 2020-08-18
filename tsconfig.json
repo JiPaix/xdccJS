@@ -19,7 +19,7 @@
     // "outFile": "./",                       /* Concatenate and emit output to single file. */
     "outDir": "dist",
     /* Redirect output structure to the directory. */
-    // "rootDir": "./",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+    "rootDir": "./src",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
     // "composite": true,                     /* Enable project compilation */
     // "tsBuildInfoFile": "./",               /* Specify file to store incremental compilation information */
     // "removeComments": true,                /* Do not emit comments to output. */
@@ -52,7 +52,7 @@
     // "baseUrl": "./",                       /* Base directory to resolve non-absolute module names. */
     // "paths": {},                           /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
     // "rootDirs": [],                        /* List of root folders whose combined content represents the structure of the project at runtime. */
-    "typeRoots": ["@types", "node_modules/@types"],
+    "typeRoots": ["src/@types", "node_modules/@types"],
     /* List of folders to include type definitions from. */
     // "types": [],                           /* Type declaration files to be included in compilation. */
     "allowSyntheticDefaultImports": true,
@@ -77,9 +77,11 @@
   },
   "exclude": [
     "lib/**",
+    "src/@types/**",
     "node_modules/**",
     "dist/**",
     "./test.*",
-    "tests/**"
+    "tests/**",
+    "src/bin/**"
   ]
 }

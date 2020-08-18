@@ -16,11 +16,11 @@
   "scripts": {
     "pkg": "pkg ./dist/bin/xdccjs.js --out-path executables",
     "test": "snyk test && node ./node_modules/mocha/bin/mocha -r ts-node/register tests/mocha.ts",
-    "build": "node ./node_modules/rimraf/bin.js dist && node ./node_modules/typescript/bin/tsc && node intellisense.js && node ./build/index.js",
-    "prepublishOnly": "npm run build && npm run test && node intellisense.js",
+    "build": "node ./node_modules/rimraf/bin.js dist && node ./node_modules/typescript/bin/tsc && node ./build/index.js",
+    "prepublishOnly": "npm run build && npm run test && node ./build/index.js",
     "snyk-wiz": "node ./node_modules/snyk/dist/cli/index.js wizard",
-    "doc": "node ./node_modules/typedoc/bin/typedoc && node intellisense.js",
-    "intellisense": "node intellisense.js"
+    "doc": "node ./node_modules/typedoc/bin/typedoc && node ./build/index.js",
+    "intellisense": "node ./build/index.js"
   },
   "repository": {
     "type": "git",
