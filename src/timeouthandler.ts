@@ -87,16 +87,15 @@ export class TimeOut extends Connect {
     this.say(candidate.nick, 'XDCC CANCEL')
     if (typeof candidate.timeout.eventType === 'undefined') {
       throw Error('no event Type')
-    } else {
-      this.emit(candidate.timeout.eventType, new Error(candidate.timeout.message), candidate.timeout.fileInfo)
-      candidate.emit(candidate.timeout.eventType, new Error(candidate.timeout.message), candidate.timeout.fileInfo)
-      if (this.verbose) {
-        const msg = '%danger% ' + candidate.timeout.message
-        if (candidate.timeout.bar) {
-          candidate.timeout.bar.interrupt(msg, false)
-        } else {
-          this.print(msg, candidate.timeout.padding)
-        }
+    }
+    this.emit(candidate.timeout.eventType, new Error(candidate.timeout.message), candidate.timeout.fileInfo)
+    candidate.emit(candidate.timeout.eventType, new Error(candidate.timeout.message), candidate.timeout.fileInfo)
+    if (this.verbose) {
+      const msg = '%danger% ' + candidate.timeout.message
+      if (candidate.timeout.bar) {
+        candidate.timeout.bar.interrupt(msg, false)
+      } else {
+        this.print(msg, candidate.timeout.padding)
       }
     }
   }
