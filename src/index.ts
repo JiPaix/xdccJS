@@ -27,7 +27,7 @@ export default class XDCC extends EventEmitter {
       this.emit('done', job)
     })
     this.irc.on('pipe', (stream, f) => {
-      this.emit('done', stream, f)
+      this.emit('pipe', stream, f)
     })
     this.irc.on('error', (err, f) => {
       this.emit('error', err, f)
