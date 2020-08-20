@@ -95,7 +95,10 @@ export class CtcpParser extends AddJob {
     }
   ): boolean {
     if (fs.existsSync(fileInfo.filePath) && this.path) {
-      const position = fs.statSync(fileInfo.filePath).size - 8192
+      let position = fs.statSync(fileInfo.filePath).size - 8192
+      if (position < 0) {
+        position = 0
+      }
       const quotedFilename = this.fileNameWithQuotes(fileInfo.file)
       this.ctcpRequest(resp.nick, 'DCC RESUME', quotedFilename, fileInfo.port, position, fileInfo.token)
       this.resumequeue.push({
