@@ -64,7 +64,7 @@ export default class Downloader extends CtcpParser {
         this.TOeventType(candidate, 'error')
           .TOeventMessage(candidate, '%danger% Timeout: no initial connnection', 6)
           .TOdisconnectAfter(candidate, stream, client, server, pick)
-          .TOstart(candidate, 15, fileInfo)
+          .TOstart(candidate, this.timeout, fileInfo)
         this.processDL(server, client, stream, candidate, fileInfo, pick)
       })
 
@@ -102,13 +102,11 @@ export default class Downloader extends CtcpParser {
     const bar = this.setupProgressBar(fileInfo.length)
     const sendBuffer = Buffer.alloc(8)
     let received = 0
-    client.on('connect', () => {
-      if (!this.path) {
+    client.on('data', data => {
+      if (received === 0 && !this.path) {
         candidate.emit('pipe', stream, fileInfo)
         this.emit('pipe', stream, fileInfo)
       }
-    })
-    client.on('data', data => {
       stream.write(data)
       received += data.length
       sendBuffer.writeBigInt64BE(BigInt(received), 0)

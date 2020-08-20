@@ -19,7 +19,7 @@ export class AddJob extends TimeOut {
       this.say(args.target, `xdcc send ${candidate.now}`)
       this.TOeventType(candidate, 'error')
         .TOeventMessage(candidate, `timeout: no response from %yellow%${candidate.nick}`, 6)
-        .TOstart(candidate, 15)
+        .TOstart(candidate, this.timeout)
       this.print(
         `%success% sending command: /MSG %yellow%${
           candidate.nick
@@ -129,7 +129,7 @@ export class AddJob extends TimeOut {
         this.say(candidate.nick, `xdcc send ${candidate.now}`)
         this.TOeventType(candidate, 'error')
           .TOeventMessage(candidate, `timeout: no response from %yellow%${candidate.nick}`, 6)
-          .TOstart(candidate, 15)
+          .TOstart(candidate, this.timeout)
         this.print(
           `%success% sending command: /MSG %yellow%${
             candidate.nick

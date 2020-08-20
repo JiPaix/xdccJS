@@ -77,7 +77,7 @@ export class CtcpParser extends AddJob {
     if (fileInfo) {
       this.TOeventMessage(candidate, `couldn't connect to %yellow%` + fileInfo.ip + ':' + fileInfo.port, 6)
         .TOeventType(candidate, 'error')
-        .TOstart(candidate, 15, fileInfo)
+        .TOstart(candidate, this.timeout, fileInfo)
       if (fileInfo.type === 'DCC SEND') {
         isResume = this.checkExistingFiles(fileInfo, candidate, resp)
       }
@@ -109,7 +109,7 @@ export class CtcpParser extends AddJob {
       })
       this.TOeventType(candidate, 'error')
         .TOeventMessage(candidate, `couldn't resume download of %cyan%` + fileInfo.file, 6)
-        .TOstart(candidate, 30, fileInfo)
+        .TOstart(candidate, this.timeout, fileInfo)
       return true
     } else {
       return false
