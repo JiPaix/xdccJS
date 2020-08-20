@@ -16,15 +16,18 @@ export interface ParamsTimeout extends ParamsIRC {
    * // if download of pack '20' fails it will retry twice before skipping to pack '25'
    */
   retry?: number
+  timeout?: number
 }
 
 export class TimeOut extends Connect {
   protected portInUse: number[]
   retry: number
+  timeout: number
   constructor(params: ParamsTimeout) {
     super(params)
     this.portInUse = []
     this.retry = this._is('retry', params.retry, 'number', 1)
+    this.timeout = this._is('timeout', params.timeout, 'number', 30)
   }
   protected TOeventType(candidate: Job, eventType: 'error' | 'cancel'): this {
     candidate.timeout.eventType = eventType
