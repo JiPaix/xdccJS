@@ -120,12 +120,16 @@ export class CtcpParser extends AddJob {
       return string
     }
   }
-
-  protected parseCtcp(text: string, nick: string): FileInfo | void {
-    const parts = text.match(/(?:[^\s"]+|"[^"]*")+/g)
-    if (parts === null) {
+  private ctcpMatch(text: string): RegExpMatchArray {
+    const match = text.match(/(?:[^\s"]+|"[^"]*")+/g)
+    if (match === null) {
       throw new TypeError(`CTCP : received unexpected msg : ${text}`)
+    } else {
+      return match
     }
+  }
+  protected parseCtcp(text: string, nick: string): FileInfo | void {
+    const parts = this.ctcpMatch(text)
     const fileInfo: FileInfo = {
       type: `${parts[0]} ${parts[1]}`,
       file: parts[2].replace(/"/g, ''),
