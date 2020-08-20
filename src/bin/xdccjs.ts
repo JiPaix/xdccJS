@@ -55,24 +55,34 @@ export class XdccJSbin extends Profiles {
       this.downloadWith(this.xdccBINOPTS())
     }
   }
+
+  private writeMSG(time: number): void {
+    process.stderr.cursorTo(1)
+    process.stderr.write(Connect.replace('%info% waiting: ' + time))
+    process.stderr.clearLine(1)
+  }
+
+  private clearMSG(): void {
+    process.stderr.clearLine(0)
+    process.stderr.cursorTo(0)
+  }
+
   private waitMessage(time: number, xdccJS: XDCC, bot: string, download: string): void {
     const start = time
     const inter = setInterval(() => {
       if (start > 0) {
-        process.stderr.cursorTo(1)
-        process.stderr.write(Connect.replace('%info% waiting: ' + time--))
-        process.stderr.clearLine(1)
+        this.writeMSG(time--)
       }
       if (time === -1) {
         if (start > 0) {
-          process.stderr.clearLine(0)
-          process.stderr.cursorTo(0)
+          this.clearMSG()
         }
         clearInterval(inter)
         xdccJS.download(bot, download)
       }
     }, 1000)
   }
+
   private downloadWith(opts: [Params, savedParams]): void {
     if (typeof this.program.bot == 'undefined' && typeof opts[1].bot == 'undefined') {
       throw new BinError('%danger% You must specify a bot name')
