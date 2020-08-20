@@ -127,6 +127,15 @@ export class AddJob extends TimeOut {
         candidate.now = candidate.queue[0]
         this.removeNowFromQueue(candidate)
         this.say(candidate.nick, `xdcc send ${candidate.now}`)
+        this.TOeventType(candidate, 'error')
+          .TOeventMessage(candidate, `timeout: no response from %yellow%${candidate.nick}`, 6)
+          .TOstart(candidate, 15)
+        this.print(
+          `%success% sending command: /MSG %yellow%${
+            candidate.nick
+          }%reset% xdcc send %yellow%${candidate.now.toString()}`,
+          4
+        )
       } else {
         this.candidates = this.candidates.filter(c => c.nick !== candidate.nick)
         candidate.emit('done', candidate.show())

@@ -111,6 +111,10 @@ export class TimeOut extends Connect {
       candidate.retry++
       this.say(candidate.nick, `xdcc send ${candidate.now}`)
       this.print(`%info% retrying: ${candidate.retry}/${this.retry}`, 6)
+      candidate.timeout.to = setTimeout(() => {
+        this.routine(candidate)
+        this.redownload(candidate, fileInfo)
+      }, 15 * 1000)
     } else {
       candidate.timeout.clear()
       const pad = candidate.retry + 5
@@ -118,7 +122,6 @@ export class TimeOut extends Connect {
       candidate.emit('error', `skipped pack: ${candidate.now}`, fileInfo)
       this.emit('error', `skipped pack: ${candidate.now}`, fileInfo)
       candidate.failures.push(candidate.now)
-      this.removeNowFromQueue(candidate)
       this.emit('next', candidate)
     }
   }
