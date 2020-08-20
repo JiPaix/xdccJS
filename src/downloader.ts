@@ -143,9 +143,7 @@ export default class Downloader extends CtcpParser {
     client.on('error', (e: { message: string }) => {
       candidate.timeout.clear()
       const msg =
-        e.message === 'cancel'
-          ? '%danger% Job cancelled: %cyan%' + candidate.nick
-          : '%danger% Connection error: %yellow%' + e.message
+        e.message === 'cancel' ? 'Job cancelled: %cyan%' + candidate.nick : 'Connection error: %yellow%' + e.message
       const event = e.message === 'cancel' ? 'cancel' : 'error'
       this.TOeventType(candidate, event)
         .TOeventMessage(candidate, msg, 6)
