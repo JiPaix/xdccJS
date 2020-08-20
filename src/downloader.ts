@@ -6,6 +6,7 @@ import * as net from 'net'
 import * as fs from 'fs'
 import * as ProgressBar from '../lib/progress'
 import * as colors from 'colors/safe'
+import { v4 } from 'public-ip'
 
 export interface ParamsDL extends ParamsCTCP {
   /**
@@ -21,15 +22,20 @@ export interface ParamsDL extends ParamsCTCP {
 
 export default class Downloader extends CtcpParser {
   passivePort: number[]
-
+  ip: Promise<number>
   constructor(params: ParamsDL) {
     super(params)
+    this.ip = this.getIp()
     this.passivePort = this._is('passivePort', params.passivePort, 'object', [5001])
     this.on('prepareDL', (downloadrequest: { fileInfo: FileInfo; candidate: Job }) => {
       this.prepareDL(downloadrequest)
     })
   }
-
+  async getIp(): Promise<number> {
+    const string = await v4()
+    const d = string.split('.')
+    return ((+d[0] * 256 + +d[1]) * 256 + +d[2]) * 256 + +d[3]
+  }
   private setupStream(fileInfo: FileInfo): fs.WriteStream | PassThrough {
     if (this.path) {
       if (fileInfo.type === 'DCC ACCEPT') {
@@ -60,6 +66,16 @@ export default class Downloader extends CtcpParser {
           .TOdisconnectAfter(candidate, stream, client, server, pick)
           .TOstart(candidate, 15, fileInfo)
         this.processDL(server, client, stream, candidate, fileInfo, pick)
+      })
+
+      server.listen(pick, '0.0.0.0', () => {
+        this.ip.then(ip => {
+          this.raw(
+            `PRIVMSG ${candidate.nick} ${String.fromCharCode(1)}DCC SEND ${fileInfo.file} ${ip} ${pick} ${
+              fileInfo.length
+            } ${fileInfo.token}${String.fromCharCode(1)}`
+          )
+        })
       })
     } else {
       const client = net.connect(fileInfo.port, fileInfo.ip)
