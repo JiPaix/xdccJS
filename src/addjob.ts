@@ -130,7 +130,7 @@ export class AddJob extends TimeOut {
       } else {
         this.candidates = this.candidates.filter(c => c.nick !== candidate.nick)
         candidate.emit('done', candidate.show())
-        this.emit('done', () => candidate.show())
+        this.emit('done', candidate.show())
         if (!this.candidates.length) {
           this.emit('can-quit')
         } else {
