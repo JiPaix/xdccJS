@@ -66,11 +66,7 @@ export class Connect extends Client {
     if (typeof chan === 'string') {
       return [this.chanHashtag(chan)]
     } else if (Array.isArray(chan)) {
-      const newchan = []
-      for (const channel of chan) {
-        newchan.push(this.chanHashtag(channel))
-      }
-      return newchan
+      return chan.map(ch => this.chanHashtag(ch))
     } else if (!chan) {
       return []
     } else {
