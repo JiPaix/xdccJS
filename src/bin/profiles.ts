@@ -4,7 +4,6 @@ import { BinError } from './errorhandler'
 import XDCC, { Params } from '..'
 import { BaseCommander, savedParams } from './commander'
 
-
 export class Profiles extends BaseCommander {
   profilePath: string
   defaultProfilePath: string
@@ -117,40 +116,40 @@ export class Profiles extends BaseCommander {
   }
 
   protected mergeProfileWithARGV(): void {
-    if (typeof this.defaultProfile === 'undefined') {
+    if (!this.defaultProfile) {
       throw new BinError('Problem in control flow : mergeProfileWithARGV')
     }
-    if (typeof this.program.server !== 'undefined') {
-      this.defaultProfile[0].host = this.program.server
+    if (this.program.host) {
+      this.defaultProfile[0].host = this.program.host
     }
-    if (typeof this.program.port !== 'undefined') {
+    if (this.program.port) {
       this.defaultProfile[0].port = this.program.port
     }
-    if (typeof this.program.path !== 'undefined') {
+    if (this.program.path) {
       this.defaultProfile[0].path = this.program.path
     }
-    if (typeof this.program.username !== 'undefined') {
-      this.defaultProfile[0].nick = this.program.username
+    if (this.program.nick) {
+      this.defaultProfile[0].nick = this.program.nick
     }
-    if (typeof this.program.channel !== 'undefined') {
-      this.defaultProfile[0].chan = this.program.channel
+    if (this.program.chan) {
+      this.defaultProfile[0].chan = this.program.chan
     }
-    if (typeof this.program.retry !== 'undefined') {
+    if (this.program.retry) {
       this.defaultProfile[0].retry = this.program.retry
     }
-    if (typeof this.program.reversePort !== 'undefined') {
-      this.defaultProfile[0].passivePort = [this.program.reversePort]
+    if (this.program.passivePort) {
+      this.defaultProfile[0].passivePort = [this.program.passivePort]
     }
-    if (typeof this.program.noRandomize !== 'undefined') {
+    if (this.program.noRandomize) {
       this.defaultProfile[0].randomizeNick = this.program.noRandomize ? false : true
     }
-    if (typeof this.program.bot !== 'undefined') {
+    if (this.program.bot) {
       this.defaultProfile[1].bot = this.program.bot
     }
-    if (typeof this.program.wait !== 'undefined') {
+    if (this.program.wait) {
       this.defaultProfile[1].wait = this.program.wait
     }
-    if (typeof this.defaultProfile[1].wait === 'undefined') {
+    if (!this.defaultProfile[1].wait) {
       this.defaultProfile[1].wait = 0
     }
   }

@@ -10,15 +10,15 @@ export type savedParams = {
   bot: string
 }
 export interface InterfaceCLI extends commander.Command {
-  server?: string
+  host?: string
   port?: number
   bot?: string
   download?: string[]
   path?: string
-  username?: string
-  channel?: string
+  nick?: string
+  chan?: string
   retry?: number
-  reversePort?: number
+  passivePort?: number
   noRandomize?: string
   saveProfile?: string
   deleteProfile?: string
@@ -36,15 +36,15 @@ export class BaseCommander {
     this.program
       .name('xdccJS')
       .version(version)
-      .option('-s, --server <server>', 'irc server address')
-      .option('--port <number>', 'irc server port', this.parseIfNotInt)
+      .option('-h, --host <server>', 'IRC server address')
+      .option('--port <number>', 'IRC server port', this.parseIfNotInt)
       .option('-b, --bot <botname>', 'xdcc bot nickname')
       .option('-d, --download <packs...>', 'pack number(s) to download')
       .option('-p, --path <path>', 'download path', path.normalize)
-      .option('-u, --username <username>', 'irc username', 'xdccJS')
-      .option('-c, --channel [chan...]', 'channel to join (without #)')
+      .option('-n, --nickname <nickname>', 'Your IRC nickname', 'xdccJS')
+      .option('-c, --chan [chan...]', 'channel(s) to join (without #)')
       .option('-r, --retry <number>', 'number of attempts before skipping pack', this.parseIfNotInt)
-      .option('--reverse-port <number>', 'port used for passive dccs', this.parseIfNotInt)
+      .option('--passive-port <number>', 'port used for passive dccs', this.parseIfNotInt)
       .option('--no-randomize', 'removes random numbers to nickname')
       .option(
         '-w, --wait [number]',
@@ -72,18 +72,18 @@ export class BaseCommander {
     console.error(''.padStart(pad) + Connect.replace(string))
   }
   protected xdccJSOPTS(): Params {
-    if (typeof this.program.server === 'undefined') {
+    if (typeof this.program.host === 'undefined') {
       throw new BinError('%danger% No server')
     }
     return {
-      host: this.program.server,
+      host: this.program.host,
       port: this.program.port,
-      nick: this.program.username,
-      chan: this.program.channel,
+      nick: this.program.nick,
+      chan: this.program.chan,
       path: this.program.path,
       retry: this.program.retry,
       randomizeNick: this.program.noRandomize ? false : true,
-      passivePort: [this.program.reversePort || 5001],
+      passivePort: [this.program.passivePort || 5001],
       verbose: true,
     }
   }
