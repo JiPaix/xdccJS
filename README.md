@@ -21,7 +21,7 @@ It can also be used as a <a href="#command-line-interface">command-line</a> down
     - [jobs](#Jobs)
     - [events](#Events)
     - [use pipes](#Pipes)
-  - [Disconnect and Reconnect (IRC)](#disconnectreconnect)
+  - [(Auto) disconnect from IRC](#disconnect)
 - [CLI](#command-line-interface)
   - [Installation](#installation-1)
   - [Options](#options)
@@ -203,25 +203,12 @@ Job.on('pipe', stream => {
   stream.pipe(vlc.stdin)
 })
 ```
-## Disconnect/Reconnect
-
+## Disconnect
 ```js
 // event triggered when all jobs are done.
 xdccJS.on('can-quit', () => {
   xdccJS.quit() // this is how you disconnect from IRC
 })
-
-// reconnect to the same server :
-xdccJS.reconnect() //=> sends xdccJS 'ready' event AGAIN
-
-// change server :
-xdccJS.reconnect(
-  {
-    host: 'irc.newserver.net',
-    port: 6669, // optional, default: 6667 
-    chan: ['#one', '#two'] // optional
-  }
-)
 ```
 # Command-line Interface
 ## Installation
