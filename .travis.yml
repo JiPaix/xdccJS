@@ -13,6 +13,6 @@ before_script:
   - ./cc-test-reporter before-build
 script:
     - npm run build
-    - nyc --reporter=lcov npm run test
+    - nyc --reporter=lcov --include=src/* npm run test
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
