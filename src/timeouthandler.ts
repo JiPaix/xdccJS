@@ -117,7 +117,7 @@ export class TimeOut extends Connect {
       candidate.timeout.to = setTimeout(() => {
         this.routine(candidate)
         this.redownload(candidate, fileInfo)
-      }, 15 * 1000)
+      }, this.timeout * 1000)
     } else {
       candidate.timeout.clear()
       const pad = candidate.retry + 5
