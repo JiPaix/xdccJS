@@ -1,86 +1,91 @@
-#!/usr/bin/env node
-/* eslint-disable @typescript-eslint/triple-slash-reference */
-/// <reference path="../src/@types/irc-framework.ts"/>
-import XDCC from '../../index'
-import { program } from 'commander'
-import { version } from '../../package.json'
-import Profiler from '../helpers/bin-helpers/profiler'
-import TypeChecker from '../helpers/bin-helpers/typechecker'
-import * as path from 'path'
-import * as colors from 'colors/safe'
-import { Params } from '../interfaces/params'
+import XDCC, { Params } from '../index'
+import { BinError } from './errorhandler'
+import { Profiles } from './profiles'
+import { Connect } from '../connect'
+import { savedParams } from './commander'
 
-Profiler.InitFolder()
-
-program
-  .version(version)
-  .name('xdccJS')
-  .option('-s, --server <server>', 'irc server address')
-  .option('--port <number>', 'irc server port', TypeChecker.parseIfNotInt, 6667)
-  .option('-b, --bot <botname>', 'xdcc bot nickname')
-  .option('-d, --download <packs...>', 'pack number(s) to download')
-  .option('-p, --path [path]', 'download path', path.normalize)
-  .option('-u, --username <username>', 'irc username', 'xdccJS')
-  .option('-c, --channel [chan...]', 'channel to join (without #)')
-  .option('-r, --retry [number]', 'number of attempts before skipping pack', TypeChecker.parseIfNotInt, 0)
-  .option('--reverse-port [number]', 'port used for passive dccs', TypeChecker.parseIfNotInt, 5001)
-  .option('--no-randomize', 'removes random numbers to nickname')
-  .option(
-    '-w, --wait [number]',
-    'wait time (in seconds) in channel(s) before sending download request',
-    TypeChecker.parseIfNotInt,
-    0
-  )
-  .option('--save-profile [string]', 'save current options as a profile')
-  .option('--delete-profile [string]', 'delete profile')
-  .option('--set-profile [string]', 'set profile as default')
-  .option('--list-profile', 'list all available profiles')
-  .parse()
-
-if (Profiler.isProfile(program)) {
-  Profiler.ProcessProfile(program)
-} else {
-  Profiler.LoadDefaultProfile(program)
-  if (TypeChecker.isIRCstyle(program, process.argv)) {
-    TypeChecker.parseLazyString(program, process.argv)
+export class XdccJSbin extends Profiles {
+  constructor() {
+    super()
+    if (this.isProfileSetting()) {
+      this.profileAction()
+    } else {
+      const parsedARGV = this.isCopyPasteARGV()
+      if (parsedARGV) {
+        this.lazy(parsedARGV)
+      } else {
+        this.main()
+      }
+    }
+  }
+  private isLazySyntaxCorrect(match: RegExpExecArray): boolean {
+    if (match[1].toLowerCase() === 'msg' && match[3].toLowerCase() === 'xdcc' && match[4].toLowerCase() === 'send') {
+      return true
+    } else {
+      return false
+    }
   }
 
-  if (TypeChecker.checkArgs(program)) {
-    const opts:Params = {
-      host: program.server,
-      port: program.port,
-      nick: program.username,
-      chan: program.channel,
-      path: program.path || false,
-      randomizeNick: program.randomize,
-      passivePort: [program.reversePort],
-      verbose: true,
-      retry: program.retry,
-    }
-
-    const xdccJS = new XDCC(opts)
-
-    xdccJS.once('ready', () => {
-      if (program.wait) {
-        let wait = program.wait
-        const interval = setInterval(() => {
-          process.stderr.cursorTo(1)
-          --wait
-          process.stderr.write(`\u2937 ` + colors.bold(colors.cyan('\u2139')) + ' waiting: ' + wait)
-          process.stderr.clearLine(1)
-          if (wait === 0) {
-            process.stderr.clearLine(0)
-            process.stderr.cursorTo(0)
-            clearInterval(interval)
-            xdccJS.download(program.bot, program.download)
-          }
-        }, 1000)
+  private lazy(match: RegExpExecArray): void {
+    if (typeof this.defaultProfile === 'undefined') {
+      throw new BinError('%info% You need to setup a profile first in order to use copy paste method')
+    } else {
+      if (this.isLazySyntaxCorrect(match)) {
+        this.program.bot = match[2]
+        this.program.download = [match[5]]
+        this.downloadWith(this.defaultProfile)
       } else {
-        xdccJS.download(program.bot, program.download)
+        throw new BinError(
+          '%danger% Wrong format, try (with double quotes): %grey%"/MSG My|BOT xdcc send 23, 25, 50-55"'
+        )
       }
-    })
-    xdccJS.on('pipe', stream => {
-      stream.pipe(process.stdout)
+    }
+  }
+  private isCopyPasteARGV(): RegExpExecArray | void {
+    const match = /\/(msg|MSG) (.*) (xdcc) (send) (.*)$/.exec(process.argv[2])
+    if (match) {
+      return match
+    }
+    return undefined
+  }
+  private main(): void {
+    if (typeof this.defaultProfile !== 'undefined') {
+      this.downloadWith(this.defaultProfile)
+    } else {
+      this.downloadWith(this.xdccBINOPTS())
+    }
+  }
+  private waitMessage(time: number, xdccJS: XDCC, bot: string, download: string): void {
+    const start = time
+    const inter = setInterval(() => {
+      if (start > 0) {
+        process.stderr.cursorTo(1)
+        process.stderr.write(Connect.replace('%info% waiting: ' + time--))
+        process.stderr.clearLine(1)
+      }
+      if (time === -1) {
+        if (start > 0) {
+          process.stderr.clearLine(0)
+          process.stderr.cursorTo(0)
+        }
+        clearInterval(inter)
+        xdccJS.download(bot, download)
+      }
+    }, 1000)
+  }
+  private downloadWith(opts: [Params, savedParams]): void {
+    if (typeof this.program.bot == 'undefined' && typeof opts[1].bot == 'undefined') {
+      throw new BinError('%danger% You must specify a bot name')
+    }
+    if (typeof this.program.download === 'undefined') {
+      throw new BinError('%danger% You must specify a packet number to download, eg. %grey%--download 1, 3, 55-60')
+    }
+    const download = this.program.download.join('')
+    const bot: string = this.program.bot ? this.program.bot : opts[1].bot
+    const wait = opts[1].wait
+    const xdccJS = new XDCC(opts[0])
+    xdccJS.on('ready', () => {
+      this.waitMessage(wait, xdccJS, bot, download)
     })
     xdccJS.on('can-quit', () => {
       xdccJS.quit()

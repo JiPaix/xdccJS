@@ -1,5 +1,5 @@
 import { EventEmitter } from 'eventemitter3'
-import * as _ from 'lodash'
+import { clone } from 'lodash'
 import { PassThrough } from 'stream'
 import { Candidate } from './candidate'
 import { FileInfo } from './fileinfo'
@@ -42,11 +42,11 @@ export class Job extends EventEmitter {
   }
   public show(): displayedJob {
     const info = {
-      nick: _.clone(this.nick),
-      queue: _.clone(this.queue),
-      now: _.clone(this.now),
-      success: _.clone(this.success),
-      failed: _.clone(this.failures),
+      nick: clone(this.nick),
+      queue: clone(this.queue),
+      now: clone(this.now),
+      success: clone(this.success),
+      failed: clone(this.failures),
       cancel: this.cancel,
     }
     return info

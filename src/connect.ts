@@ -66,7 +66,7 @@ export class Connect extends Client {
     if (typeof chan === 'string') {
       return [this.chanHashtag(chan)]
     } else if (Array.isArray(chan)) {
-      return chan
+      return chan.map(ch => this.chanHashtag(ch))
     } else if (!chan) {
       return []
     } else {
@@ -83,24 +83,26 @@ export class Connect extends Client {
       return `#${chan}`
     }
   }
-  private replace(string: string): string {
-    return string
-      .replace(/%bold%/g, '\x1b[1m')
-      .replace(/%red%/g, '\x1b[31m')
-      .replace(/%cyan%/g, '\x1b[36m')
-      .replace(/%green%/g, '\x1b[32m')
-      .replace(/%magenta%/g, '\x1B[35m')
-      .replace(/%blue%/g, '\x1B[34m')
-      .replace(/%reset%/g, '\x1b[0m')
-      .replace(/%grey%/g, '\x1b[90m')
-      .replace(/%yellow%/g, '\x1b[33m')
-      .replace(/%RGB(\S*)%/g, '\x1B[38;2;$1m')
-      .replace(/%danger%/g, '\x1b[1m\x1b[31m\u0058\x1b[0m')
-      .replace(/%info%/g, '\x1b[1m\x1b[36m\u2139\x1b[0m')
-      .replace(/%success%/g, '\x1b[1m\x1b[32m\u2713\x1b[0m')
+  static replace(string: string): string {
+    return (
+      string
+        .replace(/%bold%/g, '\x1b[1m')
+        .replace(/%red%/g, '\x1b[31m')
+        .replace(/%cyan%/g, '\x1b[36m')
+        .replace(/%green%/g, '\x1b[32m')
+        .replace(/%magenta%/g, '\x1B[35m')
+        .replace(/%blue%/g, '\x1B[34m')
+        .replace(/%reset%/g, '\x1b[0m')
+        .replace(/%grey%/g, '\x1b[90m')
+        .replace(/%yellow%/g, '\x1b[33m')
+        .replace(/%RGB(\S*)%/g, '\x1B[38;2;$1m')
+        .replace(/%danger%/g, '\x1b[1m\x1b[31m\u0058\x1b[0m')
+        .replace(/%info%/g, '\x1b[1m\x1b[36m\u2139\x1b[0m')
+        .replace(/%success%/g, '\x1b[1m\x1b[32m\u2713\x1b[0m') + '\x1b[0m'
+    )
   }
   protected print(string: string, padding = 0): void {
-    string = this.replace(string) + '\x1b[0m'
+    string = Connect.replace(string)
     if (padding > 0) {
       string = '\u2937 '.padStart(padding) + string
     }

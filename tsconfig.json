@@ -82,6 +82,5 @@
     "dist/**",
     "./test.*",
     "tests/**",
-    "src/bin/**"
   ]
 }
