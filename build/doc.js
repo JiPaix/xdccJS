@@ -1,14 +1,7 @@
-// build helper
+// lazy typing :
 const fs = require('fs')
-fs.mkdirSync('./dist/lib/progress', { recursive: true })
-fs.createReadStream('./lib/progress/index.js').pipe(fs.createWriteStream('./dist/lib/progress/index.js'))
-fs.createReadStream('./lib/progress/index.d.ts').pipe(fs.createWriteStream('./dist/lib/progress/index.d.ts'))
-
 const jsPath = './dist/index.js'
 const tsPath = './dist/index.d.ts'
-
-// lazy typing :
-
 let dts = fs.readFileSync('./dist/index.d.ts').toString()
 const LazyString = `private _listen;
     on(eventType: string | symbol, cb: (event?: unknown, another?: unknown) => void): this

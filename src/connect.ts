@@ -66,7 +66,11 @@ export class Connect extends Client {
     if (typeof chan === 'string') {
       return [this.chanHashtag(chan)]
     } else if (Array.isArray(chan)) {
-      return chan
+      const newchan = []
+      for (const channel of chan) {
+        newchan.push(this.chanHashtag(channel))
+      }
+      return newchan
     } else if (!chan) {
       return []
     } else {
@@ -83,7 +87,7 @@ export class Connect extends Client {
       return `#${chan}`
     }
   }
-  private replace(string: string): string {
+  static replace(string: string): string {
     return string
       .replace(/%bold%/g, '\x1b[1m')
       .replace(/%red%/g, '\x1b[31m')
@@ -100,7 +104,7 @@ export class Connect extends Client {
       .replace(/%success%/g, '\x1b[1m\x1b[32m\u2713\x1b[0m')
   }
   protected print(string: string, padding = 0): void {
-    string = this.replace(string) + '\x1b[0m'
+    string = Connect.replace(string) + '\x1b[0m'
     if (padding > 0) {
       string = '\u2937 '.padStart(padding) + string
     }
