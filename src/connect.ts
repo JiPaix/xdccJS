@@ -5,27 +5,30 @@
 import { Client } from 'irc-framework'
 
 export class Connect extends Client {
-  chan: string[]
-  verbose: boolean
-  host: string
-  connectionTimeout!: NodeJS.Timeout
+  protected chan: string[]
+  protected verbose: boolean
+  protected host: string
+  protected nick: string
+  protected port: number
+  protected connectionTimeout!: NodeJS.Timeout
   constructor(params: ParamsIRC) {
     super()
-    let nick = params.nick || 'xdccJS'
+    this.nick = params.nick || 'xdccJS'
     if (params.randomizeNick) {
-      nick = this.nickRandomizer(nick)
+      this.nick = this.nickRandomizer(this.nick)
     }
     this.host = this._is('host', params.host, 'string')
-    this._is('port', params.port, 'number', 6667)
-    this.chan = this.chanCheck(params.chan)
+    this.port = this._is('port', params.port, 'number', 6667)
     this.verbose = this._is('verbose', params.verbose, 'boolean', false)
+    this.chan = this.chanCheck(params.chan)
     this.connect({
-      host: params.host,
-      port: params.port,
-      nick: nick,
+      host: this.host,
+      port: this.port,
+      nick: this.nick,
     })
     this.onConnect()
   }
+
   private onConnect(): void {
     this.on('connected', () => {
       clearTimeout(this.connectionTimeout)
@@ -37,7 +40,7 @@ export class Connect extends Client {
       this.emit('ready')
     })
   }
-  private nickRandomizer(nick: string): string {
+  nickRandomizer(nick: string): string {
     if (nick) {
       if (nick.length > 6) {
         nick = nick.substr(0, 6)
@@ -48,7 +51,7 @@ export class Connect extends Client {
     return nick + Math.floor(Math.random() * 999) + 1
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected _is(name: string, variable: unknown, type: string, def?: unknown): any {
+  _is(name: string, variable: unknown, type: string, def?: unknown): any {
     if (typeof variable !== type) {
       if (typeof def === 'undefined') {
         const err = new TypeError()
@@ -62,7 +65,7 @@ export class Connect extends Client {
       return variable
     }
   }
-  private chanCheck(chan?: string | string[]): string[] {
+  chanCheck(chan?: string | string[]): string[] {
     if (typeof chan === 'string') {
       return [this.chanHashtag(chan)]
     } else if (Array.isArray(chan)) {
