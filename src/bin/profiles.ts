@@ -140,7 +140,7 @@ export class Profiles extends BaseCommander {
     if (this.program.passivePort) {
       this.defaultProfile[0].passivePort = [this.program.passivePort]
     }
-    if (this.program.noRandomize) {
+    if (typeof this.program.noRandomize !== 'undefined') {
       this.defaultProfile[0].randomizeNick = this.program.noRandomize ? false : true
     }
     if (this.program.bot) {
