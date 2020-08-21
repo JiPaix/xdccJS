@@ -71,14 +71,14 @@ export class XdccJSbin extends Profiles {
     const start = time
     const inter = setInterval(() => {
       if (start > 0) {
-        this.writeMSG(time--)
+        this.writeMSG(--time)
       }
-      if (time === -1) {
+      if (time === 0) {
         if (start > 0) {
           this.clearMSG()
         }
-        clearInterval(inter)
         xdccJS.download(bot, download)
+        clearInterval(inter)
       }
     }, 1000)
   }
@@ -91,7 +91,10 @@ export class XdccJSbin extends Profiles {
       throw new BinError('%danger% You must specify a packet number to download, eg. %grey%--download 1, 3, 55-60')
     }
     const download = this.program.download.join('')
-    const bot: string = this.program.bot ? this.program.bot : opts[1].bot
+    const bot = this.program.bot ? this.program.bot : opts[1].bot
+    if (!bot) {
+      throw new Error('Control flow error: downloadwith()')
+    }
     const wait = opts[1].wait
     const xdccJS = new XDCC(opts[0])
     xdccJS.on('ready', () => {

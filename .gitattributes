@@ -1,6 +1,4 @@
 docs/** linguist-documentation=true
 examples/** linguist-documentation=true
-intellisense.js linguist-vendored=true
-build/index.js linguist-vendored=true
-lib/** linguist-vendored=true
-bin/xdccjs.ts linguist-language=typescript
+build/** linguist-vendored=true
+**/lib/** linguist-vendored=true
