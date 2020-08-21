@@ -61,6 +61,7 @@ const opts = {
   verbose: false, // Display download progress and jobs status                  - optioanl (default: false)
   randomizeNick: false, // Add random numbers at end of nickname                - optional (default: true)
   passivePort: [5000, 5001, 5002], // Array of port(s) to use with Passive DCC  - optional (default: [5001])
+  timeout: 50, // Nb of seconds between each retries                            - optional (default: 30)
 }
 
 ```

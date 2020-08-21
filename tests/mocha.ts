@@ -162,6 +162,9 @@ describe('RealLife#2', () => {
     start2 = new XDCC2(args2)
     start2.on('ready', () => {
       start2.irc.on('message', ev => {
+        if (ev.target === downloadInfo.bot) {
+          console.error(ev.message)
+        }
         if (ev.nick.includes('|P|')) {
           if (ev.message.includes('#')) {
             const pack = ev.message.match(/#\w+/g)
