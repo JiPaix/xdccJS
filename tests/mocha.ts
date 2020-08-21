@@ -29,7 +29,7 @@ const args: Params = {
   path: 'downloads',
   port: 6660,
   retry: 1,
-  verbose: true,
+  verbose: false,
   nick: Math.random()
     .toString(36)
     .replace(/[^a-z]+/g, '')
@@ -152,7 +152,7 @@ const args2: Params = {
   host: process.env.SERVER2,
   chan: [process.env.CHAN1, process.env.CHAN2],
   retry: 0,
-  verbose: false,
+  verbose: true,
   randomizeNick: true,
 }
 let downloadInfo: { bot: string; pack: string }
@@ -182,6 +182,11 @@ describe('RealLife#2', () => {
   it('download passive pipe', function (done) {
     this.timeout(0)
     const job = start2.download(downloadInfo.bot, downloadInfo.pack)
+
+    start2.on('error', e => {
+      console.error(e)
+    })
+
     job.on('pipe', stream => {
       if (stream instanceof PassThrough) {
         done()
