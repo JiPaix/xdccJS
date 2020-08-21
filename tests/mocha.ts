@@ -163,8 +163,11 @@ describe('RealLife#2', () => {
     start2.on('ready', () => {
       start2.irc.on('message', ev => {
         if (downloadInfo) {
-          if (ev.target === downloadInfo.bot) {
-            console.error(ev.message)
+          const ignore = ['NickServ', 'TheSource', 'TS-Search']
+          if (!ignore.includes(ev.nick)) {
+            if (ev.target === start2.irc.user.nick) {
+              console.error(ev.message)
+            }
           }
         }
         if (ev.nick.includes('|P|')) {
