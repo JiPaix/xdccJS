@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { XdccJSbin } from './xdccjs'
 import { BinError } from './errorhandler'
 import { Connect } from '../connect'

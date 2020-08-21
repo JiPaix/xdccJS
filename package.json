@@ -1,6 +1,6 @@
 {
   "name": "xdccjs",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "download files from XDCC bots on IRC, complete implementation of the XDCC protocol",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -17,7 +17,7 @@
     "pkg": "pkg ./dist/bin/xdccjs.js --out-path executables",
     "test": "node ./node_modules/mocha/bin/mocha -r ts-node/register tests/mocha.ts",
     "build": "node ./node_modules/rimraf/bin.js dist && node ./build/copyfiles.js && node ./node_modules/typescript/bin/tsc && node ./build/doc.js",
-    "prepublishOnly": "npm run build && npm run test && node ./build/index.js",
+    "prepublishOnly": "npm run build",
     "snyk-wiz": "node ./node_modules/snyk/dist/cli/index.js wizard",
     "doc": "node ./node_modules/typedoc/bin/typedoc && node ./build/doc.js",
     "intellisense": "node ./build/index.js"
