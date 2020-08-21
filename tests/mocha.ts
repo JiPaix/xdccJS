@@ -6,18 +6,37 @@ import { Job } from '../src/interfaces/job'
 import { isArray } from 'lodash'
 import * as fs from 'fs'
 import * as path from 'path'
+import { PassThrough } from 'stream'
+import Manipulator from 'dotenv-manipulator'
+
+new Manipulator()
+declare let process: {
+  exit: (n: number) => {}
+  env: {
+    NODE_ENV: string
+    SERVER1: string
+    SERVER2: string
+    CHAN1: string
+    CHAN2: string
+    GIN: string
+  }
+}
 const XDCC2 = require('../src/index').default
 let start: XDCC
 
 const args: Params = {
-  host: 'irc.rizon.net',
-  chan: ['xdccjs', '#xdccjs2'],
+  host: process.env.SERVER1,
   path: 'downloads',
   port: 6660,
   retry: 1,
   verbose: true,
-  randomizeNick: true,
+  nick: Math.random()
+    .toString(36)
+    .replace(/[^a-z]+/g, '')
+    .substr(0, 9),
+  randomizeNick: false,
   passivePort: [5001],
+  timeout: 5,
 }
 
 const testFile = path.resolve('./', 'downloads', 'Gin.txt')
@@ -105,7 +124,7 @@ let size: number
 describe('RealLife', () => {
   it('really download', function (done) {
     this.timeout(0)
-    B = start.download('ginpachi-sensei', 1)
+    B = start.download(process.env.GIN, 1)
     B.on('downloaded', f => {
       if (fs.lstatSync(f.filePath).size === f.length) {
         size = f.length
@@ -115,7 +134,7 @@ describe('RealLife', () => {
   })
   it('resume', function (done) {
     this.timeout(0)
-    const C = start.download('ginpachi-sensei', 1)
+    const C = start.download(process.env.GIN, 1)
     C.on('downloaded', f => {
       if (fs.lstatSync(f.filePath).size === size) {
         done()
@@ -124,6 +143,72 @@ describe('RealLife', () => {
   })
   it('quit', function (done) {
     start.quit()
+    done()
+  })
+})
+
+let start2: XDCC
+const args2: Params = {
+  host: process.env.SERVER2,
+  chan: [process.env.CHAN1, process.env.CHAN2],
+  retry: 0,
+  verbose: false,
+  randomizeNick: true,
+}
+let downloadInfo: { bot: string; pack: string }
+describe('RealLife#2', () => {
+  it('connect', function (done) {
+    this.timeout(0)
+    start2 = new XDCC2(args2)
+    start2.on('ready', () => {
+      start2.irc.on('message', ev => {
+        if (ev.nick.includes('|P|')) {
+          if (ev.message.includes('#')) {
+            const pack = ev.message.match(/#\w+/g)
+            if (pack) {
+              if (!downloadInfo) {
+                downloadInfo = { bot: ev.nick, pack: pack[0].replace('#', '') }
+              }
+            }
+          }
+        }
+      })
+      setTimeout(() => {
+        done()
+      }, 65 * 1000)
+    })
+  })
+
+  it('download passive pipe', function (done) {
+    this.timeout(0)
+    const job = start2.download(downloadInfo.bot, downloadInfo.pack)
+    job.on('pipe', stream => {
+      if (stream instanceof PassThrough) {
+        done()
+      } else {
+        process.exit(1)
+      }
+    })
+  })
+
+  it('cancel()', function (done) {
+    this.timeout(0)
+    const JobB = start2.jobs(downloadInfo.bot)
+    if (JobB instanceof Job) {
+      if (JobB.cancel) {
+        JobB.cancel()
+        JobB.on('cancel', () => {
+          done()
+        })
+      } else {
+        process.exit(1)
+      }
+    } else {
+      process.exit(1)
+    }
+  })
+  it('disconnect', function (done) {
+    start2.quit()
     done()
   })
 })

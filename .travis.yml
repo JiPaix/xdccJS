@@ -2,6 +2,12 @@ os: linux
 dist: xenial
 language: node_js
 node_js: 10
+env:
+  - CHAN1=$CHAN1
+  - CHAN2=$CHAN2
+  - SERVER1=$SERVER1
+  - SERVER2=$SERVER2
+  - GIN=$GIN
 before_install:
   - npm install -g snyk
   - npm install -g nyc

@@ -55,6 +55,7 @@
     "@typescript-eslint/parser": "^2.26.0",
     "@wcardinal/typedoc-plugin-named-event": "^1.0.0",
     "chai": "^4.2.0",
+    "dotenv-manipulator": "^3.0.1",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.11.0",
     "mocha": "^7.1.1",

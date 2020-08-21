@@ -1288,6 +1288,11 @@ dot-prop@^5.2.0:
   dependencies:
     is-obj "^2.0.0"
 
+dotenv-manipulator@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/dotenv-manipulator/-/dotenv-manipulator-3.0.1.tgz#853a976b92b77d5964f900b7a955c0e3af813ac5"
+  integrity sha512-PwN4DmE6jkZ0L/TXkuhoCX3a77rWtwsXeXQS39OUcwIuoAtt5B5ThaOE6OqFIT9A7U8SJZq5SOVD6eCkzvBp2A==
+
 dotnet-deps-parser@4.10.0:
   version "4.10.0"
   resolved "https://registry.yarnpkg.com/dotnet-deps-parser/-/dotnet-deps-parser-4.10.0.tgz#f51c1e36700c9bf992263adb478e0e6f0095c4f0"

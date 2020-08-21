@@ -9,3 +9,4 @@ executables/
 coverage/
 .nyc_output/
 src/package.json
+.env
