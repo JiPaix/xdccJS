@@ -4,7 +4,7 @@ import { Job } from './interfaces/job'
 import { PassThrough } from 'stream'
 import * as net from 'net'
 import * as fs from 'fs'
-import * as ProgressBar from '../lib/progress'
+import * as ProgressBar from './lib/progress'
 import { v4 } from 'public-ip'
 import { Connect } from './connect'
 
