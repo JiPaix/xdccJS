@@ -98,6 +98,7 @@ export class Profiles extends BaseCommander {
     const search = profile + '.json'
     if (this.availableProfiles.includes(search)) {
       fs.unlinkSync(path.join(this.profilePath, search))
+      fs.unlinkSync(this.defaultProfilePath)
       this.availableProfiles = this.initFolder()
     } else {
       this.log(`%danger% Profile ${profile} doesn't exist`)
