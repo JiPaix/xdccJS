@@ -5,8 +5,8 @@ import { PassThrough } from 'stream'
 import * as net from 'net'
 import * as fs from 'fs'
 import * as ProgressBar from '../lib/progress'
-import * as colors from 'colors/safe'
 import { v4 } from 'public-ip'
+import { Connect } from './connect'
 
 export interface ParamsDL extends ParamsCTCP {
   /**
@@ -172,7 +172,7 @@ export default class Downloader extends CtcpParser {
   }
   protected setupProgressBar(len: number): ProgressBar {
     return new ProgressBar(
-      `\u2937`.padStart(6) + ` ${colors.bold(colors.green('\u2713'))} downloading [:bar] ETA: :eta @ :rate - :percent `,
+      `\u2937 `.padStart(6) + Connect.replace('%success% downloading [:bar] ETA: :eta @ :rate - :percent'),
       {
         complete: '=',
         incomplete: ' ',

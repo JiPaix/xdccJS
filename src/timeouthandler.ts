@@ -7,7 +7,7 @@ import { FileInfo } from './interfaces/fileinfo'
 
 export interface ParamsTimeout extends ParamsIRC {
   /**
-   * @description Number of retries when a download fails
+   * Number of retries when a download fails
    * @default `1`
    * @example
    * ```js
@@ -16,6 +16,10 @@ export interface ParamsTimeout extends ParamsIRC {
    * // if download of pack '20' fails it will retry twice before skipping to pack '25'
    */
   retry?: number
+  /**
+   * Time before a download is considered timed out
+   * @default `30`
+   */
   timeout?: number
 }
 
