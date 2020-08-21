@@ -7,7 +7,7 @@ import { Connect } from '../connect'
 
 export type savedParams = {
   wait: number
-  bot: string
+  bot?: string
 }
 export interface InterfaceCLI extends commander.Command {
   host?: string
@@ -88,7 +88,10 @@ export class BaseCommander {
     }
   }
 
-  protected xdccBINOPTS(): [Params, savedParams] {
+  protected xdccBINOPTS(isSaveProfile = false): [Params, savedParams] {
+    if (isSaveProfile) {
+      return [this.xdccJSOPTS(), { wait: this.program.wait, bot: this.program.bot || '' }]
+    }
     if (typeof this.program.bot === 'undefined') {
       throw new BinError('%danger% a bot must be specified')
     }

@@ -77,7 +77,7 @@ export class Profiles extends BaseCommander {
       const xdccJS = new XDCC(opts)
       xdccJS.quit()
       const filePath = path.join(this.profilePath, this.program.saveProfile + '.json')
-      fs.writeFileSync(filePath, JSON.stringify(this.xdccBINOPTS()))
+      fs.writeFileSync(filePath, JSON.stringify(this.xdccBINOPTS(true)))
       fs.writeFileSync(this.defaultProfilePath, JSON.stringify({ profile: this.program.saveProfile }))
       this.availableProfiles = this.initFolder()
       this.log(`%success% Set ${this.program.saveProfile} as new default profile`)
