@@ -63,7 +63,7 @@ const opts = {
   verbose: true, // Display download progress and jobs status                               - default: false
   randomizeNick: false, // Add random numbers at end of nickname                            - default: true
   passivePort: [5000, 5001, 5002], // Array of port(s) to use with Passive DCC              - default: [5001]
-  secure: true, // Allow/Deny files sent by bot with different name than the one requested  - default: false
+  secure: false, // Allow/Deny files sent by bot with different name than the one requested - default: true
 }
 
 ```
