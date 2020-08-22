@@ -37,6 +37,7 @@ const args: Params = {
   randomizeNick: false,
   passivePort: [5001],
   timeout: 5,
+  secure: false,
 }
 
 const testFile = path.resolve('./', 'downloads', 'Gin.txt')
