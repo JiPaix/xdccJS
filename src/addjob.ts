@@ -14,9 +14,8 @@ export class AddJob extends TimeOut {
   protected onRequest(): void {
     this.on('request', (args: { target: string; packets: number[] }) => {
       const candidate = this.getCandidate(args.target)
-      candidate.now = args.packets[0]
-      this.removeNowFromQueue(candidate)
-      this.say(args.target, `xdcc send ${candidate.now}`)
+      this.prepareCandidate(candidate)
+      this.say(candidate.nick, `xdcc send ${candidate.now}`)
       this.TOeventType(candidate, 'error')
         .TOeventMessage(candidate, `timeout: no response from %yellow%${candidate.nick}`, 6)
         .TOstart(candidate, this.timeout)
@@ -121,11 +120,8 @@ export class AddJob extends TimeOut {
   }
   protected onNext(): void {
     this.on('next', (candidate: Job) => {
-      candidate.retry = 0
-      this.removeNowFromQueue(candidate)
       if (candidate.queue.length) {
-        candidate.now = candidate.queue[0]
-        this.removeNowFromQueue(candidate)
+        this.prepareCandidate(candidate)
         this.say(candidate.nick, `xdcc send ${candidate.now}`)
         this.TOeventType(candidate, 'error')
           .TOeventMessage(candidate, `timeout: no response from %yellow%${candidate.nick}`, 6)

@@ -109,7 +109,9 @@ export class TimeOut extends Connect {
     }
   }
 
-  protected removeNowFromQueue(candidate: Job): void {
+  protected prepareCandidate(candidate: Job): void {
+    candidate.retry = 0
+    candidate.now = candidate.queue[0]
     candidate.queue = candidate.queue.filter(pending => pending.toString() !== candidate.now.toString())
   }
 
