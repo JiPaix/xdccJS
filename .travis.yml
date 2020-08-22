@@ -1,7 +1,7 @@
 os: linux
 dist: xenial
 language: node_js
-node_js: 
+node_js:
   - 10
   - 11
   - 12
@@ -11,11 +11,17 @@ install:
   - npm install
 script:
     - npm run build
-deploy:
-  provider: npm
-  email: "$NPM_EMAIL"
-  api_key : "$NPM_API_TOKEN"
-  skip_cleanup: true
-  on:
-    branch: master
-    condition: $TRAVS_COMMIT_MESSAGE =~ (v[0-9]\.[0-9]\.[0-9])
+jobs:
+  include:
+    - stage: deploy
+      node_js: 14
+      install: npm install
+      script: npm run build
+      deploy:
+        provider: npm
+        email: "$NPM_EMAIL"
+        api_token : "$NPM_API_TOKEN"
+        cleanup: false
+        on:
+          branch: master
+          condition: $TRAVIS_COMMIT_MESSAGE =~ (v[0-9]\.[0-9]\.[0-9])
