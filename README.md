@@ -49,19 +49,21 @@ let opts = {
 
 const xdccJS = new XDCC(opts)
 ```
-But you can also define a set of options to your preference : a full description of these parameters [here](docs/interfaces/params.html)
+Except for `host` every parameter is optional, but you can also define a set of options to your preference :  
+a full description of these parameters [here](docs/interfaces/params.html)
 ```js
 const opts = {
-  host: 'irc.server.net', // IRC hostname                                       - required
-  port: 6660, // IRC port                                                       - optional (default: 6667)
-  nick: 'ItsMeJiPaix', // Nickname                                              - optional (default: xdccJS + random)
-  chan: ['#candy', '#fruits'], // channel or array of channels                  - optional
-  path: 'downloads', // Download path or 'false'                                - optional (default: false, which enables piping)
-  retry: 2, // Nb of retries on failed download                                 - optional (default: 1)
-  timeout: 50, // Nb of seconds before a download is considered timed out       - optional (default: 30)
-  verbose: false, // Display download progress and jobs status                  - optioanl (default: false)
-  randomizeNick: false, // Add random numbers at end of nickname                - optional (default: true)
-  passivePort: [5000, 5001, 5002], // Array of port(s) to use with Passive DCC  - optional (default: [5001])
+  host: 'irc.server.net', // IRC hostname                                                   - required
+  port: 6660, // IRC port                                                                   - default: 6667
+  nick: 'ItsMeJiPaix', // Nickname                                                          - default: xdccJS + random
+  chan: ['#candy', '#fruits'], // Array of channels                                         - default : [ ]
+  path: 'downloads', // Download path or 'false'                                            - default: false (which enables piping)
+  retry: 2, // Nb of retries before skip                                                    - default: 1
+  timeout: 50, // Nb of seconds before a download is considered timed out                   - default: 30
+  verbose: true, // Display download progress and jobs status                               - default: false
+  randomizeNick: false, // Add random numbers at end of nickname                            - default: true
+  passivePort: [5000, 5001, 5002], // Array of port(s) to use with Passive DCC              - default: [5001]
+  secure: true, // Allow/Deny files sent by bot with different name than the one requested  - default: false
 }
 
 ```

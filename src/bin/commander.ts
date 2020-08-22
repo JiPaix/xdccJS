@@ -19,7 +19,8 @@ export interface InterfaceCLI extends commander.Command {
   chan?: string
   retry?: number
   passivePort?: number
-  noRandomize?: string
+  randomize?: boolean
+  secure?: boolean
   saveProfile?: string
   deleteProfile?: string
   setProfile?: string
@@ -36,7 +37,7 @@ export class BaseCommander {
     this.program
       .name('xdccJS')
       .version(version)
-      .option('-h, --host <server>', 'IRC server address')
+      .option('-h, --host <server>', 'IRC server hostname')
       .option('--port <number>', 'IRC server port', this.parseIfNotInt)
       .option('-b, --bot <botname>', 'xdcc bot nickname')
       .option('-d, --download <packs...>', 'pack number(s) to download')
@@ -45,13 +46,14 @@ export class BaseCommander {
       .option('-c, --chan [chan...]', 'channel(s) to join (without #)')
       .option('-r, --retry <number>', 'number of attempts before skipping pack', this.parseIfNotInt)
       .option('--passive-port <number>', 'port used for passive dccs', this.parseIfNotInt)
-      .option('--no-randomize', 'removes random numbers to nickname')
+      .option('--no-randomize', 'Disable nickname randomization')
       .option(
         '-w, --wait [number]',
         'wait time (in seconds) in channel(s) before sending download request',
         this.parseIfNotInt,
         0
       )
+      .option('--no-secure', 'Allow files sent by bot with different name than the one requested')
       .option('--save-profile [string]', 'save current options as a profile')
       .option('--delete-profile [string]', 'delete profile')
       .option('--set-profile [string]', 'set profile as default')
@@ -82,9 +84,10 @@ export class BaseCommander {
       chan: this.program.chan,
       path: this.program.path,
       retry: this.program.retry,
-      randomizeNick: this.program.noRandomize ? false : true,
+      randomizeNick: this.program.randomize,
       passivePort: [this.program.passivePort || 5001],
       verbose: true,
+      secure: this.program.secure,
     }
   }
 

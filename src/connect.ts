@@ -117,7 +117,7 @@ export class Connect extends Client {
 
 export interface ParamsIRC {
   /**
-   * @description IRC server's hostname
+   * IRC server's hostname
    * @example
    * ```js
    * params.host = 'irc.server.net'
@@ -125,7 +125,7 @@ export interface ParamsIRC {
    */
   host: string
   /**
-   * @description IRC server PORT
+   * IRC server PORT
    * @default `6667`
    * @example
    * ```js
@@ -134,7 +134,7 @@ export interface ParamsIRC {
    */
   port?: number
   /**
-   * @description Nickname to use on IRC
+   * Nickname to use on IRC
    * @default `'xdccJS' + randomInt`
    * @example
    * ```js
@@ -143,7 +143,7 @@ export interface ParamsIRC {
    */
   nick?: string
   /**
-   * @description Channel(s) to join
+   * Channel(s) to join
    * @remark Hashtags are optional
    * @example
    * ```js
@@ -157,7 +157,7 @@ export interface ParamsIRC {
    */
   chan?: string[] | string
   /**
-   * @description Add Random numbers to nickname
+   * Add Random numbers to nickname
    * @default: `true`
    * @example
    * ```js
@@ -166,7 +166,7 @@ export interface ParamsIRC {
    */
   randomizeNick?: boolean
   /**
-   * @description Display information regarding your download in console
+   * Display information regarding your download in console
    * @default `false`
    * @example
    * ```js

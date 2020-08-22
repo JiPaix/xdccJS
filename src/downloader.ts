@@ -10,7 +10,7 @@ import { Connect } from './connect'
 
 export interface ParamsDL extends ParamsCTCP {
   /**
-   * @description Array of ports for passive DCC
+   * Array of ports for passive DCC
    * @default `5001`
    * @remark Some xdcc bots use passive dcc, this require to have these ports opened on your computer/router/firewall
    * @example

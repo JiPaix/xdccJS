@@ -7,7 +7,7 @@ import { Job } from './interfaces/job'
 
 export interface ParamsCTCP extends ParamsTimeout {
   /**
-   * @description Download path
+   * Download path
    * @default `false`
    * @remark `undefined` or `false` enables piping, see {@link XDCC.download} for example on how to use pipes.
    * @example
@@ -27,9 +27,21 @@ export interface ParamsCTCP extends ParamsTimeout {
    * ```
    * */
   path?: string | false
+  /**
+   * Allow/Deny files sent by bot with different name than the one requested.
+   * @example
+   * ```js
+   * // with secure = true
+   * xdccJS.download('XDCC|SECURE', 1)
+   * //=> Only accept files comming from 'XDCC|SECURE'
+   * ```js
+   *
+   */
+  secure?: boolean
 }
 export class CtcpParser extends AddJob {
   path: string | boolean
+  secure: boolean
   protected resumequeue: {
     nick: string
     ip: string
@@ -38,6 +50,7 @@ export class CtcpParser extends AddJob {
   }[] = []
   constructor(params: ParamsCTCP) {
     super(params)
+    this.secure = this._is('secure', params.secure, 'boolean', true)
     this.path = this.pathCheck(params.path)
     this.on('ctcp request', (resp: { [prop: string]: string }): void => {
       const isDownloadRequest = this.checkBeforeDL(resp, this.candidates[0])
@@ -73,15 +86,23 @@ export class CtcpParser extends AddJob {
     candidate: Job
   ): { fileInfo: FileInfo; candidate: Job } | void {
     const fileInfo = this.parseCtcp(resp.message, resp.nick)
+    let canWe = true
     let isResume = false
-    if (fileInfo) {
+    if (this.secure) {
+      if (resp.nick.toLowerCase() === candidate.nick.toLowerCase()) {
+        canWe = true
+      } else {
+        canWe = false
+      }
+    }
+    if (fileInfo && canWe) {
       this.TOeventMessage(candidate, `couldn't connect to %yellow%` + fileInfo.ip + ':' + fileInfo.port, 6)
         .TOeventType(candidate, 'error')
         .TOstart(candidate, this.timeout, fileInfo)
       if (fileInfo.type === 'DCC SEND') {
         isResume = this.checkExistingFiles(fileInfo, candidate, resp)
       }
-      if (!isResume) {
+      if (!isResume && canWe) {
         return { fileInfo: fileInfo, candidate: candidate }
       }
     }
