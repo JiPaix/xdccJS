@@ -20,6 +20,16 @@ export interface ParamsDL extends ParamsCTCP {
   passivePort?: number[]
 }
 
+interface Pass {
+  server?: net.Server
+  client: net.Socket
+  stream: fs.WriteStream | PassThrough
+  candidate: Job
+  fileInfo: FileInfo
+  pick?: number
+  bar: ProgressBar
+}
+
 export default class Downloader extends CtcpParser {
   passivePort: number[]
   ip: Promise<number>
@@ -102,99 +112,87 @@ export default class Downloader extends CtcpParser {
   ): void {
     candidate.cancel = this.makeCancelable(candidate, client)
     const bar = this.setupProgressBar(fileInfo.length)
-    this.onData(server, client, stream, candidate, fileInfo, pick, bar)
-    this.onEnd(server, client, stream, candidate, fileInfo, pick)
-    this.onError(server, client, stream, candidate, fileInfo, pick, bar)
+    const pass: Pass = {
+      server: server,
+      client: client,
+      stream: stream,
+      candidate: candidate,
+      fileInfo: fileInfo,
+      pick: pick,
+      bar: bar,
+    }
+    this.onData(pass)
+    this.onEnd(pass)
+    this.onError(pass)
   }
 
-  private onError(
-    server: net.Server | undefined,
-    client: net.Socket,
-    stream: fs.WriteStream | PassThrough,
-    candidate: Job,
-    fileInfo: FileInfo,
-    pick: number | undefined,
-    bar: ProgressBar
-  ): void {
-    client.on('error', (e: { message: string }) => {
-      candidate.timeout.clear()
+  private onError(args: Pass): void {
+    args.client.on('error', (e: { message: string }) => {
+      args.candidate.timeout.clear()
       const msg =
-        e.message === 'cancel' ? 'Job cancelled: %cyan%' + candidate.nick : 'Connection error: %yellow%' + e.message
+        e.message === 'cancel'
+          ? 'Job cancelled: %cyan%' + args.candidate.nick
+          : 'Connection error: %yellow%' + e.message
       const event = e.message === 'cancel' ? 'cancel' : 'error'
-      this.TOeventType(candidate, event)
-        .TOeventMessage(candidate, msg, 6)
-        .TOdisconnectAfter(candidate, stream, client, server, pick)
-        .TOexecuteLater(candidate, () => {
+      this.TOeventType(args.candidate, event)
+        .TOeventMessage(args.candidate, msg, 6)
+        .TOdisconnectAfter(args.candidate, args.stream, args.client, args.server, args.pick)
+        .TOexecuteLater(args.candidate, () => {
           if (e.message === 'cancel') {
-            candidate.failures.push(candidate.now)
-            candidate.queue = []
-            if (fs.existsSync(fileInfo.filePath)) {
-              fs.unlinkSync(fileInfo.filePath)
+            args.candidate.failures.push(args.candidate.now)
+            args.candidate.queue = []
+            if (fs.existsSync(args.fileInfo.filePath)) {
+              fs.unlinkSync(args.fileInfo.filePath)
             }
-            this.emit('next', candidate)
+            this.emit('next', args.candidate)
           } else {
-            this.redownload(candidate, fileInfo)
+            this.redownload(args.candidate, args.fileInfo)
           }
         })
-        .TOstart(candidate, 0, fileInfo, bar)
+        .TOstart(args.candidate, 0, args.fileInfo, args.bar)
     })
   }
 
-  private onEnd(
-    server: net.Server | undefined,
-    client: net.Socket,
-    stream: fs.WriteStream | PassThrough,
-    candidate: Job,
-    fileInfo: FileInfo,
-    pick: number | undefined
-  ): void {
-    client.on('end', () => {
-      candidate.timeout.clear()
-      this.print('%success% done : %cyan%' + fileInfo.file, 8)
-      candidate.success.push(fileInfo.file)
-      if (server && pick) {
-        server.close(() => {
-          this.portInUse = this.portInUse.filter(p => p !== pick)
+  private onEnd(args: Pass): void {
+    args.client.on('end', () => {
+      args.candidate.timeout.clear()
+      this.print('%success% done : %cyan%' + args.fileInfo.file, 8)
+      args.candidate.success.push(args.fileInfo.file)
+      if (args.server && args.pick) {
+        args.server.close(() => {
+          this.portInUse = this.portInUse.filter(p => p !== args.pick)
         })
       }
-      stream.end()
-      client.end()
-      this.emit('downloaded', fileInfo)
-      candidate.emit('downloaded', fileInfo)
-      this.emit('next', candidate)
+      args.stream.end()
+      args.client.end()
+      this.emit('downloaded', args.fileInfo)
+      args.candidate.emit('downloaded', args.fileInfo)
+      this.emit('next', args.candidate)
     })
   }
 
-  private onData(
-    server: net.Server | undefined,
-    client: net.Socket,
-    stream: fs.WriteStream | PassThrough,
-    candidate: Job,
-    fileInfo: FileInfo,
-    pick: number | undefined,
-    bar: ProgressBar
-  ): void {
+  private onData(args: Pass): void {
     const sendBuffer = Buffer.alloc(8)
     let received = 0
-    client.on('data', data => {
+    args.client.on('data', data => {
       if (received === 0 && !this.path) {
-        candidate.emit('pipe', stream, fileInfo)
-        this.emit('pipe', stream, fileInfo)
+        args.candidate.emit('pipe', args.stream, args.fileInfo)
+        this.emit('pipe', args.stream, args.fileInfo)
       }
-      stream.write(data)
+      args.stream.write(data)
       received += data.length
       sendBuffer.writeBigInt64BE(BigInt(received), 0)
-      client.write(sendBuffer)
-      if (this.verbose && bar) {
-        bar.tick(data.length)
+      args.client.write(sendBuffer)
+      if (this.verbose && args.bar) {
+        args.bar.tick(data.length)
       }
-      if (received === fileInfo.length) {
-        client.end()
+      if (received === args.fileInfo.length) {
+        args.client.end()
       } else {
-        this.TOeventType(candidate, 'error')
-          .TOeventMessage(candidate, '%danger% Timeout: Not receiving data', 6)
-          .TOdisconnectAfter(candidate, stream, client, server, pick)
-          .TOstart(candidate, 2, fileInfo, bar)
+        this.TOeventType(args.candidate, 'error')
+          .TOeventMessage(args.candidate, '%danger% Timeout: Not receiving data', 6)
+          .TOdisconnectAfter(args.candidate, args.stream, args.client, args.server, args.pick)
+          .TOstart(args.candidate, 2, args.fileInfo, args.bar)
       }
     })
   }
