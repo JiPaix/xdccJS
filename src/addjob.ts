@@ -15,16 +15,6 @@ export class AddJob extends TimeOut {
     this.on('request', (args: { target: string; packets: number[] }) => {
       const candidate = this.getCandidate(args.target)
       this.prepareCandidate(candidate)
-      this.say(candidate.nick, `xdcc send ${candidate.now}`)
-      this.TOeventType(candidate, 'error')
-        .TOeventMessage(candidate, `timeout: no response from %yellow%${candidate.nick}`, 6)
-        .TOstart(candidate, this.timeout)
-      this.print(
-        `%success% sending command: /MSG %yellow%${
-          candidate.nick
-        }%reset% xdcc send %yellow%${candidate.now.toString()}`,
-        4
-      )
     })
   }
 
@@ -113,25 +103,31 @@ export class AddJob extends TimeOut {
         return !pos || item != ary[pos - 1]
       })
   }
+
+  protected prepareCandidate(candidate: Job): void {
+    candidate.retry = 0
+    candidate.now = candidate.queue[0]
+    candidate.queue = candidate.queue.filter(pending => pending.toString() !== candidate.now.toString())
+    this.say(candidate.nick, `xdcc send ${candidate.now}`)
+    this.TOeventType(candidate, 'error')
+      .TOeventMessage(candidate, `timeout: no response from %yellow%${candidate.nick}`, 6)
+      .TOstart(candidate, this.timeout)
+    this.print(
+      `%success% sending command: /MSG %yellow%${candidate.nick}%reset% xdcc send %yellow%${candidate.now.toString()}`,
+      4
+    )
+  }
+
   public getCandidate(target: string): Job {
     return this.candidates.filter(
       candidates => candidates.nick.localeCompare(target, 'en', { sensitivity: 'base' }) === 0
     )[0]
   }
+  
   protected onNext(): void {
     this.on('next', (candidate: Job) => {
       if (candidate.queue.length) {
         this.prepareCandidate(candidate)
-        this.say(candidate.nick, `xdcc send ${candidate.now}`)
-        this.TOeventType(candidate, 'error')
-          .TOeventMessage(candidate, `timeout: no response from %yellow%${candidate.nick}`, 6)
-          .TOstart(candidate, this.timeout)
-        this.print(
-          `%success% sending command: /MSG %yellow%${
-            candidate.nick
-          }%reset% xdcc send %yellow%${candidate.now.toString()}`,
-          4
-        )
       } else {
         this.candidates = this.candidates.filter(c => c.nick !== candidate.nick)
         candidate.emit('done', candidate.show())

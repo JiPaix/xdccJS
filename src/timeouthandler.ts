@@ -110,12 +110,6 @@ export class TimeOut extends Connect {
     }
   }
 
-  protected prepareCandidate(candidate: Job): void {
-    candidate.retry = 0
-    candidate.now = candidate.queue[0]
-    candidate.queue = candidate.queue.filter(pending => pending.toString() !== candidate.now.toString())
-  }
-
   protected redownload(candidate: Job, fileInfo?: FileInfo): void {
     if (candidate.retry < this.retry) {
       candidate.retry++
