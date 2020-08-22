@@ -9,7 +9,7 @@ node_js:
   - 14
 install:
   - npm install
-before_deploy:
+script:
     - npm run build
 deploy:
   provider: npm
