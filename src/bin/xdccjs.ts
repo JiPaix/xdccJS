@@ -70,8 +70,9 @@ export class XdccJSbin extends Profiles {
   private waitMessage(time: number, xdccJS: XDCC, bot: string, download: string): void {
     const start = time
     const inter = setInterval(() => {
+      time--
       if (start > 0) {
-        this.writeMSG(--time)
+        this.writeMSG(time)
       }
       if (time === 0) {
         if (start > 0) {

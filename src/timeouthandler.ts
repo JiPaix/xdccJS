@@ -93,12 +93,13 @@ export class TimeOut extends Connect {
   }
 
   private routine(candidate: Job): void {
-    this.say(candidate.nick, 'XDCC CANCEL')
     if (typeof candidate.timeout.eventType === 'undefined') {
       throw Error('no event Type')
     }
-    this.emit(candidate.timeout.eventType, new Error(candidate.timeout.message), candidate.timeout.fileInfo)
-    candidate.emit(candidate.timeout.eventType, new Error(candidate.timeout.message), candidate.timeout.fileInfo)
+    this.say(candidate.nick, 'XDCC CANCEL')
+    const error = new Error(candidate.timeout.message)
+    this.emit(candidate.timeout.eventType, error, candidate.timeout.fileInfo)
+    candidate.emit(candidate.timeout.eventType, error, candidate.timeout.fileInfo)
     if (this.verbose) {
       const msg = '%danger% ' + candidate.timeout.message
       if (candidate.timeout.bar) {
