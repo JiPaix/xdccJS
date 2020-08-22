@@ -23,6 +23,7 @@ export interface ParamsDL extends ParamsCTCP {
 export default class Downloader extends CtcpParser {
   passivePort: number[]
   ip: Promise<number>
+
   constructor(params: ParamsDL) {
     super(params)
     this.ip = this.getIp()
@@ -31,6 +32,7 @@ export default class Downloader extends CtcpParser {
       this.prepareDL(downloadrequest)
     })
   }
+
   async getIp(): Promise<number> {
     const string = await v4()
     const d = string.split('.')
@@ -53,6 +55,7 @@ export default class Downloader extends CtcpParser {
       return new PassThrough()
     }
   }
+
   private prepareDL(downloadrequest: { fileInfo: FileInfo; candidate: Job }): void {
     const fileInfo = downloadrequest.fileInfo
     const candidate = downloadrequest.candidate
@@ -99,44 +102,20 @@ export default class Downloader extends CtcpParser {
   ): void {
     candidate.cancel = this.makeCancelable(candidate, client)
     const bar = this.setupProgressBar(fileInfo.length)
-    const sendBuffer = Buffer.alloc(8)
-    let received = 0
-    client.on('data', data => {
-      if (received === 0 && !this.path) {
-        candidate.emit('pipe', stream, fileInfo)
-        this.emit('pipe', stream, fileInfo)
-      }
-      stream.write(data)
-      received += data.length
-      sendBuffer.writeBigInt64BE(BigInt(received), 0)
-      client.write(sendBuffer)
-      if (this.verbose) {
-        bar.tick(data.length)
-      }
-      if (received === fileInfo.length) {
-        client.end()
-      } else {
-        this.TOeventType(candidate, 'error')
-          .TOeventMessage(candidate, '%danger% Timeout: Not receiving data', 6)
-          .TOdisconnectAfter(candidate, stream, client, server, pick)
-          .TOstart(candidate, 2, fileInfo, bar)
-      }
-    })
-    client.on('end', () => {
-      candidate.timeout.clear()
-      this.print('%success% done : %cyan%' + fileInfo.file, 8)
-      candidate.success.push(fileInfo.file)
-      if (server && pick) {
-        server.close(() => {
-          this.portInUse = this.portInUse.filter(p => p !== pick)
-        })
-      }
-      stream.end()
-      client.end()
-      this.emit('downloaded', fileInfo)
-      candidate.emit('downloaded', fileInfo)
-      this.emit('next', candidate)
-    })
+    this.onData(server, client, stream, candidate, fileInfo, pick, bar)
+    this.onEnd(server, client, stream, candidate, fileInfo, pick)
+    this.onError(server, client, stream, candidate, fileInfo, pick, bar)
+  }
+
+  private onError(
+    server: net.Server | undefined,
+    client: net.Socket,
+    stream: fs.WriteStream | PassThrough,
+    candidate: Job,
+    fileInfo: FileInfo,
+    pick: number | undefined,
+    bar: ProgressBar
+  ): void {
     client.on('error', (e: { message: string }) => {
       candidate.timeout.clear()
       const msg =
@@ -161,6 +140,65 @@ export default class Downloader extends CtcpParser {
     })
   }
 
+  private onEnd(
+    server: net.Server | undefined,
+    client: net.Socket,
+    stream: fs.WriteStream | PassThrough,
+    candidate: Job,
+    fileInfo: FileInfo,
+    pick: number | undefined
+  ): void {
+    client.on('end', () => {
+      candidate.timeout.clear()
+      this.print('%success% done : %cyan%' + fileInfo.file, 8)
+      candidate.success.push(fileInfo.file)
+      if (server && pick) {
+        server.close(() => {
+          this.portInUse = this.portInUse.filter(p => p !== pick)
+        })
+      }
+      stream.end()
+      client.end()
+      this.emit('downloaded', fileInfo)
+      candidate.emit('downloaded', fileInfo)
+      this.emit('next', candidate)
+    })
+  }
+
+  private onData(
+    server: net.Server | undefined,
+    client: net.Socket,
+    stream: fs.WriteStream | PassThrough,
+    candidate: Job,
+    fileInfo: FileInfo,
+    pick: number | undefined,
+    bar: ProgressBar
+  ): void {
+    const sendBuffer = Buffer.alloc(8)
+    let received = 0
+    client.on('data', data => {
+      if (received === 0 && !this.path) {
+        candidate.emit('pipe', stream, fileInfo)
+        this.emit('pipe', stream, fileInfo)
+      }
+      stream.write(data)
+      received += data.length
+      sendBuffer.writeBigInt64BE(BigInt(received), 0)
+      client.write(sendBuffer)
+      if (this.verbose && bar) {
+        bar.tick(data.length)
+      }
+      if (received === fileInfo.length) {
+        client.end()
+      } else {
+        this.TOeventType(candidate, 'error')
+          .TOeventMessage(candidate, '%danger% Timeout: Not receiving data', 6)
+          .TOdisconnectAfter(candidate, stream, client, server, pick)
+          .TOstart(candidate, 2, fileInfo, bar)
+      }
+    })
+  }
+
   private makeCancelable(candidate: Job, client: net.Socket): () => void {
     const fn = (): void => {
       candidate.timeout.clear()
@@ -169,6 +207,7 @@ export default class Downloader extends CtcpParser {
     }
     return fn
   }
+
   protected setupProgressBar(len: number): ProgressBar {
     return new ProgressBar(
       `\u2937 `.padStart(6) + Connect.replace('%success% downloading [:bar] ETA: :eta @ :rate - :percent'),
