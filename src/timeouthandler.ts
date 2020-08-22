@@ -22,7 +22,22 @@ export interface ParamsTimeout extends ParamsIRC {
    */
   timeout?: number
 }
-
+interface TimeoutSetup {
+  candidate: Job
+  eventType: 'error' | 'cancel'
+  message: string
+  padding?: number
+  executeLater?: () => void
+  disconnectAfter?: {
+    stream: fs.WriteStream | PassThrough
+    socket: net.Socket
+    server?: net.Server
+    pick?: number | undefined
+    bar?: ProgressBar
+  }
+  delay: number
+  fileInfo?: FileInfo
+}
 export class TimeOut extends Connect {
   protected portInUse: number[]
   retry: number
@@ -33,38 +48,23 @@ export class TimeOut extends Connect {
     this.retry = this._is('retry', params.retry, 'number', 1)
     this.timeout = this._is('timeout', params.timeout, 'number', 30)
   }
-  protected TOeventType(candidate: Job, eventType: 'error' | 'cancel'): this {
-    candidate.timeout.eventType = eventType
-    return this
-  }
-  protected TOeventMessage(candidate: Job, message: string, padding = 0): this {
-    candidate.timeout.message = message
-    candidate.timeout.padding = padding
-    return this
-  }
-  protected TOexecuteLater(candidate: Job, fn: () => void, delay = 0): this {
-    candidate.timeout.fn = fn
-    candidate.timeout.delay = delay
-    return this
-  }
-  /**
-   * @ignore
-   */
-  protected TOdisconnectAfter(
-    candidate: Job,
-    stream: fs.WriteStream | PassThrough,
-    socket: net.Socket,
-    server?: net.Server,
-    pick?: number | undefined
-  ): this {
-    candidate.timeout.stream = stream
-    candidate.timeout.socket = socket
-    candidate.timeout.server = server
-    candidate.timeout.pick = pick
-    return this
+  protected __SetupTimeout(obj: TimeoutSetup): void {
+    obj.candidate.timeout.eventType = obj.eventType
+    obj.candidate.timeout.message = obj.message
+    obj.candidate.timeout.padding = obj.padding
+    obj.candidate.timeout.fn = obj.executeLater
+    obj.candidate.timeout.fileInfo = obj.fileInfo
+    if (obj.disconnectAfter) {
+      obj.candidate.timeout.stream = obj.disconnectAfter.stream
+      obj.candidate.timeout.socket = obj.disconnectAfter.socket
+      obj.candidate.timeout.server = obj.disconnectAfter.server
+      obj.candidate.timeout.pick = obj.disconnectAfter.pick
+      obj.candidate.timeout.bar = obj.disconnectAfter.bar
+    }
+    this.TOstart(obj.candidate, obj.delay)
   }
 
-  protected TOendStreams(candidate: Job): this {
+  private TOendStreams(candidate: Job): this {
     if (candidate.timeout.stream && candidate.timeout.socket) {
       candidate.timeout.stream.end()
       candidate.timeout.socket.end()
@@ -76,9 +76,7 @@ export class TimeOut extends Connect {
     return this
   }
 
-  protected TOstart(candidate: Job, delay: number, fileInfo?: FileInfo, bar?: ProgressBar): void {
-    candidate.timeout.fileInfo = fileInfo
-    candidate.timeout.bar = bar
+  private TOstart(candidate: Job, delay: number): void {
     this.makeClearable(candidate)
     candidate.timeout.clear()
     candidate.timeout.to = setTimeout(() => {

@@ -109,9 +109,13 @@ export class AddJob extends TimeOut {
     candidate.now = candidate.queue[0]
     candidate.queue = candidate.queue.filter(pending => pending.toString() !== candidate.now.toString())
     this.say(candidate.nick, `xdcc send ${candidate.now}`)
-    this.TOeventType(candidate, 'error')
-      .TOeventMessage(candidate, `timeout: no response from %yellow%${candidate.nick}`, 6)
-      .TOstart(candidate, this.timeout)
+    this.__SetupTimeout({
+      candidate: candidate,
+      eventType: 'error',
+      message: `timeout: no response from %yellow%${candidate.nick}`,
+      padding: 6,
+      delay: this.timeout,
+    })
     this.print(
       `%success% sending command: /MSG %yellow%${candidate.nick}%reset% xdcc send %yellow%${candidate.now.toString()}`,
       4
@@ -123,7 +127,7 @@ export class AddJob extends TimeOut {
       candidates => candidates.nick.localeCompare(target, 'en', { sensitivity: 'base' }) === 0
     )[0]
   }
-  
+
   protected onNext(): void {
     this.on('next', (candidate: Job) => {
       if (candidate.queue.length) {

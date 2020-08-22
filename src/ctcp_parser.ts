@@ -102,9 +102,17 @@ export class CtcpParser extends AddJob {
     const fileInfo = this.parseCtcp(resp.message, resp.nick)
     let isResume = false
     if (fileInfo && this.SecurityCheck(resp.nick, candidate.nick)) {
-      this.TOeventMessage(candidate, `couldn't connect to %yellow%` + fileInfo.ip + ':' + fileInfo.port, 6)
-        .TOeventType(candidate, 'error')
-        .TOstart(candidate, this.timeout, fileInfo)
+      this.__SetupTimeout({
+        candidate: candidate,
+        eventType: 'error',
+        message: `couldn't connect to %yellow%` + fileInfo.ip + ':' + fileInfo.port,
+        padding: 6,
+        delay: this.timeout,
+        fileInfo: fileInfo,
+      })
+      // this.TOeventMessage(candidate, `couldn't connect to %yellow%` + fileInfo.ip + ':' + fileInfo.port, 6)
+      //   .TOeventType(candidate, 'error')
+      //   .TOstart(candidate, this.timeout, fileInfo)
       if (fileInfo.type === 'DCC SEND') {
         isResume = this.checkExistingFiles(fileInfo, candidate, resp)
       }
@@ -140,9 +148,14 @@ export class CtcpParser extends AddJob {
         filePath: fileInfo.filePath,
         file: fileInfo.file,
       })
-      this.TOeventType(candidate, 'error')
-        .TOeventMessage(candidate, `couldn't resume download of %cyan%` + fileInfo.file, 6)
-        .TOstart(candidate, this.timeout, fileInfo)
+      this.__SetupTimeout({
+        candidate: candidate,
+        eventType: 'error',
+        message: `couldn't resume download of %cyan%` + fileInfo.file,
+        padding: 6,
+        delay: this.timeout,
+        fileInfo: fileInfo,
+      })
       return true
     } else {
       return false

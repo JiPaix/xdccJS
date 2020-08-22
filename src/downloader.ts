@@ -73,10 +73,20 @@ export default class Downloader extends CtcpParser {
     if (fileInfo.port === 0) {
       const pick = this.portPicker()
       const server = net.createServer(client => {
-        this.TOeventType(candidate, 'error')
-          .TOeventMessage(candidate, '%danger% Timeout: no initial connnection', 6)
-          .TOdisconnectAfter(candidate, stream, client, server, pick)
-          .TOstart(candidate, this.timeout, fileInfo)
+        this.__SetupTimeout({
+          candidate: candidate,
+          eventType: 'error',
+          message: '%danger% Timeout: no initial connnection',
+          delay: this.timeout,
+          disconnectAfter: {
+            stream: stream,
+            server: server,
+            socket: client,
+            pick: pick,
+          },
+          padding: 6,
+          fileInfo: fileInfo,
+        })
         this.processDL(server, client, stream, candidate, fileInfo, pick)
       })
 
@@ -127,17 +137,25 @@ export default class Downloader extends CtcpParser {
   }
 
   private onError(args: Pass): void {
-    args.client.on('error', (e: { message: string }) => {
-      args.candidate.timeout.clear()
-      const msg =
-        e.message === 'cancel'
-          ? 'Job cancelled: %cyan%' + args.candidate.nick
-          : 'Connection error: %yellow%' + e.message
-      const event = e.message === 'cancel' ? 'cancel' : 'error'
-      this.TOeventType(args.candidate, event)
-        .TOeventMessage(args.candidate, msg, 6)
-        .TOdisconnectAfter(args.candidate, args.stream, args.client, args.server, args.pick)
-        .TOexecuteLater(args.candidate, () => {
+    args.client.on('error', (e: Error) => {
+      this.__SetupTimeout({
+        candidate: args.candidate,
+        eventType: e.message === 'cancel' ? 'cancel' : 'error',
+        message:
+          e.message === 'cancel'
+            ? 'Job cancelled: %cyan%' + args.candidate.nick
+            : 'Connection error: %yellow%' + e.message,
+        delay: 0,
+        disconnectAfter: {
+          stream: args.stream,
+          server: args.server,
+          socket: args.client,
+          pick: args.pick,
+          bar: args.bar,
+        },
+        padding: 6,
+        fileInfo: args.fileInfo,
+        executeLater: () => {
           if (e.message === 'cancel') {
             args.candidate.failures.push(args.candidate.now)
             args.candidate.queue = []
@@ -148,8 +166,8 @@ export default class Downloader extends CtcpParser {
           } else {
             this.redownload(args.candidate, args.fileInfo)
           }
-        })
-        .TOstart(args.candidate, 0, args.fileInfo, args.bar)
+        },
+      })
     })
   }
 
@@ -189,10 +207,21 @@ export default class Downloader extends CtcpParser {
       if (received === args.fileInfo.length) {
         args.client.end()
       } else {
-        this.TOeventType(args.candidate, 'error')
-          .TOeventMessage(args.candidate, '%danger% Timeout: Not receiving data', 6)
-          .TOdisconnectAfter(args.candidate, args.stream, args.client, args.server, args.pick)
-          .TOstart(args.candidate, 2, args.fileInfo, args.bar)
+        this.__SetupTimeout({
+          candidate: args.candidate,
+          eventType: 'error',
+          message: '%danger% Timeout: Not receiving data',
+          padding: 6,
+          disconnectAfter: {
+            stream: args.stream,
+            socket: args.client,
+            server: args.server,
+            bar: args.bar,
+            pick: args.pick,
+          },
+          delay: 2,
+          fileInfo: args.fileInfo,
+        })
       }
     })
   }
