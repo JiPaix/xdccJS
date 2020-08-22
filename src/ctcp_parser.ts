@@ -102,7 +102,7 @@ export class CtcpParser extends AddJob {
       if (fileInfo.type === 'DCC SEND') {
         isResume = this.checkExistingFiles(fileInfo, candidate, resp)
       }
-      if (!isResume && canWe) {
+      if (!isResume) {
         return { fileInfo: fileInfo, candidate: candidate }
       }
     }
