@@ -5,6 +5,10 @@ import * as path from 'path'
 import * as fs from 'fs'
 import { Job } from './interfaces/job'
 
+interface ResumeQueue extends FileInfo {
+  nick: string
+}
+
 export interface ParamsCTCP extends ParamsTimeout {
   /**
    * Download path
@@ -42,12 +46,7 @@ export interface ParamsCTCP extends ParamsTimeout {
 export class CtcpParser extends AddJob {
   path: string | boolean
   secure: boolean
-  protected resumequeue: {
-    nick: string
-    ip: string
-    length: number
-    token: number
-  }[] = []
+  protected resumequeue: ResumeQueue[] = []
   constructor(params: ParamsCTCP) {
     super(params)
     this.secure = this._is('secure', params.secure, 'boolean', true)
@@ -81,21 +80,28 @@ export class CtcpParser extends AddJob {
       })
     }
   }
+
+  private SecurityCheck(nick: string, candidateNick: string): boolean {
+    nick = nick.toLowerCase()
+    candidateNick = candidateNick.toLowerCase()
+    if (this.secure) {
+      if (nick === candidateNick) {
+        return true
+      } else {
+        return false
+      }
+    } else {
+      return true
+    }
+  }
+
   private checkBeforeDL(
     resp: { [prop: string]: string },
     candidate: Job
   ): { fileInfo: FileInfo; candidate: Job } | void {
     const fileInfo = this.parseCtcp(resp.message, resp.nick)
-    let canWe = true
     let isResume = false
-    if (this.secure) {
-      if (resp.nick.toLowerCase() === candidate.nick.toLowerCase()) {
-        canWe = true
-      } else {
-        canWe = false
-      }
-    }
-    if (fileInfo && canWe) {
+    if (fileInfo && this.SecurityCheck(resp.nick, candidate.nick)) {
       this.TOeventMessage(candidate, `couldn't connect to %yellow%` + fileInfo.ip + ':' + fileInfo.port, 6)
         .TOeventType(candidate, 'error')
         .TOstart(candidate, this.timeout, fileInfo)
@@ -116,17 +122,23 @@ export class CtcpParser extends AddJob {
     }
   ): boolean {
     if (fs.existsSync(fileInfo.filePath) && this.path) {
-      let position = fs.statSync(fileInfo.filePath).size - 8192
-      if (position < 0) {
-        position = 0
+      fileInfo.position = fs.statSync(fileInfo.filePath).size - 8192
+      if (fileInfo.position < 0) {
+        fileInfo.position = 0
       }
+      fileInfo.length = fileInfo.length - fileInfo.position
       const quotedFilename = this.fileNameWithQuotes(fileInfo.file)
-      this.ctcpRequest(resp.nick, 'DCC RESUME', quotedFilename, fileInfo.port, position, fileInfo.token)
+      this.ctcpRequest(resp.nick, 'DCC RESUME', quotedFilename, fileInfo.port, fileInfo.position, fileInfo.token)
       this.resumequeue.push({
+        type: fileInfo.type,
         nick: resp.nick,
         ip: fileInfo.ip,
         length: fileInfo.length,
         token: fileInfo.token,
+        position: fileInfo.position,
+        port: fileInfo.port,
+        filePath: fileInfo.filePath,
+        file: fileInfo.file,
       })
       this.TOeventType(candidate, 'error')
         .TOeventMessage(candidate, `couldn't resume download of %cyan%` + fileInfo.file, 6)
@@ -154,27 +166,34 @@ export class CtcpParser extends AddJob {
   }
   protected parseCtcp(text: string, nick: string): FileInfo | void {
     const parts = this.ctcpMatch(text)
-    const fileInfo: FileInfo = {
-      type: `${parts[0]} ${parts[1]}`,
-      file: parts[2].replace(/"/g, ''),
-      filePath: this.path ? path.normalize(this.path + '/' + parts[2].replace(/"/g, '')) : 'pipe',
-      ip: this.uint32ToIP(parseInt(parts[3], 10)),
-      port: parseInt(parts[4], 10),
-      length: parseInt(parts[5], 10),
-      token: parseInt(parts[6], 10),
-    }
-    if (parts[1] === 'SEND') {
-      return fileInfo
-    }
-    if (parts[1] === 'ACCEPT') {
+    const type = `${parts[0]} ${parts[1]}`
+    if (type === 'DCC ACCEPT') {
       const resume = this.resumequeue.filter(q => q.nick == nick)
       this.resumequeue = this.resumequeue.filter(q => q.nick !== nick)
-      fileInfo.port = parseInt(parts[3])
-      fileInfo.position = parseInt(parts[4])
-      fileInfo.ip = resume[0].ip
-      fileInfo.length = resume[0].length
-      fileInfo.token = resume[0].token
-      return fileInfo
+      if (resume.length) {
+        return {
+          type: `${parts[0]} ${parts[1]}`,
+          file: parts[2].replace(/"/g, ''),
+          filePath: resume[0].filePath,
+          ip: resume[0].ip,
+          port: resume[0].port,
+          position: resume[0].position,
+          length: resume[0].length,
+          token: resume[0].token,
+        }
+      }
+    }
+    if (type === 'DCC SEND') {
+      return {
+        type: `${parts[0]} ${parts[1]}`,
+        file: parts[2].replace(/"/g, ''),
+        filePath: this.path ? path.normalize(this.path + '/' + parts[2].replace(/"/g, '')) : 'pipe',
+        ip: this.uint32ToIP(parseInt(parts[3], 10)),
+        port: parseInt(parts[4], 10),
+        position: 0,
+        length: parseInt(parts[5], 10),
+        token: parseInt(parts[6], 10),
+      }
     }
   }
 

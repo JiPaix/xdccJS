@@ -36,11 +36,10 @@ export default class Downloader extends CtcpParser {
     const d = string.split('.')
     return ((+d[0] * 256 + +d[1]) * 256 + +d[2]) * 256 + +d[3]
   }
+
   private setupStream(fileInfo: FileInfo): fs.WriteStream | PassThrough {
     if (this.path) {
       if (fileInfo.type === 'DCC ACCEPT') {
-        fileInfo.position = fileInfo.position ? fileInfo.position : 0
-        fileInfo.length = fileInfo.length - fileInfo.position
         return fs.createWriteStream(fileInfo.filePath, {
           flags: 'r+',
           start: fileInfo.position,
