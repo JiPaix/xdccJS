@@ -118,7 +118,7 @@ export class CtcpParser extends AddJob {
       }
     }
   }
-  
+
   private addToResumeQueue(fileInfo: FileInfo, nick: string): void {
     this.resumequeue.push({
       type: fileInfo.type,
