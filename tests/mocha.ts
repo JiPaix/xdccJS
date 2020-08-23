@@ -35,7 +35,6 @@ const args: Params = {
     .replace(/[^a-z]+/g, '')
     .substr(0, 9),
   randomizeNick: false,
-  passivePort: [5001],
   timeout: 5,
   secure: false,
 }
@@ -155,7 +154,10 @@ const args2: Params = {
   retry: 0,
   verbose: true,
   randomizeNick: true,
+  path: false,
+  passivePort: Array.from(Array(5050 + 1).keys()).slice(5005),
 }
+
 let downloadInfo: { bot: string; pack: string }
 describe('RealLife#2', () => {
   it('connect', function (done) {
@@ -187,7 +189,6 @@ describe('RealLife#2', () => {
       }, 65 * 1000)
     })
   })
-
   it('download passive pipe', function (done) {
     this.timeout(0)
     const job = start2.download(downloadInfo.bot, downloadInfo.pack)
@@ -200,6 +201,7 @@ describe('RealLife#2', () => {
       if (stream instanceof PassThrough) {
         done()
       } else {
+        console.error('not instance of PassThrough')
         process.exit(1)
       }
     })
@@ -215,14 +217,18 @@ describe('RealLife#2', () => {
           done()
         })
       } else {
+        console.error('not cancellable')
         process.exit(1)
       }
     } else {
+      console.error('not instance of Job')
       process.exit(1)
     }
   })
-  it('disconnect', function (done) {
+  it('has no job', function (done) {
     start2.quit()
-    done()
+    if (!start2.jobs()) {
+      done()
+    }
   })
 })
