@@ -110,9 +110,6 @@ export class CtcpParser extends AddJob {
         delay: this.timeout,
         fileInfo: fileInfo,
       })
-      // this.TOeventMessage(candidate, `couldn't connect to %yellow%` + fileInfo.ip + ':' + fileInfo.port, 6)
-      //   .TOeventType(candidate, 'error')
-      //   .TOstart(candidate, this.timeout, fileInfo)
       if (fileInfo.type === 'DCC SEND') {
         isResume = this.checkExistingFiles(fileInfo, candidate, resp)
       }
@@ -121,14 +118,22 @@ export class CtcpParser extends AddJob {
       }
     }
   }
+  
+  private addToResumeQueue(fileInfo: FileInfo, nick: string): void {
+    this.resumequeue.push({
+      type: fileInfo.type,
+      nick: nick,
+      ip: fileInfo.ip,
+      length: fileInfo.length,
+      token: fileInfo.token,
+      position: fileInfo.position,
+      port: fileInfo.port,
+      filePath: fileInfo.filePath,
+      file: fileInfo.file,
+    })
+  }
 
-  private checkExistingFiles(
-    fileInfo: FileInfo,
-    candidate: Job,
-    resp: {
-      [prop: string]: string
-    }
-  ): boolean {
+  private checkExistingFiles(fileInfo: FileInfo, candidate: Job, resp: { [prop: string]: string }): boolean {
     if (fs.existsSync(fileInfo.filePath) && this.path) {
       fileInfo.position = fs.statSync(fileInfo.filePath).size - 8192
       if (fileInfo.position < 0) {
@@ -137,17 +142,7 @@ export class CtcpParser extends AddJob {
       fileInfo.length = fileInfo.length - fileInfo.position
       const quotedFilename = this.fileNameWithQuotes(fileInfo.file)
       this.ctcpRequest(resp.nick, 'DCC RESUME', quotedFilename, fileInfo.port, fileInfo.position, fileInfo.token)
-      this.resumequeue.push({
-        type: fileInfo.type,
-        nick: resp.nick,
-        ip: fileInfo.ip,
-        length: fileInfo.length,
-        token: fileInfo.token,
-        position: fileInfo.position,
-        port: fileInfo.port,
-        filePath: fileInfo.filePath,
-        file: fileInfo.file,
-      })
+      this.addToResumeQueue(fileInfo, resp.nick)
       this.__SetupTimeout({
         candidate: candidate,
         eventType: 'error',
@@ -177,26 +172,20 @@ export class CtcpParser extends AddJob {
       return match
     }
   }
-  protected parseCtcp(text: string, nick: string): FileInfo | void {
-    const parts = this.ctcpMatch(text)
-    const type = `${parts[0]} ${parts[1]}`
-    if (type === 'DCC ACCEPT') {
-      const resume = this.resumequeue.filter(q => q.nick == nick)
-      this.resumequeue = this.resumequeue.filter(q => q.nick !== nick)
-      if (resume.length) {
-        return {
-          type: `${parts[0]} ${parts[1]}`,
-          file: parts[2].replace(/"/g, ''),
-          filePath: resume[0].filePath,
-          ip: resume[0].ip,
-          port: resume[0].port,
-          position: resume[0].position,
-          length: resume[0].length,
-          token: resume[0].token,
-        }
+
+  private fileInfoBuilder(parts: RegExpMatchArray, resume?: ResumeQueue): FileInfo {
+    if (resume) {
+      return {
+        type: `${parts[0]} ${parts[1]}`,
+        file: parts[2].replace(/"/g, ''),
+        filePath: resume.filePath,
+        ip: resume.ip,
+        port: resume.port,
+        position: resume.position,
+        length: resume.length,
+        token: resume.token,
       }
-    }
-    if (type === 'DCC SEND') {
+    } else {
       return {
         type: `${parts[0]} ${parts[1]}`,
         file: parts[2].replace(/"/g, ''),
@@ -207,6 +196,21 @@ export class CtcpParser extends AddJob {
         length: parseInt(parts[5], 10),
         token: parseInt(parts[6], 10),
       }
+    }
+  }
+
+  protected parseCtcp(text: string, nick: string): FileInfo | void {
+    const parts = this.ctcpMatch(text)
+    const type = `${parts[0]} ${parts[1]}`
+    if (type === 'DCC ACCEPT') {
+      const resume = this.resumequeue.filter(q => q.nick == nick)
+      this.resumequeue = this.resumequeue.filter(q => q.nick !== nick)
+      if (resume.length) {
+        return this.fileInfoBuilder(parts, resume[0])
+      }
+    }
+    if (type === 'DCC SEND') {
+      return this.fileInfoBuilder(parts)
     }
   }
 
