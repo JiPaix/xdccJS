@@ -155,7 +155,7 @@ const args2: Params = {
   verbose: true,
   randomizeNick: true,
   path: false,
-  passivePort: Array.from(Array(5050 + 1).keys()).slice(5005),
+  passivePort: Array.from(Array(5050 + 1).keys()).slice(5010),
 }
 
 let downloadInfo: { bot: string; pack: string }
