@@ -1,6 +1,6 @@
 {
   "name": "xdccjs",
-  "version": "4.0.5",
+  "version": "4.0.6",
   "description": "download files from XDCC bots on IRC, complete implementation of the XDCC protocol",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
