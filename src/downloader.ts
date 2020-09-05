@@ -121,6 +121,7 @@ export default class Downloader extends CtcpParser {
     pick: number | undefined
   ): void {
     candidate.cancel = this.makeCancelable(candidate, client)
+    this.print(`%info% downloading : %cyan% ${fileInfo.file}`, 5)
     const bar = this.setupProgressBar(fileInfo.length)
     const pass: Pass = {
       server: server,
@@ -173,8 +174,8 @@ export default class Downloader extends CtcpParser {
 
   private onEnd(args: Pass): void {
     args.client.on('end', () => {
+      this.print('%success% done.', 6)
       args.candidate.timeout.clear()
-      this.print('%success% done : %cyan%' + args.fileInfo.file, 8)
       args.candidate.success.push(args.fileInfo.file)
       if (args.server && args.pick) {
         args.server.close(() => {
@@ -236,14 +237,12 @@ export default class Downloader extends CtcpParser {
   }
 
   protected setupProgressBar(len: number): ProgressBar {
-    return new ProgressBar(
-      `\u2937 `.padStart(6) + Connect.replace('%success% downloading [:bar] ETA: :eta @ :rate - :percent'),
-      {
-        complete: '=',
-        incomplete: ' ',
-        width: 20,
-        total: len,
-      }
-    )
+    return new ProgressBar(`\u2937 `.padStart(6) + Connect.replace('[:bar] ETA: :eta @ :rate - :percent'), {
+      complete: '=',
+      incomplete: ' ',
+      width: 20,
+      total: len,
+      clear: true,
+    })
   }
 }
