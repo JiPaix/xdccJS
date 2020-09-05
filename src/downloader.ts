@@ -121,7 +121,7 @@ export default class Downloader extends CtcpParser {
     pick: number | undefined
   ): void {
     candidate.cancel = this.makeCancelable(candidate, client)
-    this.print(`%info% downloading : %cyan% ${fileInfo.file}`, 5)
+    this.print(`%info% downloading : %cyan%${fileInfo.file}`, 5)
     const bar = this.setupProgressBar(fileInfo.length)
     const pass: Pass = {
       server: server,
