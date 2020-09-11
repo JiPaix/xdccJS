@@ -227,15 +227,6 @@ export default class Downloader extends CtcpParser {
     })
   }
 
-  private makeCancelable(candidate: Job, client: net.Socket): () => void {
-    const fn = (): void => {
-      candidate.timeout.clear()
-      const cancel = new Error('cancel')
-      client.destroy(cancel)
-    }
-    return fn
-  }
-
   protected setupProgressBar(len: number): ProgressBar {
     return new ProgressBar(`\u2937 `.padStart(6) + Connect.replace('[:bar] ETA: :eta @ :rate - :percent'), {
       complete: '=',

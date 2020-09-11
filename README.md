@@ -91,11 +91,9 @@ const job2 = xdccJS.download('XDCC|RED', [1, 3, 10, 20])
   console.log(status)
   //=> { name: 'a-bot', queue: [98], now: 62, sucess: ['file.txt'], failed: [50] }
   ```
-- Cancel a download **in progress** :
+- Cancel a Job
   ```js
   job1.cancel()
-  console.log(job1.show())
-  //=> { name: 'a-bot', queue: [], now: 98, sucess: ['file.txt'], failed: [50, 62] }
   ```
 - Events (see [events documentation](#Events))
 

@@ -1,8 +1,10 @@
 # Changelog
 
 ## [v4.1.0](https://github.com/jipaix/xdccjs/tree/v4.1.0)
-
-### Enhancement: (verbose)
+### Fix: (Jobs)
+- Jobs weren't cancelable until they had a download ongoing ([a103d1b](https://github.com/JiPaix/xdccJS/commit/a103d1b85460eaee40bef87c23f8af014b620efb))
+- `job.cancel()` now totally empty a job's queue instead of just canceling the current packet ([a103d1b](https://github.com/JiPaix/xdccJS/commit/a103d1b85460eaee40bef87c23f8af014b620efb))
+### Style: (verbose)
 - Filename is now displayed before download starts ([1605b25](https://github.com/JiPaix/xdccJS/commit/1605b252f48fb592ed3ad2187a584d8b75af0301))
 - Download bar is cleared when it reaches 100% ([PR#37](https://github.com/JiPaix/xdccJS/pull/37))
 ---

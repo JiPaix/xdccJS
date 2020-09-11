@@ -128,7 +128,7 @@ export class TimeOut extends Connect {
     }
   }
 
-  private makeClearable(candidate: Job): void {
+  protected makeClearable(candidate: Job): void {
     candidate.timeout.clear = (): void => {
       candidate.timeout.to ? clearTimeout(candidate.timeout.to) : false
     }

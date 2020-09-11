@@ -1,6 +1,7 @@
 import { Job } from './interfaces/job'
 import { Candidate } from './interfaces/candidate'
 import { TimeOut, ParamsTimeout } from './timeouthandler'
+import * as net from 'net'
 
 export class AddJob extends TimeOut {
   candidates: Job[]
@@ -34,12 +35,28 @@ export class AddJob extends TimeOut {
     }
   }
 
+  protected makeCancelable(candidate: Job, client?: net.Socket): () => void {
+    const fn = (): void => {
+      candidate.timeout.clear()
+      if (client) {
+        const cancel = new Error('cancel')
+        client.destroy(cancel)
+      } else {
+        this.candidates = this.candidates.filter(x => x.nick !== candidate.nick)
+        console.log('We here')
+      }
+    }
+    return fn
+  }
+
   public download(target: string, packets: string | string[] | number | number[]): Job {
     const range = this.parsePackets(packets)
     let candidate = this.getCandidate(target)
     if (!candidate) {
       const base = this.constructCandidate(target, range)
       const newCand = new Job(base)
+      this.makeClearable(newCand)
+      newCand.cancel = this.makeCancelable(newCand)
       this.candidates.push(newCand)
       candidate = this.getCandidate(target)
     } else {
