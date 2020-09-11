@@ -8,13 +8,11 @@ It can also be used as a <a href="#command-line-interface">command-line</a> down
 - Batch downloads : `1-3, 5, 32-35, 101`
 - Resume file and auto-retry
 - Pipes!
-- <a href="https://en.wikipedia.org/wiki/Direct_Client-to-Client#Passive_DCC">Passive DCC</a>
-
+- [Passive DCC](https://en.wikipedia.org/wiki/Direct_Client-to-Client#Passive_DCC)
 - Check [advanced examples](https://github.com/JiPaix/xdccJS/tree/master/examples) and see what else you can do
 
 ## Table of contents
 - [API](#api)
-  - [Installation](#installation)
   - [Import and Require](#importrequire)
   - [Configuration](#configuration)
   - [Download](#download)
@@ -29,9 +27,9 @@ It can also be used as a <a href="#command-line-interface">command-line</a> down
   - [Profiles](#profiles)
   - [Important notes](#fyi)
 
+# Installation
+[![NPM](https://nodei.co/npm/xdccjs.png?compact=true)](https://nodei.co/npm/xdccjs/)
 # API
-## Installation
-`npm i xdccjs`
 ## Import/require
 ```js
 const XDCC = require('xdccjs').default
@@ -40,7 +38,7 @@ import XDCC from 'xdccJS'
 ```
 ## Configuration
 
-The simpliest way to start xdccJS is :
+**Minimal configuration :** 
 ```js
 let opts = {
   host: 'irc.server.net', // will use default port 6667
@@ -49,8 +47,9 @@ let opts = {
 
 const xdccJS = new XDCC(opts)
 ```
+**Advanced configuration :**
 Except for `host` every parameter is optional, but you can also define a set of options to your preference :  
-a full description of these parameters [here](docs/interfaces/params.html)
+
 ```js
 const opts = {
   host: 'irc.server.net', // IRC hostname                                                   - required
@@ -65,26 +64,45 @@ const opts = {
   passivePort: [5000, 5001, 5002], // Array of port(s) to use with Passive DCC              - default: [5001]
   secure: false, // Allow/Deny files sent by bot with different name than the one requested - default: true
 }
-
 ```
 **xdccJS includes (and extends) [@kiwiirc/irc-framework](https://github.com/kiwiirc/irc-framework)**, if you need more advanced (IRC) features check their [documentation](https://github.com/kiwiirc/irc-framework/blob/master/docs/clientapi.md) and some [examples](/examples) on how its used with xdccJS
 
 
 ## Download
->xdccJS.<span style="color:#9865a3">download</span><span style="color:black">(bot: <span style="color:#37bd80">string</span>, packets: <span style="color:#37bd80">string</span> | <span style="color:#37bd80">number</span> | <span style="color:#37bd80">number[]</span>)
+>xdccJS.**download( bot** : string, **packets** : string | number | number[] **)**
 ```js
 xdccJS.on('ready', () => {
   xdccJS.download('XDCC|BLUE', '1-3, 8, 55')
-  xdccJS.download('XDCC|RED', [1, 3, 10, 20])
   xdccJS.download('XDCC|YELLOW', 4)
+  xdccJS.download('XDCC|RED', [12, 7, 10, 20])
+  xdccJS.download('XDCC|PURPLE', ['1', '3', '10', '20'])
 })
 ```
 ### Jobs
-When a download is requested it's stored as a `Job` :
+**.download() are stored as jobs**
 ```js
-const job = xdccJS.download('a-bot', [33, 50, 62, 98])
+const job1 = xdccJS.download('a-bot', [33, 50, 62, 98])
+const job2 = xdccJS.download('XDCC|RED', [1, 3, 10, 20])
 ```
-Jobs are stored by bot name, this means that if you call `.download()` multiple times with the same bot name instead of starting a new job the existing one is updated :
+#### Jobs offers three options :
+- Get job progress status :
+  ```js
+  let status = job1.show()
+  console.log(status)
+  //=> { name: 'a-bot', queue: [98], now: 62, sucess: ['file.txt'], failed: [50] }
+  ```
+  ```console
+
+  ```
+- Cancel a download **in progress** :
+  ```js
+  job1.cancel()
+  console.log(job1.show())
+  //=> { name: 'a-bot', queue: [], now: 98, sucess: ['file.txt'], failed: [50, 62] }
+  ```
+- Events (see [events documentation](#Events))
+
+**Jobs are stored by bot nickname**, this means a job gets updated if it already exists.
 ```js
 xdccJS.on('ready', () => {
   const job1 = xdccJS.download('XDCC|BLUE', '1-3, 8, 55')
@@ -93,8 +111,10 @@ xdccJS.on('ready', () => {
   xdccJS.download('XDCC|RED', '150-155') // job2 is updated
 })
 ```
-You can retrieve a `Job` whenever you need with : `xdccJS.jobs()`
-  >xdccJS.<span style="color:#9865a3">jobs</span><span style="color:black">(bot: <span style="color:#37bd80">string</span> | <span style="color:#37bd80">undefined</span>)
+**You can also search jobs** with :`xdccJS.jobs()`
+
+> xdccJS.**jobs( bot** : string | undefined **)**
+
 ```js
 // find job by botname
 const job = xdccJS.jobs('bot-name')
@@ -102,87 +122,74 @@ const job = xdccJS.jobs('bot-name')
 // retrieve all jobs at once
 const arrayOfJobs = xdccJS.jobs()
 ```
-Each `Job` can :  
-- Display its progress status  
-  >Job.<span style="color:#9865a3">show</span><span style="color:black">(bot: <span style="color:#37bd80">string</span> | <span style="color:#37bd80">undefined</span>)
-  ```js
-  const status = job.show()
-  console.log(status)
-  //=> { name: 'a-bot', queue: [98], now: 62, sucess: ['file.txt'], failed: [50] }
-  ```
-- cancel the file currently downloading :  
-  >Job.<span style="color:#9865a3">show</span><span style="color:black">()</span>
-  ```js
-  job.cancel()
-  ```
-- Emit events (see event documentation below)
 
 ### Events
-Some events are accessible globally from `xdccJS` and from `Jobs`  
+**Most events are accessible both from xdccJS or a Job scope**
 
-<p style="font-size:smaller;">FYI: this example is for the sake of showing xdccJS capabilities, if you need download status to be displayed in a nice way just start xdccJS with parameter `verbose = true`</p>
+*FYI: those examples are for the sake of showing xdccJS capabilities, if you need download status to be displayed in a nice way just start xdccJS with parameter `verbose = true`*
  
 
-- >[<span style="color:#37bd80">xdccJS</span>].<span style="color:#9865a3">on</span>(<span style="color:#1a3ea1">'ready'</span>) : <span style="color:black">when xdccJS is ready to download</span>
-  ```js
-  xdccJS.on('ready', ()=> {
-    // download() here
-  })
-  ```
+> [**xdccJS**].on( **'ready'** ) : *xdccJS is ready to download*
+  - ```js
+    xdccJS.on('ready', ()=> {
+      // download() here
+    })
+    ```
 
-- >[<span style="color:#37bd80">xdccJS</span> | <span style="color:#37bd80">Job</span>].<span style="color:#9865a3">on</span>(<span style="color:#1a3ea1">'downloaded'</span>) : <span style="color:black">When a file successfully is downloaded</span>
-  ```js
-  xdccJS.on('downloaded', (fileInfo) => {
-    console.log(fileInfo.filePath) //=> /home/user/xdccJS/downloads/myfile.pdf
-  })
+> [**xdccJS** | **Job**].on( **'downloaded'** ) : *A file successfully downloaded*
+  - ```js
+    xdccJS.on('downloaded', (fileInfo) => {
+      console.log(fileInfo.filePath) //=> /home/user/xdccJS/downloads/myfile.pdf
+    })
 
-  job.on('downloaded', (fileInfo) => {
-    console.log('Job1 has downloaded:' + fileInfo.filePath)
-    //=> Job1 has downloaded: /home/user/xdccJS/downloads/myfile.pdf
-    console.log(fileInfo)
-    //=> { file: 'filename.pdf', filePath: '/home/user/xdccJS/downloads/myfile.pdf', length: 5844849 }
-  })
-  ```
-- >[<span style="color:#37bd80">xdccJS</span> | <span style="color:#37bd80">Job</span>].<span style="color:#9865a3">on</span>(<span style="color:#1a3ea1">'done'</span>) : <span style="color:black">When a job has no remaining package in queue</span>
-  ```js
-  xdccJS.on('done', (job) => {
-    console.log(job.show())
-      //=> { name: 'a-bot', queue: [98], now: 62, sucess: ['file.txt'], failed: [50] }
-  })
+    job.on('downloaded', (fileInfo) => {
+      console.log('Job1 has downloaded:' + fileInfo.filePath)
+      //=> Job1 has downloaded: /home/user/xdccJS/downloads/myfile.pdf
+      console.log(fileInfo)
+      //=> { file: 'filename.pdf', filePath: '/home/user/xdccJS/downloads/myfile.pdf', length: 5844849 }
+    })
+    ```
+> [**xdccJS** | **Job**].on( **'done'** ) : *A job has no remaining package in queue*
+  - ```js
+    xdccJS.on('done', (job) => {
+      console.log(job.show())
+        //=> { name: 'a-bot', queue: [98], now: 62, sucess: ['file.txt'], failed: [50] }
+    })
 
-  job.on('done', (job) => {
-    console.log('Job2 is done!')
-    console.log(job.show())
-      //=> { name: 'a-bot', queue: [98], now: 62, sucess: ['file.txt'], failed: [50] }
-  })
-  ```
-- >[<span style="color:#37bd80">xdccJS</span> | <span style="color:#37bd80">Job</span>].<span style="color:#9865a3">on</span>(<span style="color:#1a3ea1">'pipe'</span>) : <span style="color:black">When a file is getting piped (see <a href="#pipes">Pipe documentation</a>)</span>
-  ```js
-  xdccJS.on('pipe', (stream, fileInfo) => {
-    stream.pipe(somewhere)
-    console.log(fileInfo)
-    //=> { file: 'filename.pdf', filePath: 'pipe', length: 5844849 }
-  })
+    job.on('done', (job) => {
+      console.log('Job2 is done!')
+      console.log(job.show())
+        //=> { name: 'a-bot', queue: [98], now: 62, sucess: ['file.txt'], failed: [50] }
+    })
+    ```
+> [**xdccJS** | **Job**].on( **'pipe'** ) : *A pipe is available (see [pipe documentation](#pipes)*)
+  - ```js
+    xdccJS.on('pipe', (stream, fileInfo) => {
+      stream.pipe(somewhere)
+      console.log(fileInfo)
+      //=> { file: 'filename.pdf', filePath: 'pipe', length: 5844849 }
+    })
 
-  job.on('pipe', (stream, fileInfo) => {
-    stream.pipe(somewhere)
-    console.log(fileInfo)
-    //=> { file: 'filename.pdf', filePath: 'pipe', length: 5844849 }
-  })
-  ```
-- >[<span style="color:#37bd80">xdccJS</span> | <span style="color:#37bd80">Job</span>].<span style="color:#9865a3">on</span>(<span style="color:#1a3ea1">'error'</span>) : <span style="color:black">When something goes wrong</span>
-  ```js
-  xdccJS.on('error', (message) => {
-    console.log(message)
-    //=> timeout: no response from XDCC|BLUE
-  })
+    job.on('pipe', (stream, fileInfo) => {
+      stream.pipe(somewhere)
+      console.log(fileInfo)
+      //=> { file: 'filename.pdf', filePath: 'pipe', length: 5844849 }
+    })
+    ```
+> [**xdccJS** | **Job**].on( **'error'** ) : *something goes wrong*
+  - ```js
+    xdccJS.on('error', (message) => {
+      console.log(message)
+      //=> timeout: no response from XDCC|BLUE
+    })
 
-  job.on('error', (message) => {
-    //=> timeout: no response from XDCC|BLUE
-  })
-  ```
+    job.on('error', (message) => {
+      //=> timeout: no response from XDCC|BLUE
+    })
+    ```
+
 ### Pipes
-To enable piping you must initialize xdccJS with `path` set to false
+In order to use pipes xdccJS need to be initialized with path option set to false
 ```js
 // This example will start vlc.exe then play the video while it's downloading.
 const opts = {
