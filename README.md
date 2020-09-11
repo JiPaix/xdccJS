@@ -5,11 +5,11 @@
 It can also be used as a <a href="#command-line-interface">command-line</a> downloader !  
 
 ### Features :
-- <a href="https://en.wikipedia.org/wiki/Direct_Client-to-Client#Passive_DCC">Passive DCC</a>
 - Batch downloads : `1-3, 5, 32-35, 101`
-- Resume partially downloaded files
-- Auto-retry on fail
-- Pipes!  
+- Resume file and auto-retry
+- Pipes!
+- <a href="https://en.wikipedia.org/wiki/Direct_Client-to-Client#Passive_DCC">Passive DCC</a>
+
 - Check [advanced examples](https://github.com/JiPaix/xdccJS/tree/master/examples) and see what else you can do
 
 ## Table of contents
