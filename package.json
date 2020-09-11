@@ -14,7 +14,7 @@
     "scripts": "./dist/*"
   },
   "scripts": {
-    "pkg": "pkg ./dist/bin/xdccjs.js --out-path executables",
+    "pkg": "pkg ./dist/bin/index.js --out-path executables",
     "test": "node ./node_modules/mocha/bin/mocha -r ts-node/register tests/mocha.ts",
     "build": "node ./node_modules/rimraf/bin.js dist && node ./build/copyfiles.js && node ./node_modules/typescript/bin/tsc && node ./build/doc.js",
     "prepublishOnly": "npm run build",
