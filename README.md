@@ -99,11 +99,11 @@ const job2 = xdccJS.download('XDCC|RED', [1, 3, 10, 20])
   ```
 - Events (see [events documentation](#Events))
 
-**Jobs are stored by bot nickname**, this means a job gets updated if it already exists.
+**Jobs are stored by bot nickname :** `.download()` will update matching jobs
 ```js
 xdccJS.on('ready', () => {
-  const job1 = xdccJS.download('XDCC|BLUE', '1-3, 8, 55')
-  const job2 = xdccJS.download('XDCC|RED', [1, 3, 10, 20])
+  const job1 = xdccJS.download('XDCC|BLUE', '1-3, 8, 55') // job1 is created
+  const job2 = xdccJS.download('XDCC|RED', [1, 3, 10, 20]) // job2 is created
   xdccJS.download('XDCC|BLUE', 23) // job1 is updated
   xdccJS.download('XDCC|RED', '150-155') // job2 is updated
 })
