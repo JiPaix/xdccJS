@@ -1,7 +1,11 @@
 # Changelog
 
+## [v4.1.1](https://github.com/jipaix/xdccjs/tree/v4.1.0)
+### Fix: (bin)
+- MAJOR FIX : Download weren't started if `--wait` wasn't provieded
+---
 ## [v4.1.0](https://github.com/jipaix/xdccjs/tree/v4.1.0)
-### Fix: (Jobs)
+### Fix: (jobs)
 - Jobs weren't cancelable until they had a download ongoing ([a103d1b](https://github.com/JiPaix/xdccJS/commit/a103d1b85460eaee40bef87c23f8af014b620efb))
 - `job.cancel()` now totally empty a job's queue instead of just canceling the current packet ([a103d1b](https://github.com/JiPaix/xdccJS/commit/a103d1b85460eaee40bef87c23f8af014b620efb))
 ### Style: (verbose)
