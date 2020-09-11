@@ -74,7 +74,7 @@ export class XdccJSbin extends Profiles {
       if (start > 0) {
         this.writeMSG(time)
       }
-      if (time === 0) {
+      if (time <= 0) {
         if (start > 0) {
           this.clearMSG()
         }
