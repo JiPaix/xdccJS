@@ -208,6 +208,8 @@ export default class Downloader extends CtcpParser {
       if (received === args.fileInfo.length) {
         args.client.end()
       } else {
+        args.candidate.emit('downloading', args.fileInfo, received, (received / args.fileInfo.length) * 100)
+        this.emit('downloading', args.fileInfo, received, (received / args.fileInfo.length) * 100)
         this.__SetupTimeout({
           candidate: args.candidate,
           eventType: 'error',

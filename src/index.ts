@@ -32,6 +32,9 @@ export default class XDCC extends EventEmitter {
     this.irc.on('error', (err, f) => {
       this.emit('error', err, f)
     })
+    this.irc.on('downloading', (fileInfo, received, percentage) => {
+      this.emit('downloading', fileInfo, received, percentage)
+    })
   }
   /**
    * start jobs and download files

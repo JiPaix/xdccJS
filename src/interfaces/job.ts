@@ -72,6 +72,8 @@ export interface Job {
     }
   ): this
   emit(eventType: 'downloaded', fileInfo: FileInfo): this
+  emit(eventType: 'downloading', fileInfo: FileInfo, received: number, percentage: number): this
+  on(eventType: 'downloading', cb: (fileInfo: FileInfo, received: number, percentage: number) => void): this
   on(eventType: string | symbol, cb: (event?: unknown, ...args: unknown[]) => void): this
   on(eventType: 'error', msg: string, cb: (fileInfo: FileInfo) => void): this
   on(eventType: 'done', cb: (endCandidate: { nick: string; success: string[]; failures: number[] }) => void): this

@@ -182,6 +182,14 @@ declare module 'irc-framework' {
      */
     on(eventType: 'done', cb: (job: Job) => any): this
     /**
+     * @description Event triggered while a file is being downloaded
+     * @example
+     * xdccJS.on('downloading', fileInfo => {
+     *    console.log(`${fileInfo.file} @ ${percentage}%`)
+     * })
+     */
+    on(eventType: 'downloading', cb: (fileInfo: FileInfo, received: number, percentage: number) => any): this
+    /**
      * @description Event triggered when a file is downloaded
      * @example
      * xdccJS.on('downloaded', fileInfo => {

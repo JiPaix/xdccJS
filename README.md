@@ -34,7 +34,7 @@ It can also be used as a <a href="#command-line-interface">command-line</a> down
 ```js
 const XDCC = require('xdccjs').default
 // or
-import XDCC from 'xdccJS'
+import XDCC from 'xdccjs'
 ```
 ## Configuration
 
@@ -42,7 +42,7 @@ import XDCC from 'xdccJS'
 ```js
 let opts = {
   host: 'irc.server.net', // will use default port 6667
-  path: 'my/download/folder'
+  path: '/my/download/folder' // absolute and relative paths both work
 }
 
 const xdccJS = new XDCC(opts)
@@ -130,7 +130,17 @@ const arrayOfJobs = xdccJS.jobs()
       // download() here
     })
     ```
+> [**xdccJS** | **Job**].on( **'downloading'** ) : *Data is being received (a file is downloading)*
+  - ```js
+    xdccJS.on('downloading', (fileInfo, received, percentage) => {
+      console.log(fileInfo) //=> { file: 'filename.pdf', filePath: '/path/to/filename.pdf', length: 5844849 }
+      console.log(`downloading: '${fileInfo.file}'`) //=> downloading: 'your file.pdf'
+    })
 
+    job.on('downloading', (fileInfo, received, percentage) => {
+      console.log(percentage) //=> 10.55
+    })
+    ```
 > [**xdccJS** | **Job**].on( **'downloaded'** ) : *A file successfully downloaded*
   - ```js
     xdccJS.on('downloaded', (fileInfo) => {
