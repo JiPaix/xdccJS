@@ -1,7 +1,28 @@
 import Downloader, { ParamsDL } from './downloader'
 import { Job } from './interfaces/job'
 import { EventEmitter } from 'eventemitter3'
-
+/**
+ * File informations
+ * @asMemberOf XDCC
+ */
+export interface FileInfo {
+  /** Type of transfert (send or resume) */
+  type: string
+  /** Filename */
+  file: string
+  /** Filename with absolute path, return false if using pipes */
+  filePath: string
+  /** Transfert IP */
+  ip: string
+  /** Transfert PORT  */
+  port: number
+  /** File length in bytes */
+  length: number
+  /** Token (passive DCC) */
+  token: number
+  /** Resume Position */
+  position?: number
+}
 export interface Params extends ParamsDL {
   encoding?: 'utf8'
 }
@@ -100,6 +121,15 @@ export default class XDCC extends EventEmitter {
    * @example
    * xdccJS.on('downloaded', fileInfo => {
    *    console.log('file available @: ' + fileInfo.filePath)
+   * })
+   */
+  static EVENT_DOWNLOADING: () => void
+  /**
+   * Event triggered while a file is downloading
+   * @event downloading
+   * @example
+   * xdccJS.on('downloading', (fileInfo, received, percentage) => {
+   *    console.log(`${fileInfo.file} @ ${received} of ${fileInfo.length} [${percentage}%]`)
    * })
    */
   static EVENT_DOWNLOADED: () => void
