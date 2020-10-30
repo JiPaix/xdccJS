@@ -234,12 +234,12 @@ npm install xdccjs -g
 ```
 Options:
   -V, --version              output the version number
-  -s, --server <server>      irc server address
+  -h, --host <server>        irc server address
   --port <number>            irc server port (default: 6667)
   -b, --bot <botname>        xdcc bot nickname
   -d, --download <packs...>  pack number(s) to download
   -p, --path [path]          download path
-  -u, --username <username>  irc username (default: "xdccJS")
+  -u, --username <nickname>  irc username (default: "xdccJS")
   -c, --channel [chan...]    channel to join (without #)
   -r, --retry [number]       number of attempts before skipping pack (default: 0)
   --reverse-port [number]    port used for passive dccs (default: 5001)
