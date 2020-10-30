@@ -8,14 +8,14 @@ export class Connect extends Client {
   protected chan: string[]
   protected verbose: boolean
   protected host: string
-  protected nick: string
+  protected nickname: string
   protected port: number
   protected connectionTimeout!: NodeJS.Timeout
   constructor(params: ParamsIRC) {
     super()
-    this.nick = params.nick || 'xdccJS'
+    this.nickname = params.nickname || 'xdccJS'
     if (params.randomizeNick) {
-      this.nick = this.nickRandomizer(this.nick)
+      this.nickname = this.nickRandomizer(this.nickname)
     }
     this.host = this._is('host', params.host, 'string')
     this.port = this._is('port', params.port, 'number', 6667)
@@ -24,7 +24,7 @@ export class Connect extends Client {
     this.connect({
       host: this.host,
       port: this.port,
-      nick: this.nick,
+      nick: this.nickname,
     })
     this.onConnect()
   }
@@ -44,9 +44,9 @@ export class Connect extends Client {
     if (nick) {
       if (nick.length > 6) {
         nick = nick.substr(0, 6)
-      } else {
-        nick = 'xdccJS'
       }
+    } else {
+      nick = 'xdccJS'
     }
     return nick + Math.floor(Math.random() * 999) + 1
   }
@@ -138,10 +138,10 @@ export interface ParamsIRC {
    * @default `'xdccJS' + randomInt`
    * @example
    * ```js
-   * params.nick = 'JiPaix'
+   * params.nickname = 'JiPaix'
    * ```
    */
-  nick?: string
+  nickname?: string
   /**
    * Channel(s) to join
    * @remark Hashtags are optional

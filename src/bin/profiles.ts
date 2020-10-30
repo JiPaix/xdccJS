@@ -130,7 +130,7 @@ export class Profiles extends BaseCommander {
       this.defaultProfile[0].path = this.program.path
     }
     if (this.program.nick) {
-      this.defaultProfile[0].nick = this.program.nick
+      this.defaultProfile[0].nickname = this.program.nickname
     }
     if (this.program.chan) {
       this.defaultProfile[0].chan = this.program.chan

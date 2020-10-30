@@ -42,7 +42,7 @@ export class BaseCommander {
       .option('-b, --bot <botname>', 'xdcc bot nickname')
       .option('-d, --download <packs...>', 'pack number(s) to download')
       .option('-p, --path <path>', 'download path', path.normalize)
-      .option('-n, --nickname <nickname>', 'Your IRC nickname', 'xdccJS')
+      .option('-n, --nickname <nickname>', 'Your IRC nickname')
       .option('-c, --chan [chan...]', 'channel(s) to join (without #)')
       .option('-r, --retry <number>', 'number of attempts before skipping pack', this.parseIfNotInt)
       .option('--passive-port <number>', 'port used for passive dccs', this.parseIfNotInt)
@@ -80,7 +80,7 @@ export class BaseCommander {
     return {
       host: this.program.host,
       port: this.program.port,
-      nick: this.program.nick,
+      nickname: this.program.nickname,
       chan: this.program.chan,
       path: this.program.path,
       retry: this.program.retry,

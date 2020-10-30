@@ -54,7 +54,7 @@ Except for `host` every parameter is optional, but you can also define a set of 
 const opts = {
   host: 'irc.server.net', // IRC hostname                                                   - required
   port: 6660, // IRC port                                                                   - default: 6667
-  nick: 'ItsMeJiPaix', // Nickname                                                          - default: xdccJS + random
+  nickname: 'ItsMeJiPaix', // Nickname                                                          - default: xdccJS + random
   chan: ['#candy', '#fruits'], // Array of channels                                         - default : [ ]
   path: 'downloads', // Download path or 'false'                                            - default: false (which enables piping)
   retry: 2, // Nb of retries before skip                                                    - default: 1
@@ -239,7 +239,7 @@ Options:
   -b, --bot <botname>        xdcc bot nickname
   -d, --download <packs...>  pack number(s) to download
   -p, --path [path]          download path
-  -u, --username <nickname>  irc username (default: "xdccJS")
+  -u, --nickname <nickname>  irc username (default: "xdccJS")
   -c, --channel [chan...]    channel to join (without #)
   -r, --retry [number]       number of attempts before skipping pack (default: 0)
   --reverse-port [number]    port used for passive dccs (default: 5001)
