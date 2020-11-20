@@ -45,6 +45,7 @@ export class BaseCommander {
       .option('-n, --nickname <nickname>', 'Your IRC nickname')
       .option('-c, --chan [chan...]', 'channel(s) to join (without #)')
       .option('-r, --retry <number>', 'number of attempts before skipping pack', this.parseIfNotInt)
+      .option('-q, --quiet', 'disable console output')
       .option('--passive-port <number>', 'port used for passive dccs', this.parseIfNotInt)
       .option('--no-randomize', 'Disable nickname randomization')
       .option(
@@ -86,7 +87,7 @@ export class BaseCommander {
       retry: this.program.retry,
       randomizeNick: this.program.randomize,
       passivePort: [this.program.passivePort || 5001],
-      verbose: true,
+      verbose: !this.program.quiet,
       secure: this.program.secure,
     }
   }

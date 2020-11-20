@@ -245,6 +245,7 @@ Options:
   --reverse-port [number]    port used for passive dccs (default: 5001)
   --no-randomize             removes random numbers to nickname
   -w, --wait [number]        wait time (in seconds) in channel(s) before sending download request (default: 0)
+  -q, --quiet                disable console output
   --save-profile [string]    save current options as profile
   --del-profile [string]     delete profile
   --set-profile [string]     define profile as default
