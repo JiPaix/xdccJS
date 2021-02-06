@@ -10,17 +10,20 @@ export type savedParams = {
   bot?: string
 }
 export interface InterfaceCLI extends commander.Command {
+
   host?: string
   port?: number
   bot?: string
   download?: string[]
   path?: string
-  nick?: string
-  chan?: string
+  nickname?: string
+  channel?: string
   retry?: number
   passivePort?: number
   randomize?: boolean
   secure?: boolean
+  wait?: number
+  quiet?: boolean
   saveProfile?: string
   deleteProfile?: string
   setProfile?: string
@@ -30,20 +33,22 @@ export interface InterfaceCLI extends commander.Command {
 export class BaseCommander {
   program: InterfaceCLI
   constructor() {
+
     this.program = program
     this.parseProgram()
   }
   private parseProgram(): void {
     this.program
+      .storeOptionsAsProperties()
       .name('xdccJS')
       .version(version)
       .option('-h, --host <server>', 'IRC server hostname')
-      .option('--port <number>', 'IRC server port', this.parseIfNotInt)
+      .option('--port <number>', 'IRC server port')
       .option('-b, --bot <botname>', 'xdcc bot nickname')
       .option('-d, --download <packs...>', 'pack number(s) to download')
       .option('-p, --path <path>', 'download path', path.normalize)
       .option('-n, --nickname <nickname>', 'Your IRC nickname')
-      .option('-c, --chan [chan...]', 'channel(s) to join (without #)')
+      .option('-c, --channel [chan...]', 'channel(s) to join (without #)')
       .option('-r, --retry <number>', 'number of attempts before skipping pack', this.parseIfNotInt)
       .option('-q, --quiet', 'disable console output')
       .option('--passive-port <number>', 'port used for passive dccs', this.parseIfNotInt)
@@ -61,15 +66,10 @@ export class BaseCommander {
       .option('--list-profile', 'list all available profiles')
       .parse()
   }
-  private parseIfNotInt(numstring: string | number): number {
-    if (typeof numstring === 'string') {
-      const res = parseInt(numstring)
-      if (isNaN(res)) {
-        throw new BinError('WRONG NUMBER')
-      }
-      return res
-    }
-    return numstring
+  private parseIfNotInt(numstring: string): number {
+    const number = parseInt(numstring)
+    if(isNaN(number)) throw new BinError(`%danger% option --port must ne a number`)
+    return number
   }
   protected log(string: string, pad = 0): void {
     console.error(''.padStart(pad) + Connect.replace(string))
@@ -82,7 +82,7 @@ export class BaseCommander {
       host: this.program.host,
       port: this.program.port,
       nickname: this.program.nickname,
-      chan: this.program.chan,
+      chan: this.program.channel,
       path: this.program.path,
       retry: this.program.retry,
       randomizeNick: this.program.randomize,
@@ -94,11 +94,11 @@ export class BaseCommander {
 
   protected xdccBINOPTS(isSaveProfile = false): [Params, savedParams] {
     if (isSaveProfile) {
-      return [this.xdccJSOPTS(), { wait: this.program.wait, bot: this.program.bot || '' }]
+      return [this.xdccJSOPTS(), { wait: this.program.wait!, bot: this.program.bot! }]
     }
     if (typeof this.program.bot === 'undefined') {
       throw new BinError('%danger% a bot must be specified')
     }
-    return [this.xdccJSOPTS(), { wait: this.program.wait, bot: this.program.bot }]
+    return [this.xdccJSOPTS(), { wait: this.program.wait!, bot: this.program.bot }]
   }
 }
