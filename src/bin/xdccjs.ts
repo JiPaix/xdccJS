@@ -15,7 +15,7 @@ export class XdccJSbin extends Profiles {
       this.main()
     }
   }
-  
+
   private isLazySyntaxCorrect(match: RegExpExecArray): boolean {
     if (match[1].toLowerCase() === 'msg' && match[3].toLowerCase() === 'xdcc' && match[4].toLowerCase() === 'send') {
       return true
@@ -92,10 +92,8 @@ export class XdccJSbin extends Profiles {
     }
     const download = this.program.download.join('')
     const bot = this.program.bot ? this.program.bot : opts[1].bot
-    if (!bot) {
-      throw new Error('Control flow error: downloadwith()')
-    }
-    const wait = opts[1].wait
+    const wait = opts[1].wait || 0
+    if (!bot) throw new Error('Control flow error: downloadwith()')
     const xdccJS = new XDCC(opts[0])
     xdccJS.on('ready', () => {
       this.waitMessage(wait, xdccJS, bot, download)

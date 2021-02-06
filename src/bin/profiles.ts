@@ -113,7 +113,7 @@ export class Profiles extends BaseCommander {
     if (this.program.passivePort) this.defaultProfile[0].passivePort = [this.program.passivePort]
     if (this.program.bot) this.defaultProfile[1].bot = this.program.bot
     this.defaultProfile[0].randomizeNick = this.program.randomize
-    this.defaultProfile[1].wait = this.program.wait ? this.program.wait : 0
+    this.defaultProfile[1].wait = this.program.wait
     this.defaultProfile[0].secure = this.program.secure
   }
 }
