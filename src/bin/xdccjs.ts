@@ -7,17 +7,15 @@ import { savedParams } from './commander'
 export class XdccJSbin extends Profiles {
   constructor() {
     super()
-    if (this.isProfileSetting()) {
-      this.profileAction()
+    const lazyArgs = this.isCopyPasteARGV()
+    if(lazyArgs) {
+      this.lazy(lazyArgs)
     } else {
-      const parsedARGV = this.isCopyPasteARGV()
-      if (parsedARGV) {
-        this.lazy(parsedARGV)
-      } else {
-        this.main()
-      }
+      this.profileAction()
+      this.main()
     }
   }
+  
   private isLazySyntaxCorrect(match: RegExpExecArray): boolean {
     if (match[1].toLowerCase() === 'msg' && match[3].toLowerCase() === 'xdcc' && match[4].toLowerCase() === 'send') {
       return true
@@ -42,7 +40,8 @@ export class XdccJSbin extends Profiles {
     }
   }
   private isCopyPasteARGV(): RegExpExecArray | void {
-    const match = /\/(msg|MSG) (.*) (xdcc) (send) (.*)$/.exec(process.argv[2])
+    const match = /\/(msg|MSG) (.*) (xdcc|XDCC) (send|SEND) (.*)$/
+      .exec(process.argv.join(' '))
     if (match) {
       return match
     }

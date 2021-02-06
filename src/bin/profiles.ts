@@ -48,25 +48,11 @@ export class Profiles extends BaseCommander {
     return fs.readdirSync(this.profilePath).filter(file => file.endsWith('.json'))
   }
 
-  protected isProfileSetting(): boolean {
-    for (const key of this.isProfileKeys) {
-      if (this.program[key]) {
-        return true
-      }
-    }
-    return false
-  }
-
   protected profileAction(): void {
-    if (this.program.saveProfile) {
-      this.saveProfile()
-    } else if (this.program.setProfile) {
-      this.setProfile(this.program.setProfile)
-    } else if (this.program.deleteProfile) {
-      this.deleteProfile(this.program.deleteProfile)
-    } else if (this.program.listProfile) {
-      this.listProfile()
-    }
+    if(typeof this.program.saveProfile !== 'undefined') this.saveProfile()
+    if(typeof this.program.deleteProfile !== 'undefined') this.deleteProfile(this.program.deleteProfile)
+    if(typeof this.program.setProfile !== 'undefined') this.setProfile(this.program.setProfile)
+    if(typeof this.program.listProfile !== 'undefined') this.listProfile()
   }
 
   private saveProfile(): void {
@@ -129,11 +115,11 @@ export class Profiles extends BaseCommander {
     if (this.program.path) {
       this.defaultProfile[0].path = this.program.path
     }
-    if (this.program.nick) {
+    if (this.program.nickname) {
       this.defaultProfile[0].nickname = this.program.nickname
     }
-    if (this.program.chan) {
-      this.defaultProfile[0].chan = this.program.chan
+    if (this.program.channel) {
+      this.defaultProfile[0].chan = this.program.channel
     }
     if (this.program.retry) {
       this.defaultProfile[0].retry = this.program.retry
