@@ -56,14 +56,18 @@ export class XdccJSbin extends Profiles {
   }
 
   private writeMSG(time: number): void {
-    process.stderr.cursorTo(1)
-    process.stderr.write(Connect.replace('%info% waiting: ' + time))
-    process.stderr.clearLine(1)
+    if(!this.program.quiet) {
+      process.stderr.cursorTo(1)
+      process.stderr.write(Connect.replace('%info% waiting: ' + time))
+      process.stderr.clearLine(1)
+    }
   }
 
   private clearMSG(): void {
-    process.stderr.clearLine(0)
-    process.stderr.cursorTo(0)
+    if(!this.program.quiet) {
+      process.stderr.clearLine(0)
+      process.stderr.cursorTo(0)
+    }
   }
 
   private waitMessage(time: number, xdccJS: XDCC, bot: string, download: string): void {
