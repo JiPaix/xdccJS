@@ -234,23 +234,24 @@ npm install xdccjs -g
 ```
 Options:
   -V, --version              output the version number
-  -h, --host <server>        irc server address
-  --port <number>            irc server port (default: 6667)
+  -h, --host <server>        IRC server hostname
+  --port <number>            IRC server port
   -b, --bot <botname>        xdcc bot nickname
   -d, --download <packs...>  pack number(s) to download
-  -p, --path [path]          download path
-  -u, --nickname <nickname>  irc username (default: "xdccJS")
-  -c, --channel [chan...]    channel to join (without #)
-  -r, --retry [number]       number of attempts before skipping pack (default: 0)
-  --reverse-port [number]    port used for passive dccs (default: 5001)
-  --no-randomize             removes random numbers to nickname
-  -w, --wait [number]        wait time (in seconds) in channel(s) before sending download request (default: 0)
+  -p, --path <path>          download path
+  -n, --nickname <nickname>  Your IRC nickname
+  -c, --channel [chan...]    channel(s) to join (without #)
+  -r, --retry <number>       number of attempts before skipping pack
   -q, --quiet                disable console output
-  --save-profile [string]    save current options as profile
-  --del-profile [string]     delete profile
-  --set-profile [string]     define profile as default
+  --passive-port <number>    port used for passive dccs
+  --no-randomize             Disable nickname randomization
+  -w, --wait [number]        wait time (in seconds) in channel(s) before sending download request (default: 0)
+  --no-secure                Allow files sent by bot with different name than the one requested
+  --save-profile [string]    save current options as a profile
+  --delete-profile [string]  delete profile
+  --set-profile [string]     set profile as default
   --list-profile             list all available profiles
-  -h, --help                 display help for command
+  --help                     display help for command
 ```
 ## Download 
 **I recommend using double quotes between the `bot name` and `download path`** as they often both include unescaped characeters or whitespaces
