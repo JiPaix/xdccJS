@@ -94,7 +94,11 @@ export class BaseCommander {
 
   protected xdccBINOPTS(isSaveProfile = false): [Params, savedParams] {
     if (isSaveProfile) {
+<<<<<<< HEAD
       return [this.xdccJSOPTS(), { wait: this.program.wait, bot: this.program.bot }]
+=======
+      return [this.xdccJSOPTS(), { wait: this.program.wait, bot: this.program.bot! }]
+>>>>>>> 65b0626cf7da0a4e08ce5bd851c544b366901dc9
     }
     if (typeof this.program.bot === 'undefined') {
       throw new BinError('%danger% a bot must be specified')
