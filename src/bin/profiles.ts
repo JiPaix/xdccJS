@@ -103,33 +103,15 @@ export class Profiles extends BaseCommander {
   }
 
   protected mergeProfileWithARGV(): void {
-    if (!this.defaultProfile) {
-      throw new BinError('Problem in control flow : mergeProfileWithARGV')
-    }
-    if (this.program.host) {
-      this.defaultProfile[0].host = this.program.host
-    }
-    if (this.program.port) {
-      this.defaultProfile[0].port = this.program.port
-    }
-    if (this.program.path) {
-      this.defaultProfile[0].path = this.program.path
-    }
-    if (this.program.nickname) {
-      this.defaultProfile[0].nickname = this.program.nickname
-    }
-    if (this.program.channel) {
-      this.defaultProfile[0].chan = this.program.channel
-    }
-    if (this.program.retry) {
-      this.defaultProfile[0].retry = this.program.retry
-    }
-    if (this.program.passivePort) {
-      this.defaultProfile[0].passivePort = [this.program.passivePort]
-    }
-    if (this.program.bot) {
-      this.defaultProfile[1].bot = this.program.bot
-    }
+    if (!this.defaultProfile) throw new BinError('Problem in control flow : mergeProfileWithARGV')
+    if (this.program.host) this.defaultProfile[0].host = this.program.host
+    if (this.program.port) this.defaultProfile[0].port = this.program.port
+    if (this.program.path) this.defaultProfile[0].path = this.program.path
+    if (this.program.nickname) this.defaultProfile[0].nickname = this.program.nickname
+    if (this.program.channel) this.defaultProfile[0].chan = this.program.channel
+    if (this.program.retry) this.defaultProfile[0].retry = this.program.retry
+    if (this.program.passivePort) this.defaultProfile[0].passivePort = [this.program.passivePort]
+    if (this.program.bot) this.defaultProfile[1].bot = this.program.bot
     this.defaultProfile[0].randomizeNick = this.program.randomize
     this.defaultProfile[1].wait = this.program.wait ? this.program.wait : 0
     this.defaultProfile[0].secure = this.program.secure
