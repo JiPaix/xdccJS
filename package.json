@@ -75,7 +75,7 @@
     "commander": "^7.0.0",
     "eventemitter3": "^4.0.0",
     "irc-framework": "^4.7.0",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "public-ip": "^4.0.2"
   }
 }
