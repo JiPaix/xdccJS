@@ -989,9 +989,9 @@ ipaddr.js@0.1.3:
   integrity sha1-J6nKN/FI0hArDvGRzL8sUajwJcY=
 
 irc-framework@^4.7.0:
-  version "4.9.0"
-  resolved "https://registry.yarnpkg.com/irc-framework/-/irc-framework-4.9.0.tgz#7c27a20d87099e47f32023edf1cab6da6d7a05b9"
-  integrity sha512-cUYMnnKwcNpXtEw/CXnEwUtglmaWZbfu0E/0iI7bENC3bASPNfcvcyTsFQcdknpnoFLyh5kXpQCjPBWKTbOQAQ==
+  version "4.10.0"
+  resolved "https://registry.yarnpkg.com/irc-framework/-/irc-framework-4.10.0.tgz#85746d9c3e51556bbc1481d283fe785a29dc1e96"
+  integrity sha512-a5FnHDp1p0z91bN4c4jE8GpT3nwPTY6Wu87brG5qNN4Cw527ZZVaJMj0XmSZe1OUZgbGA3mHK1zvd7738MTvjA==
   dependencies:
     core-js "^3.6.5"
     eventemitter3 "^4.0.3"
