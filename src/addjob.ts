@@ -43,7 +43,6 @@ export class AddJob extends TimeOut {
         client.destroy(cancel)
       } else {
         this.candidates = this.candidates.filter(x => x.nick !== candidate.nick)
-        console.log('We here')
       }
     }
     return fn
