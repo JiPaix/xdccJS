@@ -30,7 +30,7 @@ const args: Params = {
   port: 6660,
   retry: 1,
   verbose: false,
-  nick: Math.random()
+  nickname: Math.random()
     .toString(36)
     .replace(/[^a-z]+/g, '')
     .substr(0, 9),

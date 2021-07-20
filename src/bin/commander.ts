@@ -1,5 +1,5 @@
 import commander, { program } from 'commander'
-import { version } from '../package.json'
+import { version } from '../version.json'
 import { BinError } from './errorhandler'
 import * as path from 'path'
 import { Params } from '..'
