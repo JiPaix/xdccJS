@@ -1,24 +1,16 @@
-# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
 name: build
-
 on:
   push:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-
 jobs:
   build:
-
+    if: "!contains(github.event.head_commit.message, 'NO-CI')"
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [12.x, 14.x, 16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
@@ -28,3 +20,18 @@ jobs:
         cache: 'npm'
     - run: npm install
     - run: npm run build
+  publish:
+      if: github.ref == 'refs/heads/main'
+      needs: build
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        - uses: actions/setup-node@v1
+          with:
+            node-version: 14
+        - name: Publish
+          run: |
+            npm config set //registry.npmjs.org/:_authToken ${NPM_AUTH_TOKEN}
+            npm publish --ignore-scripts
+          env:
+            NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
