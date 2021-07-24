@@ -37,15 +37,15 @@ jobs:
     - name: 'Setting up environnement variables'
       run : |
         touch .env
-        echo SERVER1=${{secrets.SERVER1}} >> .env
-        echo SERVER2=${{secrets.SERVER2}} >> .env
-        echo CHAN1=${{secrets.CHAN1}} >> .env
-        echo CHAN2=${{secrets.CHAN2}} >> .env
-        echo BOT1=${{secrets.BOT1}} >> .env
-        echo FILE1=${{secrets.FILE1}} >> .env
-        echo IGNORE1=${{secrets.IGNORE1}} >> .env
-        echo IGNORE2=${{secrets.IGNORE2}} >> .env
-        echo IGNORE3=${{secrets.IGNORE3}} >> .env
+        echo SERVER1=${{ secrets.SERVER1 }} >> .env
+        echo SERVER2=${{ secrets.SERVER2 }} >> .env
+        echo CHAN1=${{ secrets.CHAN1 }} >> .env
+        echo CHAN2=${{ secrets.CHAN2 }} >> .env
+        echo BOT1=${{ secrets.BOT1 }} >> .env
+        echo FILE1=${{ secrets.FILE1 }} >> .env
+        echo IGNORE1=${{ secrets.IGNORE1 }} >> .env
+        echo IGNORE2=${{ secrets.IGNORE2 }} >> .env
+        echo IGNORE3=${{ secrets.IGNORE3 }} >> .env
     - name: Starting tests
       run: npm run coverage
     - name: Uploading coverage
