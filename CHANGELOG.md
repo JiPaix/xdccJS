@@ -1,5 +1,37 @@
 # Changelog
 
+## [v4.2.4](https://github.com/jipaix/xdccjs/tree/v4.3.0)
+### New Feature:
+- Added a `--quiet` option to xdccJS CLI
+### Fix:
+- NodeJS 16x not properly reading package.json
+### Misc:
+- Dependencies update (a lot)
+---
+## [v4.2.0](https://github.com/jipaix/xdccjs/tree/v4.2.0)
+### Improvement:
+- `server` option has been replace with `host` (lib+cli).
+- `nick` and `username` option are replaced with `nickname` (lib+cli)
+### Fix:
+- Fix bug with xdccJS CLI where nickname option wasn't applied if its lenght was more than 6 characters
+### Misc:
+- Dependencies update
+---
+## [v4.1.6](https://github.com/jipaix/xdccjs/tree/v4.1.6)
+### Fix:
+- Added a fileInfo typescript interface
+- Added a `downloading` event typescript definition
+---
+## [v4.1.5](https://github.com/jipaix/xdccjs/tree/v4.1.5)
+### Fix:
+- removed old compilted file from src folder
+---
+## [v4.1.2](https://github.com/jipaix/xdccjs/tree/v4.1.2)
+### New Feature (jobs):
+- Added a 'downloading' event
+### Misc:
+- Dependencies update
+---
 ## [v4.1.1](https://github.com/jipaix/xdccjs/tree/v4.1.0)
 ### Fix: (bin)
 - MAJOR FIX : Download weren't started if `--wait` wasn't provieded
