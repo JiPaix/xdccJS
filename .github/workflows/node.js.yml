@@ -25,7 +25,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-    - uses: MontyD/package-json-updated-action
+    - uses: MontyD/package-json-updated-action@1.0.1
       id: version-updated
       with:
         path: package.json
