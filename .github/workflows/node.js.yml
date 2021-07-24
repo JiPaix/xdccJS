@@ -34,20 +34,18 @@ jobs:
         cache: 'npm'
     - name: Running build
       run: npm install && npm run build
-    - name: 'Setting up environnement variables'
-      run : |
-        touch .env
-        echo SERVER1=${{ secrets.SERVER1 }} >> .env
-        echo SERVER2=${{ secrets.SERVER2 }} >> .env
-        echo CHAN1=${{ secrets.CHAN1 }} >> .env
-        echo CHAN2=${{ secrets.CHAN2 }} >> .env
-        echo BOT1=${{ secrets.BOT1 }} >> .env
-        echo FILE1=${{ secrets.FILE1 }} >> .env
-        echo IGNORE1=${{ secrets.IGNORE1 }} >> .env
-        echo IGNORE2=${{ secrets.IGNORE2 }} >> .env
-        echo IGNORE3=${{ secrets.IGNORE3 }} >> .env
     - name: Starting tests
       run: npm run coverage
+      env:
+        SERVER1: ${{ secrets.SERVER1 }}
+        SERVER2: ${{ secrets.SERVER2 }}
+        CHAN1: ${{ secrets.CHAN1 }}
+        CHAN2: ${{ secrets.CHAN2 }}
+        BOT1: ${{ secrets.BOT1 }}
+        FILE1: ${{ secrets.FILE1 }}
+        IGNORE1: ${{ secrets.IGNORE1 }}
+        IGNORE2: ${{ secrets.IGNORE2 }}
+        IGNORE3: ${{ secrets.IGNORE3 }}
     - name: Uploading coverage
       uses: codecov/codecov-action@v2
       with:
