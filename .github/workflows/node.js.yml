@@ -20,6 +20,12 @@ jobs:
         cache: 'npm'
     - run: npm install
     - run: npm run build
+  coverage:
+    steps:
+    - uses: actions/checkout@master
+    - uses: codecov/codecov-action@v2
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
   publish:
     if: github.ref == 'refs/heads/master'
     needs: build
