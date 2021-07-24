@@ -20,9 +20,8 @@ jobs:
         cache: 'npm'
     - run: npm install
     - run: npm run build
-    - run: |
-        echo ::set-output name=CURRENT_VERSION::$(npm info xdccjs version)
-        PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]')
+    - run: echo '::set-output name=CURRENT_VERSION::$(npm info xdccjs version)'
+    - run: "PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]')"
   publish:
       if: github.ref == 'refs/heads/master'
       needs: build
