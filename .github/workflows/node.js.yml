@@ -19,8 +19,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - name: Running build
-      run: npm install
-      run: npm run build
+      run: npm install && npm run build
   coverage:
     if: "!contains(github.event.head_commit.message, 'NO-CI')"
     runs-on: ubuntu-latest
