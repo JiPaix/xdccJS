@@ -20,36 +20,6 @@ jobs:
         cache: 'npm'
     - name: Running build
       run: npm install && npm run build
-  coverage:
-    if: "!contains(github.event.head_commit.message, 'NO-CI')"
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [14.x]
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - name: Running build
-      run: npm install && npm run build
-    - name: Starting tests
-      run: npm run coverage
-      env:
-        SERVER1: ${{ secrets.SERVER1 }}
-        SERVER2: ${{ secrets.SERVER2 }}
-        CHAN1: ${{ secrets.CHAN1 }}
-        CHAN2: ${{ secrets.CHAN2 }}
-        BOT1: ${{ secrets.BOT1 }}
-        FILE1: ${{ secrets.FILE1 }}
-        IGNORE1: ${{ secrets.IGNORE1 }}
-        IGNORE2: ${{ secrets.IGNORE2 }}
-        IGNORE3: ${{ secrets.IGNORE3 }}
-    - name: Uploading coverage
-      uses: codecov/codecov-action@v2
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
   publish:
     if: github.ref == 'refs/heads/master'
     needs: build
