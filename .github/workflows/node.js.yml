@@ -42,4 +42,5 @@ jobs:
       if: steps.version-updated.outputs.has-updated
     - run: npm publish
       if: steps.version-updated.outputs.has-updated
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
