@@ -4,8 +4,6 @@ import { expect } from 'chai'
 import XDCC, { Params } from '../src/index'
 import { Job } from '../src/interfaces/job'
 import { isArray } from 'lodash'
-import * as fs from 'fs'
-import * as path from 'path'
 import { PassThrough } from 'stream'
 import Manipulator from 'dotenv-manipulator'
 
@@ -138,7 +136,6 @@ describe('Jobify', () => {
   })
 })
 
-let size:number
 describe('RealLife', () => {
   it('download', function (done) {
     this.timeout(10000)
