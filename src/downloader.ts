@@ -163,7 +163,7 @@ export default class Downloader extends CtcpParser {
             if (fs.existsSync(args.fileInfo.filePath)) {
               fs.unlinkSync(args.fileInfo.filePath)
             }
-            this.emit('next', args.candidate)
+            this.emit('next', args.candidate, this.verbose)
           } else {
             this.redownload(args.candidate, args.fileInfo)
           }
@@ -186,7 +186,7 @@ export default class Downloader extends CtcpParser {
       args.client.end()
       this.emit('downloaded', args.fileInfo)
       args.candidate.emit('downloaded', args.fileInfo)
-      this.emit('next', args.candidate)
+      this.emit('next', args.candidate, this.verbose)
     })
   }
 

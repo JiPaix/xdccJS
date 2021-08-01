@@ -145,13 +145,28 @@ export class AddJob extends TimeOut {
   }
 
   protected onNext(): void {
-    this.on('next', (candidate: Job) => {
+    this.on('next', (candidate: Job, verbose:boolean) => {
       if (candidate.queue.length) {
         this.prepareCandidate(candidate)
       } else {
         this.candidates = this.candidates.filter(c => c.nick !== candidate.nick)
         candidate.emit('done', candidate.show())
         this.emit('done', candidate.show())
+        if(verbose && candidate.failures.length) {
+          if (candidate.failures.length > 1) {
+          /**
+           * Credit to CertainPerformance on stackoverflow
+           * - Profile https://stackoverflow.com/users/9515207/certainperformance
+           * - Post: https://stackoverflow.com/questions/53879088/join-an-array-by-commas-and-and/53879103#53879103
+           * - Answer: https://stackoverflow.com/a/53879103
+           */
+            const firsts = candidate.failures.slice(0, candidate.failures.length - 1);
+            const last = candidate.failures[candidate.failures.length - 1];
+            this.print(`%danger% couldn't download packs: %yellow%${firsts.join(', ') + ' and ' + last}%reset% from %yellow%${candidate.nick}%reset%`, 4)
+          } else {
+            this.print(`%danger% couldn't download pack: %yellow%${candidate.failures}%reset% from %yellow%${candidate.nick}%reset%`, 4)
+          }
+        }
         if (!this.candidates.length) {
           this.emit('can-quit')
         } else {

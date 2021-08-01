@@ -124,7 +124,7 @@ export class TimeOut extends Connect {
       candidate.emit('error', `skipped pack: ${candidate.now}`, fileInfo)
       this.emit('error', `skipped pack: ${candidate.now}`, fileInfo)
       candidate.failures.push(candidate.now)
-      this.emit('next', candidate)
+      this.emit('next', candidate, this.verbose)
     }
   }
 
