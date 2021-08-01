@@ -70,6 +70,8 @@ function ProgressBar(fmt, options) {
   this.callback = options.callback || function () {}
   this.tokens = {}
   this.lastDraw = ''
+  this.currentRollState = 0
+  this.rollStates = ['|', '/', '-', '\\', '|', '/', '-', '\\']
 }
 
 /**
@@ -103,6 +105,13 @@ ProgressBar.prototype.tick = function (len, tokens) {
     this.callback(this)
     return
   }
+}
+
+ProgressBar.prototype.roll = function() {
+  if(this.currentRollState > this.rollStates.length-1) this.currentRollState = 0
+  const current = this.rollStates[this.currentRollState]
+  this.currentRollState++
+  return current
 }
 
 /**
@@ -144,7 +153,7 @@ ProgressBar.prototype.render = function (tokens, force) {
     .replace(':eta', this.humanETA(eta))
     .replace(':percent', percent.toFixed(0) + '%')
     .replace(':rate', this.humanFileSize(rate))
-
+    .replace(':roll', this.roll())
   /* compute the available space (non-zero) for the bar */
   var availableSpace = Math.max(0, this.stream.columns - str.replace(':bar', '').length)
   if (availableSpace && process.platform === 'win32') {
