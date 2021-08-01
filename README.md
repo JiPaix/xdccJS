@@ -256,11 +256,11 @@ Options:
 ## Download 
 **I recommend using double quotes between the `bot name` and `download path`** as they often both include unescaped characeters or whitespaces
 ```bash
-xdccJS --server irc.server.net --bot "XDCC-BOT|BLUE" --download 1-5,100-105 --path "/home/user/downloads"
+xdccJS --host irc.server.net --bot "XDCC-BOT|BLUE" --download 1-5,100-105 --path "/home/user/downloads"
 ```  
 Alternatively, if you want to pipe the file just ommit the `--path` option  :  
 ```bash
-xdccJS --server irc.server.net --bot "XDCC-BOT|RED" --download 110 | vlc -
+xdccJS --host irc.server.net --bot "XDCC-BOT|RED" --download 110 | vlc -
 ```
 ## Profiles
 Profiles are presets of options.
@@ -268,7 +268,7 @@ Profiles are presets of options.
 You can save options as a profile with `--save-profile` :
 ```bash
 # Any option can be included
-xdccJS --save-profile "my_profile" --server "irc.server.net" --port "6669" --path "C:/Users/JiPaix/Desktop"
+xdccJS --save-profile "my_profile" --host "irc.server.net" --port "6669" --path "C:/Users/JiPaix/Desktop"
 ```
 ### Use
 ```bash
@@ -307,7 +307,7 @@ xdccJS --del-profile my_profile
       --channel "my-channel" --download "132" 
     ```
 - given options prevails over the one provided by profiles :
-  - except for `--server`, which results in xdccJS ignoring the current profile
+  - except for `--host`, which results in xdccJS ignoring the current profile
   - example: 
     ```bash
         # current profile has --wait 5, but this time you need --wait 50
@@ -315,7 +315,7 @@ xdccJS --del-profile my_profile
       ```
     ```bash
         # ignores ALL profile options
-        xdccJS --server "irc.mywnewserver.org"
+        xdccJS --host "irc.mywnewserver.org"
 - options `--bot` and `--path` often contains special characters and/or whitespaces :
   - ```bash
       # this wont work
