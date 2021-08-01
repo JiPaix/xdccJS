@@ -99,15 +99,15 @@ export class Connect extends Client {
         .replace(/%grey%/g, '\x1b[90m')
         .replace(/%yellow%/g, '\x1b[33m')
         .replace(/%RGB(\S*)%/g, '\x1B[38;2;$1m')
-        .replace(/%danger%/g, '\x1b[1m\x1b[31m\u0058\x1b[0m')
-        .replace(/%info%/g, '\x1b[1m\x1b[36m\u2139\x1b[0m')
-        .replace(/%success%/g, '\x1b[1m\x1b[32m\u2713\x1b[0m') + '\x1b[0m'
+        .replace(/%danger%/g, '\x1b[1m\x1b[31m[X]\x1b[0m')
+        .replace(/%info%/g, '\x1b[1m\x1b[36m[i]\x1b[0m')
+        .replace(/%success%/g, '\x1b[1m\x1b[32m>\x1b[0m') + '\x1b[0m'
     )
   }
   protected print(string: string, padding = 0): void {
     string = Connect.replace(string)
     if (padding > 0) {
-      string = '\u2937 '.padStart(padding) + string
+      string = ''.padStart(padding) + string
     }
     if (this.verbose) {
       console.error(string)
