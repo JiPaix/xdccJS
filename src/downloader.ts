@@ -230,12 +230,13 @@ export default class Downloader extends CtcpParser {
   }
 
   protected setupProgressBar(len: number): ProgressBar {
-    return new ProgressBar(`\u2937 `.padStart(6) + Connect.replace('[:bar] ETA: :eta @ :rate - :percent'), {
+    return new ProgressBar(``.padStart(6) + Connect.replace(':roll [:bar] ETA: :eta @ :rate - :percent'), {
       complete: '=',
       incomplete: ' ',
       width: 20,
       total: len,
       clear: true,
+      renderThrottle: 100
     })
   }
 }
