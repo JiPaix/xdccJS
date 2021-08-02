@@ -39,6 +39,7 @@ export class XdccJSbin extends Profiles {
       }
     }
   }
+
   private isCopyPasteARGV(): RegExpExecArray | void {
     const match = /\/(msg|MSG) (.*) (xdcc|XDCC) (send|SEND) (.*)$/
       .exec(process.argv.join(' '))
@@ -47,12 +48,10 @@ export class XdccJSbin extends Profiles {
     }
     return undefined
   }
+
   private main(): void {
-    if (!this.defaultProfile) {
-      this.downloadWith(this.defaultProfile)
-    } else {
-      this.downloadWith(this.xdccBINOPTS())
-    }
+    if (this.defaultProfile) return this.downloadWith(this.defaultProfile)
+    return this.downloadWith(this.xdccBINOPTS())
   }
 
   private writeMSG(time: number): void {
