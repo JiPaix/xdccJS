@@ -49,10 +49,16 @@ export class Profiles extends BaseCommander {
   }
 
   protected profileAction(): void {
-    if(typeof this.program.saveProfile !== 'undefined') this.saveProfile()
-    if(typeof this.program.deleteProfile !== 'undefined') this.deleteProfile(this.program.deleteProfile)
-    if(typeof this.program.setProfile !== 'undefined') this.setProfile(this.program.setProfile)
-    if(typeof this.program.listProfile !== 'undefined') this.listProfile()
+    if(this.program.deleteProfile && this.program.listProfile || 
+      this.program.deleteProfile && this.program.saveProfile ||
+      this.program.deleteProfile && this.program.setProfile ||
+      this.program.listProfile && this.program.saveProfile ||
+      this.program.listProfile && this.program.setProfile ||
+      this.program.saveProfile && this.program.setProfile) throw new BinError("Profile options aren't meant to be mixed, only use one of those.")
+    if(typeof this.program.deleteProfile !== 'undefined') return this.deleteProfile(this.program.deleteProfile)
+    if(typeof this.program.listProfile !== 'undefined') return this.listProfile()
+    if(typeof this.program.saveProfile !== 'undefined') return this.saveProfile()
+    if(typeof this.program.setProfile !== 'undefined') return this.setProfile(this.program.setProfile)
   }
 
   private saveProfile(): void {

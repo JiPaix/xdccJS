@@ -90,7 +90,7 @@ export class XdccJSbin extends Profiles {
   private downloadWith(opts: [Params, savedParams]): void {
     if(typeof this.program.saveProfile === 'undefined' && typeof this.program.setProfile === 'undefined' && typeof this.program.deleteProfile === 'undefined') {
       if (typeof this.program.bot === 'undefined' && typeof opts[1].bot === 'undefined') {
-        throw new BinError('%danger% You must specify a bot name')
+        throw new BinError('%danger% Missing bot name, eg. %grey%--bot "XDCC|BOT"')
       }
       if (typeof this.program.download === 'undefined') {
         throw new BinError('%danger% You must specify a packet number to download, eg. %grey%--download 1, 3, 55-60')
