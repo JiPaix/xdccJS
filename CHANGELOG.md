@@ -22,18 +22,6 @@
 - Docs:
   - fixing header position and icons url [c02314d4](https://github.com/JiPaix/xdccJS/commit/c02314d499dc40d1af0e6de2630646373887c227) [cd3942dc](https://github.com/JiPaix/xdccJS/commit/cd3942dcad60e6885f5d571c9807a52b41d0421e)
 ---
-### Fix:
-- Unicode characeters not showing up in some cases [#230](https://github.com/JiPaix/xdccJS/pull/230) (lib+bin)
-  - Credit [@omgbox](https://github.com/omgbox)
-- Documentation still mentioning `--server` while its been replaced with `--host` [#230](https://github.com/JiPaix/xdccJS/pull/230)
-  - Credit [@omgbox](https://github.com/omgbox)
-### Improvement:
-- Added a rollbar next to download message [#230](https://github.com/JiPaix/xdccJS/pull/230) (lib+bin)
-  - `| [===   ] ETA: 10s @ 7.75 MB/s - 50%`
-  - `/ [===   ] ETA: 7s @ 7.75 MB/s - 60%`
-  - `- [====  ] ETA: 8s @ 7.75 MB/s - 68%`
-  - etc..
-- Removed some ununsed imports and variables from tests [8ef272c](https://github.com/JiPaix/xdccJS/commit/8ef272c0fd909835e341e0af2ad4c6e71bde4972)
 ## [v4.2.5](https://github.com/jipaix/xdccjs/tree/v4.2.5)
 ### Fix:
 - Unicode characeters not showing up in some cases [#230](https://github.com/JiPaix/xdccJS/pull/230) (lib+bin)
