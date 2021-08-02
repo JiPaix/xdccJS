@@ -1,5 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
+import * as os from 'os'
 import { BinError } from './errorhandler'
 import XDCC, { Params } from '..'
 import { BaseCommander, savedParams } from './commander'
@@ -14,8 +15,8 @@ export class Profiles extends BaseCommander {
   constructor() {
     super()
     this.isProfileKeys = ['saveProfile', 'deleteProfile', 'setProfile', 'listProfile']
-    this.profilePath = path.join(__dirname, '/profiles/')
-    this.defaultProfilePath = path.join(__dirname, '/default.json')
+    this.profilePath = path.join(os.homedir(), '.xdccJS', 'profiles/')
+    this.defaultProfilePath = path.join(this.profilePath, '/default.json')
     this.availableProfiles = this.initFolder()
     this.defaultProfileName = JSON.parse(fs.readFileSync(this.defaultProfilePath).toString()).profile
     if (typeof this.defaultProfileName !== 'undefined') {
