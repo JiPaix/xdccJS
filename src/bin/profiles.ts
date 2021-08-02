@@ -49,17 +49,22 @@ export class Profiles extends BaseCommander {
     return fs.readdirSync(this.profilePath).filter(file => file.endsWith('.json'))
   }
 
+  private hasTooManyProfileAction():boolean {
+    if(this.program.deleteProfile && this.program.listProfile) return true
+    if(this.program.deleteProfile && this.program.saveProfile) return true
+    if(this.program.deleteProfile && this.program.setProfile) return true
+    if(this.program.listProfile && this.program.saveProfile) return true
+    if(this.program.listProfile && this.program.setProfile) return true
+    if(this.program.saveProfile && this.program.setProfile) return true
+    return false
+  }
+
   protected profileAction(): void {
-    if(this.program.deleteProfile && this.program.listProfile || 
-      this.program.deleteProfile && this.program.saveProfile ||
-      this.program.deleteProfile && this.program.setProfile ||
-      this.program.listProfile && this.program.saveProfile ||
-      this.program.listProfile && this.program.setProfile ||
-      this.program.saveProfile && this.program.setProfile) throw new BinError("Profile options aren't meant to be mixed, only use one of those.")
-    if(typeof this.program.deleteProfile !== 'undefined') return this.deleteProfile(this.program.deleteProfile)
-    if(typeof this.program.listProfile !== 'undefined') return this.listProfile()
-    if(typeof this.program.saveProfile !== 'undefined') return this.saveProfile()
-    if(typeof this.program.setProfile !== 'undefined') return this.setProfile(this.program.setProfile)
+    if(this.hasTooManyProfileAction()) throw new BinError("Profile options aren't meant to be mixed, only use one of those.")
+    if(this.program.deleteProfile) return this.deleteProfile(this.program.deleteProfile)
+    if(this.program.listProfile) return this.listProfile()
+    if(this.program.saveProfile) return this.saveProfile()
+    if(this.program.setProfile) return this.setProfile(this.program.setProfile)
   }
 
   private saveProfile(): void {
