@@ -2,14 +2,14 @@
 
 ## [v4.2.6](https://github.com/jipaix/xdccjs/tree/v4.2.6)
 ### New feature
-- Display list of failed package when a job is done
+- Display list of failed package when a job is done [#236](https://github.com/JiPaix/xdccJS/pull/236)
   - added an extra verbose notification when a job is complete with the list of all packages that failed
 ### Fix
 - Client:
-  - changed profile location to user's home directory
+  - changed profile location to user's home directory [#237](https://github.com/JiPaix/xdccJS/pull/237)
     - some (linux) users couldn't save profile due to invalid write permission
-  - warn user if multiple profile option are used in the same command
-  - if `--save/set/delete-profile` is set, downloads cannot be triggered
+  - warn user if multiple profile option are used in the same command [#237](https://github.com/JiPaix/xdccJS/pull/237)
+  - if `--save/set/delete-profile` is set, downloads cannot be triggered [#237](https://github.com/JiPaix/xdccJS/pull/237)
 ### Misc:
 - Chores:
   - dev-deps:
