@@ -22,7 +22,8 @@
     "prepublishOnly": "npm run build",
     "snyk-wiz": "node ./node_modules/snyk/dist/cli/index.js wizard",
     "doc": "node ./node_modules/typedoc/bin/typedoc && node ./build/doc.js",
-    "intellisense": "node ./build/index.js"
+    "intellisense": "node ./build/index.js",
+    "postpublish": "node ./build/changelog.js"
   },
   "repository": {
     "type": "git",
@@ -55,7 +56,9 @@
     "@typescript-eslint/eslint-plugin": "^4.28.4",
     "@typescript-eslint/parser": "^4.28.4",
     "@wcardinal/typedoc-plugin-named-event": "^1.0.0",
+    "axios": "^0.21.1",
     "chai": "^4.2.0",
+    "discord.js": "^12.5.3",
     "dotenv-manipulator": "^3.0.1",
     "eslint": "^7.31.0",
     "eslint-config-prettier": "^8.3.0",

@@ -1,26 +1,21 @@
 # Changelog
 
 ## [v4.2.6](https://github.com/jipaix/xdccjs/tree/v4.2.6)
-### New feature
-- Display list of failed package when a job is done [#236](https://github.com/JiPaix/xdccJS/pull/236)
-  - added an extra verbose notification when a job is complete with the list of all packages that failed
-### Fix
-- Client:
-  - changed profile location to user's home directory [#237](https://github.com/JiPaix/xdccJS/pull/237)
-    - some (linux) users couldn't save profile due to invalid write permission
-  - warn user if multiple profile option are used in the same command [#237](https://github.com/JiPaix/xdccJS/pull/237)
-  - if `--save/set/delete-profile` is set, downloads cannot be triggered [#237](https://github.com/JiPaix/xdccJS/pull/237)
-### Misc:
-- Chores:
-  - dev-deps:
-    - bump @types/node from 16.4.7 to 16.4.10 [#231](https://github.com/JiPaix/xdccJS/pull/231)
-    - bump typedoc from 0.21.4 to 0.21.5 [#232](https://github.com/JiPaix/xdccJS/pull/232)
-    - bump @types/node from 16.4.7 to 16.4.10 [#233](https://github.com/JiPaix/xdccJS/pull/232)
-- CI:
-  - Keyword for skipping ci changed to `[ci skip]` [c252f207](https://github.com/JiPaix/xdccJS/commit/c252f2077ed6e729e69a89c20fdd3d634379a743)
-  - Dependency update check interval changed from daily to weekly [4da55709](https://github.com/JiPaix/xdccJS/commit/4da55709d55f32ae4b75a9ce146caefc1548e955)
-- Docs:
-  - fixing header position and icons url [c02314d4](https://github.com/JiPaix/xdccJS/commit/c02314d499dc40d1af0e6de2630646373887c227) [cd3942dc](https://github.com/JiPaix/xdccJS/commit/cd3942dcad60e6885f5d571c9807a52b41d0421e)
+### Features(gobal)
+* added an extra verbose notification when a job is complete with the list of all packages that failed [#236](https://github.com/JiPaix/xdccJS/pull/236)
+### Fix(bin)
+* changed profile location to user's home directory, some (linux) users couldn't save profile due to invalid write permission [#237](https://github.com/JiPaix/xdccJS/pull/237)
+* warn user if multiple profile option are used in the same command [#237](https://github.com/JiPaix/xdccJS/pull/237)
+* downloads cannot be triggered if `--save/set/delete-profile` is set [#237](https://github.com/JiPaix/xdccJS/pull/237)
+### Chores(dev-deps)
+* bump @types/node from 16.4.7 to 16.4.10 [#231](https://github.com/JiPaix/xdccJS/pull/231)
+* bump typedoc from 0.21.4 to 0.21.5 [#232](https://github.com/JiPaix/xdccJS/pull/232)
+* bump @types/node from 16.4.7 to 16.4.10 [#233](https://github.com/JiPaix/xdccJS/pull/232)
+### CI
+* changed keyword for skipping ci to `[ci skip]` [c252f207](https://github.com/JiPaix/xdccJS/commit/c252f2077ed6e729e69a89c20fdd3d634379a743)
+* changed dependency update check interval from daily to weekly [4da55709](https://github.com/JiPaix/xdccJS/commit/4da55709d55f32ae4b75a9ce146caefc1548e955)
+### Docs
+* fixing header position and icons url [c02314d4](https://github.com/JiPaix/xdccJS/commit/c02314d499dc40d1af0e6de2630646373887c227) [cd3942dc](https://github.com/JiPaix/xdccJS/commit/cd3942dcad60e6885f5d571c9807a52b41d0421e)
 ---
 ## [v4.2.5](https://github.com/jipaix/xdccjs/tree/v4.2.5)
 ### Fix:
