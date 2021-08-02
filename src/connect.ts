@@ -53,7 +53,7 @@ export class Connect extends Client {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _is(name: string, variable: unknown, type: string, def?: unknown): any {
     if (typeof variable !== type) {
-      if (typeof def === 'undefined') {
+      if (!def) {
         const err = new TypeError()
         err.name = err.name + ' [ERR_INVALID_ARG_TYPE]'
         err.message = `unexpected type of '${name}': a ${type} was expected but got '${typeof variable}'`

@@ -11,8 +11,8 @@ export class XdccJSbin extends Profiles {
     if(lazyArgs) {
       this.lazy(lazyArgs)
     } else {
-      this.profileAction()
-      this.main()
+      const profileAction = this.profileAction()
+      if(!profileAction) this.main()
     }
   }
 
@@ -25,7 +25,7 @@ export class XdccJSbin extends Profiles {
   }
 
   private lazy(match: RegExpExecArray): void {
-    if (typeof this.defaultProfile === 'undefined') {
+    if (!this.defaultProfile) {
       throw new BinError('%info% You need to setup a profile first in order to use copy paste method')
     } else {
       if (this.isLazySyntaxCorrect(match)) {
@@ -48,7 +48,7 @@ export class XdccJSbin extends Profiles {
     return undefined
   }
   private main(): void {
-    if (typeof this.defaultProfile !== 'undefined') {
+    if (!this.defaultProfile) {
       this.downloadWith(this.defaultProfile)
     } else {
       this.downloadWith(this.xdccBINOPTS())
@@ -81,18 +81,23 @@ export class XdccJSbin extends Profiles {
         if (start > 0) {
           this.clearMSG()
         }
-        xdccJS.download(bot, download)
+        const job = xdccJS.download(bot, download)
+        if(!this.program.path) {
+          job.on('pipe', stream => {
+            stream.pipe(process.stdout)
+          })
+        }
         clearInterval(inter)
       }
     }, 1000)
   }
 
   private downloadWith(opts: [Params, savedParams]): void {
-    if(typeof this.program.saveProfile === 'undefined' && typeof this.program.setProfile === 'undefined' && typeof this.program.deleteProfile === 'undefined') {
-      if (typeof this.program.bot === 'undefined' && typeof opts[1].bot === 'undefined') {
+    if(!this.hasProfileAction()) {
+      if (!this.program.bot && !opts[1].bot) {
         throw new BinError('%danger% Missing bot name, eg. %grey%--bot "XDCC|BOT"')
       }
-      if (typeof this.program.download === 'undefined') {
+      if (!this.program.download) {
         throw new BinError('%danger% You must specify a packet number to download, eg. %grey%--download 1, 3, 55-60')
       }
       const download = this.program.download.join('')

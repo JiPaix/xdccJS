@@ -19,17 +19,17 @@ export class Profiles extends BaseCommander {
     this.defaultProfilePath = path.join(this.profilePath, '/default.json')
     this.availableProfiles = this.initFolder()
     this.defaultProfileName = JSON.parse(fs.readFileSync(this.defaultProfilePath).toString()).profile
-    if (typeof this.defaultProfileName !== 'undefined') {
-      console.error('loaded default profile ' + this.defaultProfileName)
+    if (!this.defaultProfileName && !this.hasProfileAction()) {
+      this.log('%sucess% loaded default profile ' + this.defaultProfileName)
       this.defaultProfile = this.loadDefaultProfile()
-      if (typeof this.defaultProfile !== 'undefined') {
+      if (!this.defaultProfile) {
         this.mergeProfileWithARGV()
       }
     }
   }
 
   private loadDefaultProfile(): [Params, savedParams] | undefined {
-    if (typeof this.defaultProfileName !== 'undefined') {
+    if (!this.defaultProfileName) {
       const lookup = path.join(this.profilePath, this.defaultProfileName + '.json')
       if (fs.existsSync(lookup)) {
         const string = fs.readFileSync(lookup).toString()
@@ -59,12 +59,25 @@ export class Profiles extends BaseCommander {
     return false
   }
 
-  protected profileAction(): void {
+  protected profileAction(): boolean {
     if(this.hasTooManyProfileAction()) throw new BinError("Profile options aren't meant to be mixed, only use one of those.")
-    if(this.program.deleteProfile) return this.deleteProfile(this.program.deleteProfile)
-    if(this.program.listProfile) return this.listProfile()
-    if(this.program.saveProfile) return this.saveProfile()
-    if(this.program.setProfile) return this.setProfile(this.program.setProfile)
+    if(this.program.deleteProfile) {
+      this.deleteProfile(this.program.deleteProfile)
+      return true
+    }
+    if(this.program.listProfile) {
+      this.listProfile()
+      return true
+    }
+    if(this.program.saveProfile) {
+      this.saveProfile()
+      return true
+    }
+    if(this.program.setProfile) {
+      this.setProfile(this.program.setProfile)
+      return true
+    }
+    return false
   }
 
   private saveProfile(): void {
@@ -78,7 +91,7 @@ export class Profiles extends BaseCommander {
       fs.writeFileSync(filePath, JSON.stringify(this.xdccBINOPTS(true)))
       fs.writeFileSync(this.defaultProfilePath, JSON.stringify({ profile: this.program.saveProfile }))
       this.availableProfiles = this.initFolder()
-      this.log(`%success% Set ${this.program.saveProfile} as new default profile`)
+      this.log(`%info% ${this.program.saveProfile} set as new default profile`)
     }
   }
 
@@ -97,6 +110,8 @@ export class Profiles extends BaseCommander {
     if (this.availableProfiles.includes(search)) {
       fs.unlinkSync(path.join(this.profilePath, search))
       fs.unlinkSync(this.defaultProfilePath)
+      this.log('%info% Profile ' + this.defaultProfileName + ' deleted')
+      this.defaultProfileName = undefined
       this.availableProfiles = this.initFolder()
     } else {
       this.log(`%danger% Profile ${profile} doesn't exist`)

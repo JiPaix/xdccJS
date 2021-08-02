@@ -72,10 +72,11 @@ export class BaseCommander {
     return number
   }
   protected log(string: string, pad = 0): void {
-    console.error(''.padStart(pad) + Connect.replace(string))
+    if(!this.program.quiet) console.error(''.padStart(pad) + Connect.replace(string))
   }
   protected xdccJSOPTS(): Params {
-    if (typeof this.program.host === 'undefined') {
+    if (!this.program.host) {
+      if(this.program.saveProfile) throw new BinError('%danger% Saved profile must at least contain a host')
       throw new BinError('%danger% No server')
     }
     return {
@@ -87,17 +88,23 @@ export class BaseCommander {
       retry: this.program.retry,
       randomizeNick: this.program.randomize,
       passivePort: [this.program.passivePort || 5001],
-      verbose: !this.program.quiet,
+      verbose: this.program.quiet ? false : true,
       secure: this.program.secure,
     }
   }
-
+  protected hasProfileAction():boolean {
+    if(this.program.deleteProfile) return true
+    if(this.program.saveProfile) return true
+    if(this.program.deleteProfile) return true
+    if(this.program.listProfile) return true
+    return false
+  }
   protected xdccBINOPTS(isSaveProfile = false): [Params, savedParams] {
     if (isSaveProfile) {
       return [this.xdccJSOPTS(), { wait: this.program.wait, bot: this.program.bot }]
     }
-    if (!this.program.bot && !this.program.saveProfile) {
-      throw new BinError('%danger% Missing bot name, eg. %grey%--bot "XDCC|BOT"')
+    if (!this.program.bot && !this.hasProfileAction()) {
+      throw new BinError('%danger% LALALA Missing bot name, eg. %grey%--bot "XDCC|BOT"')
     }
     return [this.xdccJSOPTS(), { wait: this.program.wait, bot: this.program.bot }]
   }

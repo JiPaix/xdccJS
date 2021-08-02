@@ -91,7 +91,7 @@ export class TimeOut extends Connect {
   }
 
   private routine(candidate: Job): void {
-    if (typeof candidate.timeout.eventType === 'undefined') {
+    if (!candidate.timeout.eventType) {
       throw Error('no event Type')
     }
     this.say(candidate.nick, 'XDCC CANCEL')
