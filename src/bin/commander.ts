@@ -96,8 +96,8 @@ export class BaseCommander {
     if (isSaveProfile) {
       return [this.xdccJSOPTS(), { wait: this.program.wait, bot: this.program.bot }]
     }
-    if (typeof this.program.bot === 'undefined') {
-      throw new BinError('%danger% a bot must be specified')
+    if (!this.program.bot && !this.program.saveProfile) {
+      throw new BinError('%danger% Missing bot name, eg. %grey%--bot "XDCC|BOT"')
     }
     return [this.xdccJSOPTS(), { wait: this.program.wait, bot: this.program.bot }]
   }

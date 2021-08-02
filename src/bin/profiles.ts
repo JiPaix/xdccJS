@@ -1,5 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
+import * as os from 'os'
 import { BinError } from './errorhandler'
 import XDCC, { Params } from '..'
 import { BaseCommander, savedParams } from './commander'
@@ -14,8 +15,8 @@ export class Profiles extends BaseCommander {
   constructor() {
     super()
     this.isProfileKeys = ['saveProfile', 'deleteProfile', 'setProfile', 'listProfile']
-    this.profilePath = path.join(__dirname, '/profiles/')
-    this.defaultProfilePath = path.join(__dirname, '/default.json')
+    this.profilePath = path.join(os.homedir(), '.xdccJS', 'profiles/')
+    this.defaultProfilePath = path.join(this.profilePath, '/default.json')
     this.availableProfiles = this.initFolder()
     this.defaultProfileName = JSON.parse(fs.readFileSync(this.defaultProfilePath).toString()).profile
     if (typeof this.defaultProfileName !== 'undefined') {
@@ -48,11 +49,22 @@ export class Profiles extends BaseCommander {
     return fs.readdirSync(this.profilePath).filter(file => file.endsWith('.json'))
   }
 
+  private hasTooManyProfileAction():boolean {
+    if(this.program.deleteProfile && this.program.listProfile) return true
+    if(this.program.deleteProfile && this.program.saveProfile) return true
+    if(this.program.deleteProfile && this.program.setProfile) return true
+    if(this.program.listProfile && this.program.saveProfile) return true
+    if(this.program.listProfile && this.program.setProfile) return true
+    if(this.program.saveProfile && this.program.setProfile) return true
+    return false
+  }
+
   protected profileAction(): void {
-    if(typeof this.program.saveProfile !== 'undefined') this.saveProfile()
-    if(typeof this.program.deleteProfile !== 'undefined') this.deleteProfile(this.program.deleteProfile)
-    if(typeof this.program.setProfile !== 'undefined') this.setProfile(this.program.setProfile)
-    if(typeof this.program.listProfile !== 'undefined') this.listProfile()
+    if(this.hasTooManyProfileAction()) throw new BinError("Profile options aren't meant to be mixed, only use one of those.")
+    if(this.program.deleteProfile) return this.deleteProfile(this.program.deleteProfile)
+    if(this.program.listProfile) return this.listProfile()
+    if(this.program.saveProfile) return this.saveProfile()
+    if(this.program.setProfile) return this.setProfile(this.program.setProfile)
   }
 
   private saveProfile(): void {

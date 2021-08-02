@@ -91,6 +91,6 @@ if (fs.existsSync(tsPath) && fs.existsSync(jsPath)) {
   fs.writeFileSync(tsPath, replace(ts))
   console.log('done')
 } else {
-  console.error('run yarn build first')
+  console.error('execute `npm run build` first')
   process.exit(1)
 }

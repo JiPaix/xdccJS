@@ -88,22 +88,24 @@ export class XdccJSbin extends Profiles {
   }
 
   private downloadWith(opts: [Params, savedParams]): void {
-    if (typeof this.program.bot == 'undefined' && typeof opts[1].bot == 'undefined') {
-      throw new BinError('%danger% You must specify a bot name')
+    if(typeof this.program.saveProfile === 'undefined' && typeof this.program.setProfile === 'undefined' && typeof this.program.deleteProfile === 'undefined') {
+      if (typeof this.program.bot === 'undefined' && typeof opts[1].bot === 'undefined') {
+        throw new BinError('%danger% Missing bot name, eg. %grey%--bot "XDCC|BOT"')
+      }
+      if (typeof this.program.download === 'undefined') {
+        throw new BinError('%danger% You must specify a packet number to download, eg. %grey%--download 1, 3, 55-60')
+      }
+      const download = this.program.download.join('')
+      const bot = this.program.bot ? this.program.bot : opts[1].bot
+      const wait = opts[1].wait || 0
+      if (!bot) throw new Error('Control flow error: downloadwith()')
+      const xdccJS = new XDCC(opts[0])
+      xdccJS.on('ready', () => {
+        this.waitMessage(wait, xdccJS, bot, download)
+      })
+      xdccJS.on('can-quit', () => {
+        xdccJS.quit()
+      })
     }
-    if (typeof this.program.download === 'undefined') {
-      throw new BinError('%danger% You must specify a packet number to download, eg. %grey%--download 1, 3, 55-60')
-    }
-    const download = this.program.download.join('')
-    const bot = this.program.bot ? this.program.bot : opts[1].bot
-    const wait = opts[1].wait || 0
-    if (!bot) throw new Error('Control flow error: downloadwith()')
-    const xdccJS = new XDCC(opts[0])
-    xdccJS.on('ready', () => {
-      this.waitMessage(wait, xdccJS, bot, download)
-    })
-    xdccJS.on('can-quit', () => {
-      xdccJS.quit()
-    })
   }
 }
