@@ -19,12 +19,10 @@ export class Profiles extends BaseCommander {
     this.defaultProfilePath = path.join(this.profilePath, '/default.json')
     this.availableProfiles = this.initFolder()
     this.defaultProfileName = JSON.parse(fs.readFileSync(this.defaultProfilePath).toString()).profile
-    if (!this.defaultProfileName && !this.hasProfileAction()) {
-      this.log('%sucess% loaded default profile ' + this.defaultProfileName)
+    if(this.defaultProfileName && !this.hasProfileAction()) {
+      this.log('%success% loaded default profile ' + this.defaultProfileName)
       this.defaultProfile = this.loadDefaultProfile()
-      if (!this.defaultProfile) {
-        this.mergeProfileWithARGV()
-      }
+      this.mergeProfileWithARGV()
     }
   }
 
