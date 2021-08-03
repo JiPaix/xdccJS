@@ -68,7 +68,7 @@ export class BaseCommander {
   }
   private parseIfNotInt(numstring: string): number {
     const number = parseInt(numstring)
-    if(isNaN(number)) throw new BinError(`%danger% option --port must ne a number`)
+    if(isNaN(number)) throw new BinError(`%danger% option --port must be a number`)
     return number
   }
   protected log(string: string, pad = 0): void {
@@ -77,7 +77,7 @@ export class BaseCommander {
   protected xdccJSOPTS(): Params {
     if (!this.program.host) {
       if(this.program.saveProfile) throw new BinError('%danger% Saved profile must at least contain a host')
-      throw new BinError('%danger% No server')
+      throw new BinError('%danger% a hostname is required, eg. %grey%--host irc.server.net')
     }
     return {
       host: this.program.host,
@@ -104,7 +104,7 @@ export class BaseCommander {
       return [this.xdccJSOPTS(), { wait: this.program.wait, bot: this.program.bot }]
     }
     if (!this.program.bot && !this.hasProfileAction()) {
-      throw new BinError('%danger% LALALA Missing bot name, eg. %grey%--bot "XDCC|BOT"')
+      throw new BinError('%danger% Missing bot name, eg. %grey%--bot "XDCC|BOT"')
     }
     return [this.xdccJSOPTS(), { wait: this.program.wait, bot: this.program.bot }]
   }
