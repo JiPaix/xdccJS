@@ -27,14 +27,11 @@ export class Profiles extends BaseCommander {
   }
 
   private loadDefaultProfile(): [Params, savedParams] | undefined {
-    if (!this.defaultProfileName) {
-      const lookup = path.join(this.profilePath, this.defaultProfileName + '.json')
-      if (fs.existsSync(lookup)) {
-        const string = fs.readFileSync(lookup).toString()
-        const json = JSON.parse(string)
-        return json
-      }
-    }
+    if(!this.defaultProfileName) return
+    const lookup = path.join(this.profilePath, this.defaultProfileName + '.json')
+    if(!fs.existsSync(lookup)) return
+    const string = fs.readFileSync(lookup).toString()
+    return JSON.parse(string)
   }
 
   protected initFolder(): string[] {
