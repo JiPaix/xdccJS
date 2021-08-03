@@ -60,9 +60,9 @@ export class BaseCommander {
         0
       )
       .option('--no-secure', 'Allow files sent by bot with different name than the one requested')
-      .option('--save-profile [string]', 'save current options as a profile')
-      .option('--delete-profile [string]', 'delete profile')
-      .option('--set-profile [string]', 'set profile as default')
+      .option('--save-profile <string>', 'save current options as a profile')
+      .option('--delete-profile <string>', 'delete profile')
+      .option('--set-profile <string>', 'set profile as default')
       .option('--list-profile', 'list all available profiles')
       .parse()
   }
