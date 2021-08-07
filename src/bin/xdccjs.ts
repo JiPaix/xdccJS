@@ -104,11 +104,18 @@ export class XdccJSbin extends Profiles {
       const wait = opts[1].wait || 0
       if (!bot) throw new Error('Control flow error: downloadwith()')
       const xdccJS = new XDCC(opts[0])
-      xdccJS.on('ready', () => {
+      .on('ready', () => {
         this.waitMessage(wait, xdccJS, bot, download)
       })
-      xdccJS.on('can-quit', () => {
+      .on('can-quit', () => {
         xdccJS.quit()
+      })
+      .on('error', e => {
+        if((e as Error).message.includes('UNREACHABLE')) {
+          // trick to avoid "hard" throws
+          const error = new BinError(`%danger% Connection to ${opts[0].host}:${opts[0].port ? opts[0].port : 6667} failed`)
+          console.error(error.message)
+        }
       })
     }
   }
