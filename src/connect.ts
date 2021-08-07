@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/triple-slash-reference */
 /// <reference path="./@types/irc-framework.ts"/>
 import { Client } from 'irc-framework'
-
+import * as net from 'net'
 export class Connect extends Client {
   protected chan: string[]
   protected verbose: boolean
@@ -21,14 +21,46 @@ export class Connect extends Client {
     this.port = this._is('port', params.port, 'number', 6667)
     this.verbose = this._is('verbose', params.verbose, 'boolean', false)
     this.chan = this.chanCheck(params.chan)
-    this.connect({
-      host: this.host,
-      port: this.port,
-      nick: this.nickname,
+    this.checkConnection(this.host, this.port).then(() => {
+      this.connect({
+        host: this.host,
+        port: this.port,
+        nick: this.nickname,
+        auto_reconnect_max_wait: 0,
+        auto_reconnect_max_retries: 0,
+      })
+      this.onConnect()
+    }).catch(e => {
+      throw new Error(e)
     })
-    this.onConnect()
-  }
 
+  }
+  private checkConnection(host:string, port:number, timeout?:number):Promise<void> {
+    return new Promise((resolve, reject) => {
+      const socket = net.createConnection(port, host, ()=> {
+        socket.end()
+        resolve()
+      }).on('error', (e) => {
+        reject(`UNREACHABLE HOST ${host}:${port}`)
+      })
+    })
+    // return new Promise(function(resolve, reject) {
+    //     timeout = timeout || 10000;
+    //     var timer = setTimeout(function() {
+    //         reject("timeout");
+    //         socket.end();
+    //     }, timeout);
+    //     var socket = net.createConnection(port, host, function() {
+    //         clearTimeout(timer);
+    //         resolve();
+    //         socket.end();
+    //     });
+    //     socket.on('error', function(err) {
+    //         clearTimeout(timer);
+    //         reject('Couldn\'t reach server');
+    //     });
+    // });
+}
   private onConnect(): void {
     this.on('connected', () => {
       clearTimeout(this.connectionTimeout)
