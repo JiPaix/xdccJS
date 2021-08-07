@@ -31,7 +31,7 @@ export class Connect extends Client {
       })
       this.onConnect()
     }).catch(e => {
-      throw new Error(e)
+      this.emit('error', e)
     })
 
   }
@@ -41,7 +41,7 @@ export class Connect extends Client {
         socket.end()
         resolve()
       }).on('error', (e) => {
-        reject(`UNREACHABLE HOST ${host}:${port}`)
+        reject(new Error(`UNREACHABLE "${host}:${port}"`))
       })
     })
     // return new Promise(function(resolve, reject) {
