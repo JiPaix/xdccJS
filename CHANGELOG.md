@@ -1,4 +1,9 @@
 # Changelog
+
+## [v4.2.9](https://github.com/jipaix/xdccjs/tree/v4.2.9)
+### HotFix
+- Prevent xdccJS to indefinitely tries to connect to an unreachable host.
+---
 ## [v4.2.8](https://github.com/jipaix/xdccjs/tree/v4.2.8)
 ### Fix(global)
 - Fix a bug introduced in v4.2.6 were parameter `verbose` wasn't considered optional [d0e61f24](https://github.com/JiPaix/xdccJS/commit/d0e61f24a646ceda5a2bdd0ab04969df8175fd1d)
