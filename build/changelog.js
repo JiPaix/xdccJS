@@ -1,13 +1,10 @@
 const fs = require('fs')
 const axios = require('axios')
-const manip= require('dotenv-manipulator').default
 const fd = require('form-data')
-new manip()
 
 const { Client, Intents, MessageEmbed } = require('discord.js');
 
 const version = require('../package.json').version;
-const { default: Manipulator } = require('dotenv-manipulator');
 
 let changelog = fs.readFileSync('./CHANGELOG.md').toString().split('---')[0].split(/(?=###)/gm)
 changelog.shift()
