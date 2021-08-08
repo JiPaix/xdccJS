@@ -19,6 +19,7 @@ It can also be used as a <a href="#command-line-interface">command-line</a> down
     - [events](#Events)
     - [use pipes](#Pipes)
   - [(Auto) disconnect from IRC](#disconnect)
+  - [Advanced IRC commands](#advanced-irc-commands)
 - [CLI](#command-line-interface)
   - [Installation](#installation-1)
   - [Options](#options)
@@ -64,8 +65,6 @@ const opts = {
   secure: false, // Allow/Deny files sent by bot with different name than the one requested - default: true
 }
 ```
-**xdccJS includes (and extends) [@kiwiirc/irc-framework](https://github.com/kiwiirc/irc-framework)**, if you need more advanced (IRC) features check their [documentation](https://github.com/kiwiirc/irc-framework/blob/master/docs/clientapi.md) and some [examples](/examples) on how its used with xdccJS
-
 
 ## Download
 >xdccJS.**download( bot** : string, **packets** : string | number | number[] **)**
@@ -83,7 +82,7 @@ xdccJS.on('ready', () => {
 const job1 = xdccJS.download('a-bot', [33, 50, 62, 98])
 const job2 = xdccJS.download('XDCC|RED', [1, 3, 10, 20])
 ```
-#### Jobs offers three options :
+#### Jobs offer three options :
 - Get job progress status :
   ```js
   let status = job1.show()
@@ -224,6 +223,23 @@ xdccJS.on('can-quit', () => {
   xdccJS.quit() // this is how you disconnect from IRC
 })
 ```
+## Advanced IRC commands
+**xdccJS uses [@kiwiirc/irc-framework](https://github.com/kiwiirc/irc-framework)** client which is **entirely** accessible via the `irc` property.  
+Check their client API [documentation](https://github.com/kiwiirc/irc-framework/blob/master/docs/clientapi.md)
+```js
+// middlewares
+xdccJS.irc.use(middleware)
+
+xdccJS.on('ready', () => {
+  // change nickname
+  xdccJS.irc.changeNick('new-nickname')
+  // listen to kick events
+  xdccJS.irc.on('kick', (info) => {
+    //=> do something..
+  })
+})
+```
+An extended version of this example is available [here](/examples/irc-framework.js)
 # Command-line Interface
 ## Installation
 ```bash
