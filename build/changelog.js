@@ -1,12 +1,14 @@
 const fs = require('fs')
 const axios = require('axios')
 const fd = require('form-data')
+require('dotenv').config()
 
 const { Client, Intents, MessageEmbed } = require('discord.js');
 
 const version = require('../package.json').version;
 
 let changelog = fs.readFileSync('./CHANGELOG.md').toString().split('---')[0].split(/(?=###)/gm)
+
 changelog.shift()
 
 function createGitHubRelease() {
@@ -49,23 +51,22 @@ async function uploadAssets(id) {
 
 createGitHubRelease().then(async (res) => {
     const remoteFiles = await uploadAssets(res.data.id).catch(e => {throw e})
-    postToDiscord(remoteFiles)
+    postToDiscord()
 }).catch(e => {
   throw e
 })
 
 function postToDiscord() {
+
   const discord = new Client({ 
-    intents: Intents.NON_PRIVILEGED 
+    intents: Intents.FLAGS.GUILDS
   });
   
-  const embed = new MessageEmbed()
   
-  for (const field of changelog) {
-    embed.addField(field.split(/\n|\r\n/g)[0].replace('### ', ''), field.replace(/###(.*)(\n|\r\n)/g, '').replace(/\[(.*)]\((.*)\)/g, ''), false)
-  }
-  
-  embed
+
+  discord.once('ready', async() => {
+    const embed = new MessageEmbed()
+    embed
     .setTitle('v'+version+' has been released')
     .setDescription('CHANGELOG')
     .setURL('https://github.com/JiPaix/xdccJS/releases/tag/v'+version)
@@ -73,10 +74,13 @@ function postToDiscord() {
     .setColor('DARK_GREEN')
     .setThumbnail('https://github.com/JiPaix/xdccJS/raw/main/logo.png')
     .setAuthor('JiPaix', 'https://avatars.githubusercontent.com/u/26584973?v=4', 'https://github.com/JiPaix')
-
-  discord.once('ready', async() => {
+    for (const field of changelog) {
+      embed.addField(field.split(/\n|\r\n/g)[0].replace('### ', ''), field.replace(/###(.*)(\n|\r\n)/g, '').replace(/\[(.*)]\((.*)\)/g, ''), false)
+    }
+    
+    console.log(embed)
       const chan = await discord.channels.fetch(process.env.DISCORD_CHANNEL_ID)
-      await chan.send({embed}).catch((e) => {throw e})
+      await chan.send({embeds: [embed]}).catch((e) => {throw e})
       discord.destroy()
   });
   discord.login(process.env.DISCORD_SECRET);
