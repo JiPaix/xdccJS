@@ -19,10 +19,10 @@ let opts = {
 
 const xdccJS = new XDCC(opts)
 
-xdccJS.on('ready', () => {
-  const Job1 = xdccJS.download('XDCC|BLUE', '1-3, 8, 56')
-  const Job2 = xdccJS.download('XDCC|RED', [1, 3, 10, 20])
-  xdccJS.download('XDCC|BLUE', 23) // job1 is updated
+xdccJS.on('ready', async () => {
+  const Job1 = await xdccJS.download('XDCC|BLUE', '1-3, 8, 56')
+  const Job2 = await xdccJS.download('XDCC|RED', [1, 3, 10, 20])
+  await xdccJS.download('XDCC|BLUE', 23) // job1 is updated
 
   // event triggered everytime a file is downloaded regardless of its job
   xdccJS.on('downloaded', fileInfo => {

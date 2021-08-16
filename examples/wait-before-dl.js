@@ -15,11 +15,11 @@ let opts = {
 }
 
 const xdccJS = new XDCC(opts)
-const wait_in_seconds = 60
+const ms = 60 * 1000 //=> 60 seconds
 
 xdccJS.on('ready', () => {
   // connected and joined channels: waiting 60s before sending /MSG delayed-bot xdcc send #44
-  setTimeout(() => {
-    xdccJS.download('delayed-bot', 44)
-  }, 1000 * wait_in_seconds)
+  setTimeout(async () => {
+    await xdccJS.download('delayed-bot', 44)
+  }, ms)
 })

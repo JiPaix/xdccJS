@@ -14,35 +14,30 @@ let opts = {
 
 const xdccJS = new XDCC(opts)
 
-xdccJS.once('ready', () => {
-  const Job1 = xdccJS.download('a-bot', '1-5, 26')
-  xdccJS.download('another-bot', 32)
-  xdccJS.download('wow-you-leecher', [22, 150, 20])
+xdccJS.once('ready', async () => {
+  const Job1 = await xdccJS.download('a-bot', '1-5, 26') //=> save job as Job1
+  await xdccJS.download('another-bot', 32) //=> start Job without reference
+  await xdccJS.download('wow-you-leecher', [22, 150, 20]) //=> start Job without reference
 
-  xdccJS.jobs().length // 2
+  await xdccJS.jobs().length //=> 3
 
-  // find job by botname
+  // retrieve a job by nickname
   const Job2 = xdccJS.job('another-bot')
+  const Job3 = xdccJS.job('wow-you-leecher')
 
-  // cancel a job
-  Job1.cancel()
+  // cancel job2
+  Job2.cancel()
 
-  // find job and cancel() it
-  xdccJS.job('wow-you-leecher').cancel()
-
-  // lets pretend Job2 finished
-  console.log(xdccJS.jobs('another-bot')) // [ ]
-  // but this one is still accessible
-  console.log(Job2.show())
+  // display job3 info and progress
+  console.log(Job3.show())
+  // lets pretend Job1 finished
+  console.log(Job1) // [ ]
 
   /**
    * Jobs limitation a.k.a how not to get xdccJS buggy
    */
 
-  xdccJS.jobs() // returns jobs with additional information (like internal functions you don't want to break)
-  xdccJS.jobs()[0].cancel() // OK: cancel current job
-  xdccJS.jobs()[0].mycustomProperty = 'x' // OK: but Meehh
-  xdccJS.jobs()[0].queue = [3, 2, 5] // OK: change content of queue
+  xdccJS.jobs()[0].queue = [3, 2, 5] // Don't!
   xdccJS.jobs()[0].now = 22 // NO!
-  xdccJS.jobs()[0].emit('error') // NO! WHY? emitted events are used internally.
+  xdccJS.jobs()[0].emit('error') // WHY?
 })

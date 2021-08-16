@@ -77,10 +77,13 @@ xdccJS.on('ready', () => {
 })
 ```
 ### Jobs
-**.download() are stored as jobs**
+**.download() is asynchronous and returns a job**
 ```js
-const job1 = xdccJS.download('a-bot', [33, 50, 62, 98])
-const job2 = xdccJS.download('XDCC|RED', [1, 3, 10, 20])
+const job1 = await xdccJS.download('a-bot', [33, 50, 62, 98])
+const job2 = await xdccJS.download('XDCC|RED', [1, 3, 10, 20])
+xdccJS.download('XDCC|CYAN').then(job3 => {
+  // do something
+})
 ```
 #### Jobs offer three options :
 - Get job progress status :
@@ -91,17 +94,17 @@ const job2 = xdccJS.download('XDCC|RED', [1, 3, 10, 20])
   ```
 - Cancel a Job
   ```js
-  job1.cancel()
+  job2.cancel()
   ```
 - Events (see [events documentation](#Events))
 
 **Jobs are stored by bot nickname :** `.download()` will update matching jobs
 ```js
-xdccJS.on('ready', () => {
-  const job1 = xdccJS.download('XDCC|BLUE', '1-3, 8, 55') // job1 is created
-  const job2 = xdccJS.download('XDCC|RED', [1, 3, 10, 20]) // job2 is created
-  xdccJS.download('XDCC|BLUE', 23) // job1 is updated
-  xdccJS.download('XDCC|RED', '150-155') // job2 is updated
+xdccJS.on('ready', async () => {
+  const job1 = await xdccJS.download('XDCC|BLUE', '1-3, 8, 55') // job1 is created
+  const job2 = await xdccJS.download('XDCC|RED', [1, 3, 10, 20]) // job2 is created
+  await xdccJS.download('XDCC|BLUE', 23) // job1 is updated
+  await xdccJS.download('XDCC|RED', '150-155') // job2 is updated
 })
 ```
 **You can also search jobs** with :`xdccJS.jobs()`
@@ -110,10 +113,10 @@ xdccJS.on('ready', () => {
 
 ```js
 // find job by botname
-const job = xdccJS.jobs('bot-name')
+const job = await xdccJS.jobs('bot-name')
 
 // retrieve all jobs at once
-const arrayOfJobs = xdccJS.jobs()
+const arrayOfJobs = await xdccJS.jobs()
 ```
 
 ### Events
@@ -124,7 +127,7 @@ const arrayOfJobs = xdccJS.jobs()
 
 > [**xdccJS**].on( **'ready'** ) : *xdccJS is ready to download*
   - ```js
-    xdccJS.on('ready', ()=> {
+    xdccJS.on('ready', async ()=> {
       // download() here
     })
     ```
@@ -179,18 +182,20 @@ const arrayOfJobs = xdccJS.jobs()
       //=> { file: 'filename.pdf', filePath: 'pipe', length: 5844849 }
     })
     ```
-> [**xdccJS** | **Job**].on( **'error'** ) : *something goes wrong*
+> [**xdccJS**].on( **'error'** ) : *Connection Errors*  
   - ```js
-    xdccJS.on('error', (message) => {
-      console.log(message)
-      //=> timeout: no response from XDCC|BLUE
-    })
-
-    job.on('error', (message) => {
-      //=> timeout: no response from XDCC|BLUE
+    xdccJS.on('error', (err) => {
+      err instanceof Error //=> true
+      console.error(err.message) //=> UNREACHABLE HOST 1.1.1.1:6667
     })
     ```
-
+> [**Job**].on( **'error'** ) : *Job interrupted/canceled or connexion with bot unreachable*  
+  - ```js
+    job.on('error', (message, fileInfo) => {
+      console.error(message) //=> timeout: no response from XDCC|BLUE
+      console.log(fileInfo) //=> { file: 'filename.pdf', filePath: 'pipe', length: 5844849 }
+    })
+    ```
 ### Pipes
 In order to use pipes xdccJS need to be initialized with path option set to false
 ```js
@@ -207,13 +212,12 @@ const { spawn } = require('child_process')
 const vlcPath = path.normalize('C:\\Program Files\\VideoLAN\\VLC\\vlc.exe')
 const vlc = spawn(vlcPath, ['-'])
 
-xdccJS.on('ready', () => {
-  const Job = xdccJS.download('bot', 155)
-})
-
-// send data to VLC that plays the file
-Job.on('pipe', stream => {
-  stream.pipe(vlc.stdin)
+xdccJS.on('ready', async () => {
+  const Job = await xdccJS.download('bot', 155)
+  // send data to VLC that plays the file
+  Job.on('pipe', stream => {
+    stream.pipe(vlc.stdin)
+  })
 })
 ```
 ## Disconnect

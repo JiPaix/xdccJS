@@ -27,9 +27,9 @@ app.listen(port, () => console.log(`listening on port ${port}!`))
 
 // waiting for xdccJS to be connected to IRC
 xdccJS.on('ready', () => {
-  app.get('/download', (req, res) => {
+  app.get('/download', async (req, res) => {
     // starts download using url parameters
-    const webJob = xdccJS.download(req.query.bot, req.query.pack)
+    const webJob = await xdccJS.download(req.query.bot, req.query.pack)
     // waiting xdcc bot to send data
     webJob.on('pipe', (stream, fileInfo) => {
       res.set('Content-Disposition', `attachment;filename=${fileInfo.file}`) // set the filename and avoid browser directly playing the file.

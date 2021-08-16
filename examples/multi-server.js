@@ -18,16 +18,16 @@ let opts = {
  * EXAMPLE #1 - multi server with same instance (one server at a time):
  */
 const xdccJS = new XDCC(opts)
-xdccJS.once('ready', () => {
-  xdccJS.donwload('a-bot', 20)
+xdccJS.once('ready', async () => {
+  await xdccJS.donwload('a-bot', 20)
   xdccJS.once('can-quit', () => {
     xdccJS.reconnect({
       host: 'irc.other-server.net',
       port: 9999,
       chan: ['#salty', '#lemon'],
     })
-    xdccJS.once('ready', () => {
-      xdccJS.download('bot-from-another-server', 33)
+    xdccJS.once('ready', async () => {
+      await xdccJS.download('bot-from-another-server', 33)
     })
     xdccJS.once('can-quit', () => {
       xdccJS.quit() // finish and quit here
@@ -45,9 +45,9 @@ opts.port = 9999
 opts.chan = ['#another', '#planet']
 const xdccJS_2 = new XDCC(opts)
 
-xdccJS_1.once('ready', () => {
-  xdccJS_1.download('bot-from-server1', 20)
+xdccJS_1.once('ready', async () => {
+  await xdccJS_1.download('bot-from-server1', 20)
 })
-xdccJS_2.once('ready', () => {
-  xdccJS_2.download('bot-from-server2', 79)
+xdccJS_2.once('ready', async () => {
+  await xdccJS_2.download('bot-from-server2', 79)
 })

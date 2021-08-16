@@ -51,7 +51,7 @@ function ExampleMiddleware() {
 const xdccJS = new XDCC(opts)
 xdccJS.irc.use(ExampleMiddleware)
 
-xdccJS.on('ready', () => {
+xdccJS.on('ready', async () => {
   /**
    * Access IRC-FRAMEWORK methods :
    * https://github.com/kiwiirc/irc-framework/blob/master/docs/clientapi.md#methods
