@@ -1,16 +1,37 @@
 # Changelog
-
+## [v4.3.0](https://github.com/jipaix/xdccjs/tree/v4.2.9)
+## Features(lib)
+* :warning: `xdccJS.download()` is now asynchronous [a1d170b1](https://github.com/JiPaix/xdccJS/commit/a1d170b1af993eb2ae70721d68930112770f1c45)
+## Features(bin)
+* Notice user when hostname is unreachable [bd452d5a](https://github.com/JiPaix/xdccJS/commit/bd452d5a9b24337fd2c9c2fbb776c80daa49678d)
+## Fix(lib)
+* Emit `error` event instead of throwing [b0ad1413](https://github.com/JiPaix/xdccJS/commit/b0ad1413e089bafea3dbf217130674a7039457b9)
+* Fix `error` events being too ambiguous [0bf3ffc8](https://github.com/JiPaix/xdccJS/commit/0bf3ffc8c6fdab98110075821268e700329755a8)
+  * `xdccJS.on('error', (err) => { } )` IRC errors ONLY
+  * `Job.on('error', (msg, fileInfo) => {} )` Job errors ONLY
+## Doc
+* Add irc-framework integration example [6faf356e](https://github.com/JiPaix/xdccJS/commit/6faf356e7ced0de8d035d6a1c5fed7eaf5718dc0)
+  * Credit @qgustavor [issue#241](https://github.com/JiPaix/xdccJS/issues/241)
+## Chores(dev-deps)
+* Add pkg to dev-deps
+* Remove unused dotenv-manipulator
+* bump @types/node from 16.4.10 to 16.6.1
+* bump @types/lodash from 4.14.171 to 4.14.172
+* bump @typescript-eslint/parser from 4.28.5 to 4.29.0
+* bump @typescript-eslint/eslint-plugin from 4.29.0 to 4.29.1
+* bump ts-node from 10.1.0 to 10.2.0
+* bump discord.js from 12.5.3 to 13.1.0
 ## [v4.2.9](https://github.com/jipaix/xdccjs/tree/v4.2.9)
 ### HotFix
-- Prevent xdccJS to indefinitely tries to connect to an unreachable host.
+* Prevent xdccJS to indefinitely tries to connect to an unreachable host. [e9135ea1](https://github.com/JiPaix/xdccJS/commit/e9135ea11239996d428755f613c88cfb753e627c)
 ---
 ## [v4.2.8](https://github.com/jipaix/xdccjs/tree/v4.2.8)
 ### Fix(global)
-- Fix a bug introduced in v4.2.6 were parameter `verbose` wasn't considered optional [d0e61f24](https://github.com/JiPaix/xdccJS/commit/d0e61f24a646ceda5a2bdd0ab04969df8175fd1d)
+* Fix a bug introduced in v4.2.6 where parameter `verbose` wasn't optional [d0e61f24](https://github.com/JiPaix/xdccJS/commit/d0e61f24a646ceda5a2bdd0ab04969df8175fd1d)
 ### Fix(bin)
-- Profiles not loading [02371574](https://github.com/JiPaix/xdccJS/commit/02371574ce97f3dfb4ec37b40a5d2bc7fc57e458) [issue#238](https://github.com/JiPaix/xdccJS/issues/238)
-  - Credit [@omgbox](https://github.com/omgbox)
-- `--save-profile` without argument was creating a profile named `true` which wasn't interpreted as a string [61d382e0](https://github.com/JiPaix/xdccJS/commit/61d382e0922690b36b9b41ce6942334d9ce8a9a7)
+* Profiles not loading [02371574](https://github.com/JiPaix/xdccJS/commit/02371574ce97f3dfb4ec37b40a5d2bc7fc57e458) [issue#238](https://github.com/JiPaix/xdccJS/issues/238)
+  * Credit [@omgbox](https://github.com/omgbox)
+* `--save-profile` without argument was creating a profile named `true` which wasn't interpreted as a string [61d382e0](https://github.com/JiPaix/xdccJS/commit/61d382e0922690b36b9b41ce6942334d9ce8a9a7)
   - `--delete-profile`, `--save-profile` and `--set-profile` now require an argument
 ---
 ## [v4.2.7](https://github.com/jipaix/xdccjs/tree/v4.2.7)
