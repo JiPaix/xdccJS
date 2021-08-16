@@ -1,8 +1,8 @@
-import { Connect } from '../connect'
+import Connect from '../connect';
 
-export class BinError extends Error {
+export default class BinError extends Error {
   constructor(message: string) {
-    message = Connect.replace(message)
-    super(message)
+    const newMessage = Connect.replace(message);
+    super(newMessage);
   }
 }

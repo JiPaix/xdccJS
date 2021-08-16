@@ -1,12 +1,14 @@
-import { CtcpParser, ParamsCTCP } from './ctcp_parser'
-import { FileInfo } from './interfaces/fileinfo'
-import { Job } from './interfaces/job'
-import { PassThrough } from 'stream'
-import * as net from 'net'
-import * as fs from 'fs'
-import * as ProgressBar from './lib/progress'
-import { v4 } from 'public-ip'
-import { Connect } from './connect'
+/* eslint-disable max-len */
+/* eslint-disable no-param-reassign */
+import { PassThrough } from 'stream';
+import * as net from 'net';
+import * as fs from 'fs';
+import { v4 } from 'public-ip';
+import { CtcpParser, ParamsCTCP } from './ctcp_parser';
+import { FileInfo } from './interfaces/fileinfo';
+import Job from './interfaces/job';
+import ProgressBar from './lib/progress';
+import Connect from './connect';
 
 export interface ParamsDL extends ParamsCTCP {
   /**
@@ -32,21 +34,22 @@ interface Pass {
 
 export default class Downloader extends CtcpParser {
   passivePort: number[]
+
   ip: Promise<number>
 
   constructor(params: ParamsDL) {
-    super(params)
-    this.ip = this.getIp()
-    this.passivePort = this._is('passivePort', params.passivePort, 'object', [5001])
+    super(params);
+    this.ip = Downloader.getIp();
+    this.passivePort = Downloader.is('passivePort', params.passivePort, 'object', [5001]);
     this.on('prepareDL', (downloadrequest: { fileInfo: FileInfo; candidate: Job }) => {
-      this.prepareDL(downloadrequest)
-    })
+      this.prepareDL(downloadrequest);
+    });
   }
 
-  async getIp(): Promise<number> {
-    const string = await v4()
-    const d = string.split('.')
-    return ((+d[0] * 256 + +d[1]) * 256 + +d[2]) * 256 + +d[3]
+  static async getIp(): Promise<number> {
+    const string = await v4();
+    const d = string.split('.');
+    return ((+d[0] * 256 + +d[1]) * 256 + +d[2]) * 256 + +d[3];
   }
 
   private setupStream(fileInfo: FileInfo): fs.WriteStream | PassThrough {
@@ -55,61 +58,60 @@ export default class Downloader extends CtcpParser {
         return fs.createWriteStream(fileInfo.filePath, {
           flags: 'r+',
           start: fileInfo.position,
-        })
-      } else if (fileInfo.type === 'DCC SEND') {
-        return fs.createWriteStream(fileInfo.filePath)
-      } else {
-        throw Error('Error in control flow: setupStream')
+        });
+      } if (fileInfo.type === 'DCC SEND') {
+        return fs.createWriteStream(fileInfo.filePath);
       }
+      throw Error('Error in control flow: setupStream');
     } else {
-      return new PassThrough()
+      return new PassThrough();
     }
   }
 
   private prepareDL(downloadrequest: { fileInfo: FileInfo; candidate: Job }): void {
-    const fileInfo = downloadrequest.fileInfo
-    const candidate = downloadrequest.candidate
-    const stream = this.setupStream(fileInfo)
+    const { fileInfo } = downloadrequest;
+    const { candidate } = downloadrequest;
+    const stream = this.setupStream(fileInfo);
     if (fileInfo.port === 0) {
-      const pick = this.portPicker()
-      const server = net.createServer(client => {
-        this.__SetupTimeout({
-          candidate: candidate,
+      const pick = this.portPicker();
+      const server = net.createServer((client) => {
+        this.SetupTimeout({
+          candidate,
           eventType: 'error',
           message: '%danger% Timeout: no initial connnection',
           delay: this.timeout,
           disconnectAfter: {
-            stream: stream,
-            server: server,
+            stream,
+            server,
             socket: client,
-            pick: pick,
+            pick,
           },
           padding: 6,
-          fileInfo: fileInfo,
-        })
-        this.processDL(server, client, stream, candidate, fileInfo, pick)
-      })
+          fileInfo,
+        });
+        this.processDL(server, client, stream, candidate, fileInfo, pick);
+      });
 
       server.listen(pick, '0.0.0.0', () => {
-        this.ip.then(ip => {
+        this.ip.then((ip) => {
           this.raw(
             `PRIVMSG ${candidate.nick} ${String.fromCharCode(1)}DCC SEND ${fileInfo.file} ${ip} ${pick} ${
               fileInfo.length
-            } ${fileInfo.token}${String.fromCharCode(1)}`
-          )
-        })
-      })
+            } ${fileInfo.token}${String.fromCharCode(1)}`,
+          );
+        });
+      });
     } else {
-      const client = net.connect(fileInfo.port, fileInfo.ip)
-      this.processDL(undefined, client, stream, candidate, fileInfo, undefined)
+      const client = net.connect(fileInfo.port, fileInfo.ip);
+      this.processDL(undefined, client, stream, candidate, fileInfo, undefined);
     }
   }
 
   private portPicker(): number | undefined {
-    const available = this.passivePort.filter(ports => !this.portInUse.includes(ports))
-    const pick = available[Math.floor(Math.random() * available.length)]
-    this.portInUse.push(pick)
-    return pick
+    const available = this.passivePort.filter((ports) => !this.portInUse.includes(ports));
+    const pick = available[Math.floor(Math.random() * available.length)];
+    this.portInUse.push(pick);
+    return pick;
   }
 
   private processDL(
@@ -118,34 +120,34 @@ export default class Downloader extends CtcpParser {
     stream: fs.WriteStream | PassThrough,
     candidate: Job,
     fileInfo: FileInfo,
-    pick: number | undefined
+    pick: number | undefined,
   ): void {
-    candidate.cancel = this.makeCancelable(candidate, client)
-    this.print(`%info% downloading : %cyan%${fileInfo.file}`, 5)
-    const bar = this.setupProgressBar(fileInfo.length)
+    candidate.cancel = this.makeCancelable(candidate, client);
+    this.print(`%info% downloading : %cyan%${fileInfo.file}`, 5);
+    const bar = Downloader.setupProgressBar(fileInfo.length);
     const pass: Pass = {
-      server: server,
-      client: client,
-      stream: stream,
-      candidate: candidate,
-      fileInfo: fileInfo,
-      pick: pick,
-      bar: bar,
-    }
-    this.onData(pass)
-    this.onEnd(pass)
-    this.onError(pass)
+      server,
+      client,
+      stream,
+      candidate,
+      fileInfo,
+      pick,
+      bar,
+    };
+    this.onData(pass);
+    this.onEnd(pass);
+    this.onError(pass);
   }
 
   private onError(args: Pass): void {
     args.client.on('error', (e: Error) => {
-      this.__SetupTimeout({
+      this.SetupTimeout({
         candidate: args.candidate,
         eventType: e.message === 'cancel' ? 'cancel' : 'error',
         message:
           e.message === 'cancel'
-            ? 'Job cancelled: %cyan%' + args.candidate.nick
-            : 'Connection error: %yellow%' + e.message,
+            ? `Job cancelled: %cyan%${args.candidate.nick}`
+            : `Connection error: %yellow%${e.message}`,
         delay: 0,
         disconnectAfter: {
           stream: args.stream,
@@ -158,59 +160,59 @@ export default class Downloader extends CtcpParser {
         fileInfo: args.fileInfo,
         executeLater: () => {
           if (e.message === 'cancel') {
-            args.candidate.failures.push(args.candidate.now)
-            args.candidate.queue = []
+            args.candidate.failures.push(args.candidate.now);
+            args.candidate.queue = [];
             if (fs.existsSync(args.fileInfo.filePath)) {
-              fs.unlinkSync(args.fileInfo.filePath)
+              fs.unlinkSync(args.fileInfo.filePath);
             }
-            this.emit('next', args.candidate, this.verbose)
+            this.emit('next', args.candidate, this.verbose);
           } else {
-            this.redownload(args.candidate, args.fileInfo)
+            this.redownload(args.candidate, args.fileInfo);
           }
         },
-      })
-    })
+      });
+    });
   }
 
   private onEnd(args: Pass): void {
     args.client.on('end', () => {
-      this.print('%success% done.', 6)
-      args.candidate.timeout.clear()
-      args.candidate.success.push(args.fileInfo.file)
+      this.print('%success% done.', 6);
+      args.candidate.timeout.clear();
+      args.candidate.success.push(args.fileInfo.file);
       if (args.server && args.pick) {
         args.server.close(() => {
-          this.portInUse = this.portInUse.filter(p => p !== args.pick)
-        })
+          this.portInUse = this.portInUse.filter((p) => p !== args.pick);
+        });
       }
-      args.stream.end()
-      args.client.end()
-      this.emit('downloaded', args.fileInfo)
-      args.candidate.emit('downloaded', args.fileInfo)
-      this.emit('next', args.candidate, this.verbose)
-    })
+      args.stream.end();
+      args.client.end();
+      this.emit('downloaded', args.fileInfo);
+      args.candidate.emit('downloaded', args.fileInfo);
+      this.emit('next', args.candidate, this.verbose);
+    });
   }
 
   private onData(args: Pass): void {
-    const sendBuffer = Buffer.alloc(8)
-    let received = 0
-    args.client.on('data', data => {
+    const sendBuffer = Buffer.alloc(8);
+    let received = 0;
+    args.client.on('data', (data) => {
       if (received === 0 && !this.path) {
-        args.candidate.emit('pipe', args.stream, args.fileInfo)
-        this.emit('pipe', args.stream, args.fileInfo)
+        args.candidate.emit('pipe', args.stream, args.fileInfo);
+        this.emit('pipe', args.stream, args.fileInfo);
       }
-      args.stream.write(data)
-      received += data.length
-      sendBuffer.writeBigInt64BE(BigInt(received), 0)
-      args.client.write(sendBuffer)
+      args.stream.write(data);
+      received += data.length;
+      sendBuffer.writeBigInt64BE(BigInt(received), 0);
+      args.client.write(sendBuffer);
       if (this.verbose && args.bar) {
-        args.bar.tick(data.length)
+        args.bar.tick(data.length);
       }
       if (received === args.fileInfo.length) {
-        args.client.end()
+        args.client.end();
       } else {
-        args.candidate.emit('downloading', args.fileInfo, received, (received / args.fileInfo.length) * 100)
-        this.emit('downloading', args.fileInfo, received, (received / args.fileInfo.length) * 100)
-        this.__SetupTimeout({
+        args.candidate.emit('downloading', args.fileInfo, received, (received / args.fileInfo.length) * 100);
+        this.emit('downloading', args.fileInfo, received, (received / args.fileInfo.length) * 100);
+        this.SetupTimeout({
           candidate: args.candidate,
           eventType: 'error',
           message: '%danger% Timeout: Not receiving data',
@@ -224,19 +226,19 @@ export default class Downloader extends CtcpParser {
           },
           delay: 2,
           fileInfo: args.fileInfo,
-        })
+        });
       }
-    })
+    });
   }
 
-  protected setupProgressBar(len: number): ProgressBar {
-    return new ProgressBar(``.padStart(6) + Connect.replace(':roll [:bar] ETA: :eta @ :rate - :percent'), {
+  protected static setupProgressBar(len: number): ProgressBar {
+    return new ProgressBar(''.padStart(6) + Connect.replace(':roll [:bar] ETA: :eta @ :rate - :percent'), {
       complete: '=',
       incomplete: ' ',
       width: 20,
       total: len,
       clear: true,
-      renderThrottle: 100
-    })
+      renderThrottle: 100,
+    });
   }
 }

@@ -1,25 +1,28 @@
-import { Job } from './interfaces/job'
-import { Candidate } from './interfaces/candidate'
-import { TimeOut, ParamsTimeout } from './timeouthandler'
-import * as net from 'net'
+/* eslint-disable prefer-destructuring */
+/* eslint-disable no-param-reassign */
+import * as net from 'net';
+import Job from './interfaces/job';
+import { Candidate } from './interfaces/candidate';
+import { TimeOut, ParamsTimeout } from './timeouthandler';
 
-export class AddJob extends TimeOut {
+export default class AddJob extends TimeOut {
   candidates: Job[]
+
   constructor(params: ParamsTimeout) {
-    super(params)
-    this.candidates = []
-    this.onRequest()
-    this.onNext()
+    super(params);
+    this.candidates = [];
+    this.onRequest();
+    this.onNext();
   }
 
   protected onRequest(): void {
     this.on('request', (args: { target: string; packets: number[] }) => {
-      const candidate = this.getCandidate(args.target)
-      this.prepareCandidate(candidate)
-    })
+      const candidate = this.getCandidate(args.target);
+      this.prepareCandidate(candidate);
+    });
   }
 
-  private constructCandidate(target: string, range: number[]): Candidate {
+  private static constructCandidate(target: string, range: number[]): Candidate {
     return {
       nick: target,
       queue: range,
@@ -29,130 +32,139 @@ export class AddJob extends TimeOut {
       success: [],
       timeout: {
         clear: (): void => {
-          throw Error('calling clear too soon')
+          throw Error('calling clear too soon');
         },
       },
-    }
+    };
   }
 
   protected makeCancelable(candidate: Job, client?: net.Socket): () => void {
     const fn = (): void => {
-      candidate.timeout.clear()
+      candidate.timeout.clear();
       if (client) {
-        const cancel = new Error('cancel')
-        client.destroy(cancel)
+        const cancel = new Error('cancel');
+        client.destroy(cancel);
       } else {
-        this.candidates = this.candidates.filter(x => x.nick !== candidate.nick)
+        this.candidates = this.candidates.filter((x) => x.nick !== candidate.nick);
       }
-    }
-    return fn
+    };
+    return fn;
   }
 
-  public download(target: string, packets: string | string[] | number | number[]): Job {
-    const range = this.parsePackets(packets)
-    let candidate = this.getCandidate(target)
+  public async download(target: string, packets: string | string[] | number | number[])
+  : Promise<Job> {
+    const range = await AddJob.parsePackets(packets);
+    let candidate = this.getCandidate(target);
     if (!candidate) {
-      const base = this.constructCandidate(target, range)
-      const newCand = new Job(base)
-      this.makeClearable(newCand)
-      newCand.cancel = this.makeCancelable(newCand)
-      this.candidates.push(newCand)
-      candidate = this.getCandidate(target)
+      const base = AddJob.constructCandidate(target, range);
+      const newCand = new Job(base);
+      AddJob.makeClearable(newCand);
+      newCand.cancel = this.makeCancelable(newCand);
+      this.candidates.push(newCand);
+      candidate = this.getCandidate(target);
     } else {
-      const tmp: Job['queue'] = candidate.queue.concat(range)
-      candidate.queue = tmp.sort((a, b) => a - b)
+      const tmp: Job['queue'] = candidate.queue.concat(range);
+      candidate.queue = tmp.sort((a, b) => a - b);
     }
     if (this.candidates.length === 1 && candidate.now === 0) {
-      this.emit('request', { target: target, packets: candidate.queue })
+      this.emit('request', { target, packets: candidate.queue });
     }
-    return candidate
+    return candidate;
   }
 
-  private parsePackets(packets: string | string[] | number | number[]): number[] {
+  private static async parsePackets(packets: string | string[] | number | number[])
+  : Promise<number[]> {
     if (typeof packets === 'string') {
-      return this.parsePacketString(packets)
-    } else if (Array.isArray(packets)) {
-      return this.parsePacketArray(packets)
-    } else if (typeof packets === 'number') {
-      return [packets]
-    } else {
-      return [0]
+      return AddJob.parsePacketString(packets);
+    } if (Array.isArray(packets)) {
+      return AddJob.parsePacketArray(packets);
+    } if (typeof packets === 'number') {
+      return [packets];
     }
+    return [0];
   }
-  private parsePacketArray(packets: string[] | number[]): number[] {
-    const range: number[] = []
-    for (const pack of packets) {
+
+  private static async parsePacketArray(packets: string[] | number[]): Promise<number[]> {
+    const range: number[] = [];
+
+    const promises = packets.map(async (pack) => {
       if (typeof pack === 'number') {
-        range.push(pack)
+        range.push(pack);
       } else {
-        range.push(parseInt(pack))
+        range.push(parseInt(pack, 10));
       }
-    }
-    return this.sortPackets(range)
+    });
+    await Promise.all(promises);
+    return AddJob.sortPackets(range);
   }
-  private parsePacketString(packet: string): number[] {
-    packet = packet.replace(/#/gi, '')
-    const splittedPackets = packet.split(',')
-    let range: number[] = []
-    for (const packet of splittedPackets) {
-      if (packet.includes('-')) {
-        range = range.concat(this.decomposeRange(packet))
+
+  private static async parsePacketString(packet: string): Promise<number[]> {
+    const newPacket = packet.replace(/#/gi, '');
+    const splittedPackets = newPacket.split(',');
+    let range: number[] = [];
+    const promises = splittedPackets.map(async (p) => {
+      if (p.includes('-')) {
+        range = range.concat(AddJob.decomposeRange(p));
       } else {
-        range.push(parseInt(packet))
+        range.push(parseInt(p, 10));
       }
-    }
-    return this.sortPackets(range)
+    });
+    await Promise.all(promises);
+    return AddJob.sortPackets(range);
   }
-  private decomposeRange(string: string): number[] {
-    const minmax = string.split('-')
-    const start = parseInt(minmax[0])
-    const end = parseInt(minmax[1])
-    return this.range(start, end)
+
+  private static decomposeRange(string: string): number[] {
+    const minmax = string.split('-');
+    const start = parseInt(minmax[0], 10);
+    const end = parseInt(minmax[1], 10);
+    return AddJob.range(start, end);
   }
-  private range(start: number, end: number): number[] {
-    return Array.from(Array(end + 1).keys()).slice(start)
+
+  private static range(start: number, end: number): number[] {
+    return Array.from(Array(end + 1).keys()).slice(start);
   }
-  private sortPackets(range: number[]): number[] {
+
+  private static sortPackets(range: number[]): number[] {
     return range
       .sort((a, b) => a - b)
-      .filter((item, pos, ary) => {
-        return !pos || item != ary[pos - 1]
-      })
+      .filter((item, pos, ary) => !pos || item !== ary[pos - 1]);
   }
 
   protected prepareCandidate(candidate: Job): void {
-    candidate.retry = 0
-    candidate.now = candidate.queue[0]
-    candidate.queue = candidate.queue.filter(pending => pending.toString() !== candidate.now.toString())
-    this.say(candidate.nick, `xdcc send ${candidate.now}`)
-    this.__SetupTimeout({
-      candidate: candidate,
+    candidate.retry = 0;
+    candidate.now = candidate.queue[0];
+    candidate.queue = candidate.queue.filter(
+      (pending) => pending.toString() !== candidate.now.toString(),
+    );
+    this.say(candidate.nick, `xdcc send ${candidate.now}`);
+    this.SetupTimeout({
+      candidate,
       eventType: 'error',
       message: `timeout: no response from %yellow%${candidate.nick}`,
       padding: 6,
       delay: this.timeout,
-    })
+    });
     this.print(
       `%success% sending command: /MSG %yellow%${candidate.nick}%reset% xdcc send %yellow%${candidate.now.toString()}`,
-      4
-    )
+      4,
+    );
   }
 
   public getCandidate(target: string): Job {
     return this.candidates.filter(
-      candidates => candidates.nick.localeCompare(target, 'en', { sensitivity: 'base' }) === 0
-    )[0]
+      (candidates) => candidates.nick.localeCompare(target, 'en', { sensitivity: 'base' }) === 0,
+    )[0];
   }
 
   protected onNext(): void {
     this.on('next', (candidate: Job, verbose:boolean) => {
       if (candidate.queue.length) {
-        this.prepareCandidate(candidate)
+        this.prepareCandidate(candidate);
       } else {
-        this.candidates = this.candidates.filter(c => c.nick !== candidate.nick)
-        candidate.emit('done', candidate.show())
-        this.emit('done', candidate.show())
-        if(verbose && candidate.failures.length) {
+        this.candidates = this.candidates.filter((c) => c.nick !== candidate.nick);
+        candidate.emit('done', candidate.show());
+        this.emit('done', candidate.show());
+        if (verbose && candidate.failures.length) {
           if (candidate.failures.length > 1) {
           /**
            * Credit to CertainPerformance on stackoverflow
@@ -162,18 +174,18 @@ export class AddJob extends TimeOut {
            */
             const firsts = candidate.failures.slice(0, candidate.failures.length - 1);
             const last = candidate.failures[candidate.failures.length - 1];
-            this.print(`%danger% couldn't download packs: %yellow%${firsts.join(', ') + ' and ' + last}%reset% from %yellow%${candidate.nick}%reset%`, 4)
+            this.print(`%danger% couldn't download packs: %yellow%${`${firsts.join(', ')} and ${last}`}%reset% from %yellow%${candidate.nick}%reset%`, 4);
           } else {
-            this.print(`%danger% couldn't download pack: %yellow%${candidate.failures}%reset% from %yellow%${candidate.nick}%reset%`, 4)
+            this.print(`%danger% couldn't download pack: %yellow%${candidate.failures}%reset% from %yellow%${candidate.nick}%reset%`, 4);
           }
         }
         if (!this.candidates.length) {
-          this.emit('can-quit')
+          this.emit('can-quit');
         } else {
-          const newcandidate = this.candidates[0]
-          this.emit('request', { target: newcandidate.nick, packets: newcandidate.queue })
+          const newcandidate = this.candidates[0];
+          this.emit('request', { target: newcandidate.nick, packets: newcandidate.queue });
         }
       }
-    })
+    });
   }
 }

@@ -1,6 +1,6 @@
-import Downloader, { ParamsDL } from './downloader'
-import { Job } from './interfaces/job'
-import { EventEmitter } from 'eventemitter3'
+import { EventEmitter } from 'eventemitter3';
+import Downloader, { ParamsDL } from './downloader';
+import Job from './interfaces/job';
 /**
  * File informations
  * @asMemberOf XDCC
@@ -29,34 +29,37 @@ export interface Params extends ParamsDL {
 
 export default class XDCC extends EventEmitter {
   irc: Downloader
+
   constructor(params: Params) {
-    super()
-    this.irc = new Downloader(params)
-    this._listen()
+    super();
+    this.irc = new Downloader(params);
+    this.listen();
   }
-  private _listen(): void {
+
+  private listen(): void {
     this.irc.on('ready', () => {
-      this.emit('ready')
-    })
+      this.emit('ready');
+    });
     this.irc.on('can-quit', () => {
-      this.emit('can-quit')
-    })
-    this.irc.on('downloaded', f => {
-      this.emit('downloaded', f)
-    })
-    this.irc.on('done', job => {
-      this.emit('done', job)
-    })
+      this.emit('can-quit');
+    });
+    this.irc.on('downloaded', (f) => {
+      this.emit('downloaded', f);
+    });
+    this.irc.on('done', (job) => {
+      this.emit('done', job);
+    });
     this.irc.on('pipe', (stream, f) => {
-      this.emit('pipe', stream, f)
-    })
+      this.emit('pipe', stream, f);
+    });
     this.irc.on('error', (err, f) => {
-      this.emit('error', err, f)
-    })
+      this.emit('error', err, f);
+    });
     this.irc.on('downloading', (fileInfo, received, percentage) => {
-      this.emit('downloading', fileInfo, received, percentage)
-    })
+      this.emit('downloading', fileInfo, received, percentage);
+    });
   }
+
   /**
    * start jobs and download files
    * @param target bot name
@@ -69,31 +72,34 @@ export default class XDCC extends EventEmitter {
    *  xdccJS.download('XDCC|YELLOW', 4)
    * })
    */
-  download(target: string, packets: string | number | string[] | number[]): Job {
-    return this.irc.download(target, packets)
+  download(target: string, packets: string | number | string[] | number[]): Promise<Job> {
+    return this.irc.download(target, packets);
   }
+
   /**
    * Quit IRC
    */
   quit(): void {
-    this.irc.quit()
+    this.irc.quit();
   }
+
   /**
    * Search jobs
    * @param bot Bot Name
    */
-  public jobs(bot?: string): Job | Job[] | void {
+  public async jobs(bot?: string) {
     if (bot) {
-      return this.irc.getCandidate(bot)
+      return this.irc.getCandidate(bot);
     }
-    const results = []
-    for (const job of this.irc.candidates) {
-      results.push(job)
-    }
-    if (results.length) {
-      return results
-    }
+    const results:Job[] = [];
+    const promises = this.irc.candidates.map(async (job) => {
+      results.push(job);
+    });
+    await Promise.all(promises);
+    if (results.length) return results;
+    return undefined;
   }
+
   /**
    * Event triggered when xdccJS is ready to download
    * @event ready
@@ -105,6 +111,7 @@ export default class XDCC extends EventEmitter {
    * ```
    */
   static EVENT_XDCC_READY: () => void
+
   /**
    * Event triggered when all jobs are done
    * @event can-quit
@@ -115,6 +122,7 @@ export default class XDCC extends EventEmitter {
    * })
    */
   static EVENT_QUIT: () => void
+
   /**
    * Event triggered when a file is downloaded
    * @event downloaded
@@ -124,6 +132,7 @@ export default class XDCC extends EventEmitter {
    * })
    */
   static EVENT_DOWNLOADING: () => void
+
   /**
    * Event triggered while a file is downloading
    * @event downloading
@@ -133,6 +142,7 @@ export default class XDCC extends EventEmitter {
    * })
    */
   static EVENT_DOWNLOADED: () => void
+
   /**
    * Event triggered when .download() has finished downloading all files
    * @event done
@@ -149,6 +159,7 @@ export default class XDCC extends EventEmitter {
    * })
    */
   static EVENT_DONE: () => void
+
   /**
    * Event triggered when chunks of data are being received
    * @event pipe
@@ -162,6 +173,7 @@ export default class XDCC extends EventEmitter {
    * ```
    */
   static EVENT_PIPE: () => void
+
   /**
    * Event triggered when a download fails.
    * @category Download
