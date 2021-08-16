@@ -1,16 +1,10 @@
 {
-    "out": "docs",
     "name": "xdccJS",
-    "mode": "file",
-    "inputFiles": ["./src"],
-    "exclude": "**/@types/*,**/bin/,**/addjob.ts,**/connect.ts,**/ctcp_parser.ts,**/downloader.ts,**/timeouthandler.ts",
+    "entryPoints": ["./src"],
+    "out": "docs",
     "excludePrivate": true,
     "excludeProtected": true,
     "excludeExternals": true,
-    "includeDeclarations" : false,
     "readme": "none",
-    "TOC": "XDCC",
-    "theme": "minimal",
-    "plugins": ["@wcardinal/typedoc-plugin-named-event", "typedoc-plugin-no-inherit", "typedoc-plugin-as-member-of"]
-
+    "theme": "minimal"
 }

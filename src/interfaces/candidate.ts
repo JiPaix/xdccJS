@@ -1,18 +1,15 @@
-/**
- * @ignore
- */
 export interface Candidate {
   /**
-   * @ignore
+   * Cancel function
    */
   cancel?: () => void
 
   /**
-   * @description Nickname of the bot
+   * Nickname of the bot
    */
   nick: string
   /**
-   * @description Pack number in queue
+   * Pack number in queue
    */
   queue: number[]
   /**
@@ -22,19 +19,19 @@ export interface Candidate {
     clear: () => void
   }
   /**
-   * @description Package number currently downloading
+   * Package number currently downloading
    */
   now: number
   /**
-   * @description Nb of retries on `now`
+   * Nb of retries on `now`
    */
   retry: number
   /**
-   * @description Array with pack number that failed after x `retry`
+   * Array with pack number that failed after x `retry`
    */
   failures: number[]
   /**
-   * @description Array of file (filenames) that successfully downloaded
+   * Array of file (filenames) that successfully downloaded
    */
   success: string[]
 }

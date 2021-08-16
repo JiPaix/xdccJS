@@ -1,4 +1,7 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable max-classes-per-file */
 import { EventEmitter } from 'eventemitter3';
+import { PassThrough } from 'stream';
 import Downloader, { ParamsDL } from './downloader';
 import Job from './interfaces/job';
 /**
@@ -72,7 +75,7 @@ export default class XDCC extends EventEmitter {
    *  xdccJS.download('XDCC|YELLOW', 4)
    * })
    */
-  download(target: string, packets: string | number | string[] | number[]) {
+  download(target: string, packets: string | number | string[] | number[]):Promise<Job> {
     return this.irc.download(target, packets);
   }
 
@@ -102,51 +105,62 @@ export default class XDCC extends EventEmitter {
 
   /**
    * Event triggered when xdccJS is ready to download
+   * @category Connection
    * @event ready
    * @example
    * ```js
-   * xdccJS.on('xdcc-ready', () => {
+   * xdccJS.on('ready', () => {
    *  xdccJS.download('XDCC|BOT', 23)
    * })
    * ```
    */
-  static EVENT_XDCC_READY: () => void
+  static 'ready': () => XDCC
 
   /**
    * Event triggered when all jobs are done
+   * @category Connection
    * @event can-quit
    * @example
    * ```js
    * xdccJS.on('can-quit', () => {
    *  xdccJS.quit()
    * })
+   * ```
    */
-  static EVENT_QUIT: () => void
+  static 'can-quit': () => XDCC
 
   /**
    * Event triggered when a file is downloaded
+   * @category Download
    * @event downloaded
    * @example
+   * ```js
    * xdccJS.on('downloaded', fileInfo => {
    *    console.log('file available @: ' + fileInfo.filePath)
    * })
+   * ```
    */
-  static EVENT_DOWNLOADING: () => void
+  static 'downloaded': (info:FileInfo) => XDCC
 
   /**
    * Event triggered while a file is downloading
+   * @category Download
    * @event downloading
    * @example
+   * ```js
    * xdccJS.on('downloading', (fileInfo, received, percentage) => {
    *    console.log(`${fileInfo.file} @ ${received} of ${fileInfo.length} [${percentage}%]`)
    * })
+   * ```
    */
-  static EVENT_DOWNLOADED: () => void
+   static 'downloading': (info:FileInfo, received: number, percentage: number) => XDCC
 
   /**
    * Event triggered when .download() has finished downloading all files
+   * @category Download
    * @event done
    * @example
+   * ```js
    * xdccJS.on('ready', () => {
    *    xdccJS.download('XDCC|BLUE', '23-25, 102, 300')
    *    xdccJS.download('XDCC|RED', 1152)
@@ -157,11 +171,13 @@ export default class XDCC extends EventEmitter {
    *    //=> Finished all jobs from XDCC|BLUE
    *    //=> Finished all jobs from XDCC|RED
    * })
+   * ```
    */
-  static EVENT_DONE: () => void
+  static 'done': (job:Job) => XDCC
 
   /**
    * Event triggered when chunks of data are being received
+   * @category Download
    * @event pipe
    * @remark only works if `xdccJS.path = false`
    * @example
@@ -172,19 +188,18 @@ export default class XDCC extends EventEmitter {
    * })
    * ```
    */
-  static EVENT_PIPE: () => void
+  static 'pipe': (stream: PassThrough, info:FileInfo) => XDCC
 
   /**
    * Event triggered when a download fails.
-   * @category Download
+   * @category Connection
    * @event error
    * @example
    * ```js
-   * xdccJS.on('error', (e, f) => {
-   *   console.log(`failed to download ${f.file}`)
-   *   console.log(e)
+   * xdccJS.on('error', (e) => {
+   *   throw e
    * })
    * ```
    */
-  static EVENT_ERROR: () => void
+  static 'error': (error:Error) => XDCC
 }

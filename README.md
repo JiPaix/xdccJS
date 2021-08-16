@@ -344,4 +344,4 @@ xdccJS --del-profile my_profile
     ```
 
 ## Documentation
-Full documentation is available <a href="https://jipaix.github.io/xdccJS/classes/xdcc.html">here</a>
+Full documentation is available <a href="https://jipaix.github.io/xdccJS/classes/index.default.html">here</a>
