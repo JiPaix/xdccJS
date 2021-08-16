@@ -1,18 +1,18 @@
 # Changelog
-## [v4.3.0](https://github.com/jipaix/xdccjs/tree/v4.2.9)
-## Features(lib)
+## [v4.3.0](https://github.com/jipaix/xdccjs/tree/v4.3.0)
+### Features(lib)
 * :warning: `xdccJS.download()` is now asynchronous [a1d170b1](https://github.com/JiPaix/xdccJS/commit/a1d170b1af993eb2ae70721d68930112770f1c45)
-## Features(bin)
+### Features(bin)
 * Notice user when hostname is unreachable [bd452d5a](https://github.com/JiPaix/xdccJS/commit/bd452d5a9b24337fd2c9c2fbb776c80daa49678d)
-## Fix(lib)
+### Fix(lib)
 * Emit `error` event instead of throwing [b0ad1413](https://github.com/JiPaix/xdccJS/commit/b0ad1413e089bafea3dbf217130674a7039457b9)
 * Fix `error` events being too ambiguous [0bf3ffc8](https://github.com/JiPaix/xdccJS/commit/0bf3ffc8c6fdab98110075821268e700329755a8)
   * `xdccJS.on('error', (err) => { } )` IRC errors ONLY
   * `Job.on('error', (msg, fileInfo) => {} )` Job errors ONLY
-## Doc
+### Doc
 * Add irc-framework integration example [6faf356e](https://github.com/JiPaix/xdccJS/commit/6faf356e7ced0de8d035d6a1c5fed7eaf5718dc0)
   * Credit @qgustavor [issue#241](https://github.com/JiPaix/xdccJS/issues/241)
-## Chores(dev-deps)
+### Chores(dev-deps)
 * Add pkg to dev-deps
 * Remove unused dotenv-manipulator
 * bump @types/node from 16.4.10 to 16.6.1
@@ -21,6 +21,7 @@
 * bump @typescript-eslint/eslint-plugin from 4.29.0 to 4.29.1
 * bump ts-node from 10.1.0 to 10.2.0
 * bump discord.js from 12.5.3 to 13.1.0
+---
 ## [v4.2.9](https://github.com/jipaix/xdccjs/tree/v4.2.9)
 ### HotFix
 * Prevent xdccJS to indefinitely tries to connect to an unreachable host. [e9135ea1](https://github.com/JiPaix/xdccJS/commit/e9135ea11239996d428755f613c88cfb753e627c)
