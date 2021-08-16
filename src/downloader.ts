@@ -7,7 +7,7 @@ import { v4 } from 'public-ip';
 import { CtcpParser, ParamsCTCP } from './ctcp_parser';
 import { FileInfo } from './interfaces/fileinfo';
 import Job from './interfaces/job';
-import ProgressBar from './lib/progress';
+import * as ProgressBar from './lib/progress';
 import Connect from './connect';
 
 export interface ParamsDL extends ParamsCTCP {
