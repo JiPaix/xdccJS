@@ -3,29 +3,9 @@
 import { EventEmitter } from 'eventemitter3';
 import { PassThrough } from 'stream';
 import Downloader, { ParamsDL } from './downloader';
+import { FileInfo } from './interfaces/fileinfo';
 import Job from './interfaces/job';
-/**
- * File informations
- * @asMemberOf XDCC
- */
-export interface FileInfo {
-  /** Type of transfert (send or resume) */
-  type: string
-  /** Filename */
-  file: string
-  /** Filename with absolute path, return false if using pipes */
-  filePath: string
-  /** Transfert IP */
-  ip: string
-  /** Transfert PORT  */
-  port: number
-  /** File length in bytes */
-  length: number
-  /** Token (passive DCC) */
-  token: number
-  /** Resume Position */
-  position?: number
-}
+
 export interface Params extends ParamsDL {
   encoding?: 'utf8'
 }
