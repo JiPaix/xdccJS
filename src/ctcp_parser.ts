@@ -114,7 +114,7 @@ export class CtcpParser extends AddJob {
       });
       if (fileInfo.type === 'DCC SEND') {
         const isResume = this.checkExistingFiles(fileInfo, candidate, resp);
-        if (isResume) return { fileInfo, candidate };
+        if (!isResume) return { fileInfo, candidate };
       }
     }
     return undefined;
