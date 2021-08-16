@@ -237,7 +237,7 @@ declare module 'irc-framework' {
      *  //=> failed to download myfile.mp'
      *  //=> timeout: no response from BOT-NICKNAME
      */
-    on(eventType: 'error', cb: (error: Error, fileInfo: FileInfo) => void): this
+    on(eventType: 'error', cb: (error: Error) => void): this
     /**
      * @description Event triggered when xdccJS is ready to download
      * @example

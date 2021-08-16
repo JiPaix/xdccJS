@@ -128,9 +128,9 @@ export class TimeOut extends Connect {
     } else {
       candidate.timeout.clear();
       const pad = candidate.retry + 5;
-      this.print(`%danger% skipped pack: ${candidate.now}`, pad);
-      candidate.emit('error', `skipped pack: ${candidate.now}`, fileInfo);
-      this.emit('error', `skipped pack: ${candidate.now}`, fileInfo);
+      const message = `%danger% skipped pack: ${candidate.now}`;
+      this.print(message, pad);
+      candidate.emit('error', message, fileInfo);
       candidate.failures.push(candidate.now);
       this.emit('next', candidate, this.verbose);
     }

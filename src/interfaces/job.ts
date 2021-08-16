@@ -7,6 +7,7 @@ import * as net from 'net';
 import { Candidate } from './candidate';
 import ProgressBar from '../lib/progress';
 import { FileInfo } from './fileinfo';
+import JobError from '../errorshandler';
 
 namespace Jobs {
   export type displayedJob = {
@@ -80,7 +81,7 @@ namespace Jobs {
   }
   export interface Job {
     emit(eventType: string | symbol, ...args: unknown[]): boolean
-    emit(eventType: 'error', msg: string, fileInfo: FileInfo): this
+    emit(eventType: 'error', errorMessage: string, fileInfo: FileInfo|undefined): this
     emit(
       eventType: 'done',
       endCandidate: {
@@ -93,7 +94,7 @@ namespace Jobs {
     emit(eventType: 'downloading', fileInfo: FileInfo, received: number, percentage: number): this
     on(eventType: 'downloading', cb: (fileInfo: FileInfo, received: number, percentage: number) => void): this
     on(eventType: string | symbol, cb: (event?: unknown, ...args: unknown[]) => void): this
-    on(eventType: 'error', msg: string, cb: (fileInfo: FileInfo) => void): this
+    on(eventType: 'error', cb: (errorMessage: string, fileInfo: FileInfo) => void): this
     on(eventType: 'done', cb: (endCandidate: { nick: string; success: string[]; failures: number[] }) => void): this
     on(eventType: 'downloaded', cb: (fileInfo: FileInfo) => void): this
     on(eventType: 'pipe', cb: (stream: PassThrough, fileInfo: FileInfo) => void): this

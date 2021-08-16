@@ -98,8 +98,9 @@ export default class Connect extends Client {
         auto_reconnect_max_retries: 0,
       });
       this.onConnect();
-    }).catch((e:Error) => {
-      this.emit('error', e);
+    }).catch((e:unknown) => {
+      if (e instanceof Error) this.emit('error', e);
+      if (typeof e === 'string') this.emit('error', new Error(e));
     });
   }
 
@@ -109,7 +110,7 @@ export default class Connect extends Client {
         socket.end();
         resolve();
       }).on('error', () => {
-        reject(new Error(`UNREACHABLE "${host}:${port}"`));
+        reject(new Error(`UNREACHABLE HOST: "${host}:${port}"`));
       });
     });
   }

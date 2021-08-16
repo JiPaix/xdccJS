@@ -110,15 +110,13 @@ export default class XdccJSbin extends Profiles {
           xdccJS.quit();
         })
         .on('error', (e) => {
-          if (e) {
-            if ((e as Error).message.includes('UNREACHABLE')) {
-              // trick to avoid "hard" throws
-              const error = new BinError(`%danger% Connection to ${opts[0].host}:${opts[0].port ? opts[0].port : 6667} failed`);
-              console.error(error.message);
-            }
-          } else {
-            throw e;
+          if (!e) {
+            console.error(new BinError('%danger% Unknown error'));
+            return;
           }
+          // trick to avoid "hard" throws
+          const error = new BinError(`%danger% ${e.message}`);
+          console.error(error.message);
         });
     }
   }

@@ -52,8 +52,8 @@ export default class XDCC extends EventEmitter {
     this.irc.on('pipe', (stream, f) => {
       this.emit('pipe', stream, f);
     });
-    this.irc.on('error', (err, f) => {
-      this.emit('error', err, f);
+    this.irc.on('error', (err) => {
+      this.emit('error', err);
     });
     this.irc.on('downloading', (fileInfo, received, percentage) => {
       this.emit('downloading', fileInfo, received, percentage);
@@ -72,7 +72,7 @@ export default class XDCC extends EventEmitter {
    *  xdccJS.download('XDCC|YELLOW', 4)
    * })
    */
-  download(target: string, packets: string | number | string[] | number[]): Promise<Job> {
+  download(target: string, packets: string | number | string[] | number[]) {
     return this.irc.download(target, packets);
   }
 
