@@ -15,15 +15,15 @@ It can also be used as a <a href="#command-line-interface">command-line</a> down
   - [Import and Require](#importrequire)
   - [Configuration](#configuration)
   - [Download](#download)
-    - [jobs](#Jobs)
-    - [events](#Events)
-    - [use pipes](#Pipes)
+    - [jobs](#jobs)
+    - [events](#events)
+    - [use pipes](#pipes)
   - [(Auto) disconnect from IRC](#disconnect)
   - [Advanced IRC commands](#advanced-irc-commands)
 - [CLI](#command-line-interface)
   - [Installation](#installation-1)
   - [Options](#options)
-  - [Download](#download-1)
+  - [Usage](#usage)
   - [Profiles](#profiles)
   - [Important notes](#fyi)
 
@@ -272,8 +272,7 @@ Options:
   --list-profile             list all available profiles
   --help                     display help for command
 ```
-## Download 
-**I recommend using double quotes between the `bot name` and `download path`** as they often both include unescaped characeters or whitespaces
+## Usage
 ```bash
 xdccJS --host irc.server.net --bot "XDCC-BOT|BLUE" --download 1-5,100-105 --path "/home/user/downloads"
 ```  
@@ -281,43 +280,46 @@ Alternatively, if you want to pipe the file just ommit the `--path` option  :
 ```bash
 xdccJS --host irc.server.net --bot "XDCC-BOT|RED" --download 110 | vlc -
 ```
+**I recommend using double quotes between the `bot name` and `download path`** as they often both include unescaped characeters or whitespaces
 ## Profiles
-Profiles are presets of options.
-### Save
-You can save options as a profile with `--save-profile` :
+You can use profiles to automatically load predefined options on startup
+### How to use profiles
+Save a predefined set of options:
 ```bash
-# Any option can be included
+# save a profile with name "my_profile"
 xdccJS --save-profile "my_profile" --host "irc.server.net" --port "6669" --path "C:/Users/JiPaix/Desktop"
 ```
-### Use
 ```bash
-#1 - standard
+# use "my_profile" settings
 xdccJS --bot "XDCC|BOT" --download "1132-1137"
-
-#2 - if your profile includes a bot name
-xdccJS --download "1132-1137"
-
-#3 - use a different path than the one provided by current profile
-xdccJS --bot "XDCC|BOT" --download "1132-1137" --path "E:/external_disk"
-
-#4 - standard + copy/paste
+```
+You can override profile settings:
+```bash
+# use "my_profile" profile, change download path
+xdccJS --bot "XDCC|BOT" --download "1132-1137" --path "/home/user/new/path"
+```
+If a profile provide at least a `--host` you can use the *lazy* mode:
+```bash
 xdccJS "/msg XDCC|BOT xdcc send 1132-1337" # quotes are important here
 ```
-### Set default
-set default profile :
+  
+#### Save Profile
 ```bash
-xdccJS --set-profile another_profile
+xdccJS --save-profile "my_profile" --host "irc.server.net" --port 6669 --path "C:/Users/username/Desktop"
 ```
-### List
-List all profiles :
+Saved profile are automatically set as default.
+#### Change default profile
 ```bash
-xdccJS --list-profile
+xdccJS --set-profile "my_profile"
 ```
-### Delete
-Delete a profile :
+#### Delete profile
 ```bash
-xdccJS --del-profile my_profile
+xdccJS --delete-profile "my_profile"
 ```
+#### List available profiles
+```bash
+ xdcJS --list-profile 
+ ```
 ## FYI
 - hashtags for channels and packs are optional :
   - ```bash
