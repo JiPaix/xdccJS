@@ -1,4 +1,36 @@
 # Changelog
+## [v4.3.1](https://github.com/jipaix/xdccjs/tree/v4.3.1)
+### Fix(glob)
+- Override default username (credit: @TheFlashBold)
+### Fix(lib)
+* remove duplicate interface
+### Fix(ci)
+* fix build cmd not working
+* added build without doc
+* add codeql analyze
+* fix release and discord integration
+* build utilities are rewritten in TypeScript language
+### Chores(dev-deps)
+* bump axios from 0.21.1 to 0.22.0
+* bump commander from 8.1.0 to 8.2.0
+* bump discord.js from 13.1.0 to 13.2.0
+* bump eslint from 7.32.0 to 8.0.0 
+* added eslint plugin import/typescript 2.24.2
+* bump mocha from 9.0.3 to 9.1.2
+* bump pkg from 5.3.1 to 5.3.3
+* bump ts-node from 10.2.0 to 10.2.1
+* bump typedoc from 0.21.6 to 0.21.6
+* bump typescript from 4.3.5 to 4.4.3
+* bump @types/chai from 4.2.21 to 4.2.22
+* bump @types/lodash from 4.14.172 to 4.14.175
+* bump @types/node from 16.6.1 to 16.10.3
+* bump @typescript-eslint/eslint-plugin 4.29.1 from to 4.33.0
+* bump @typescript-eslint/parser from 4.29.3 to 4.33.0
+### Style(lib)
+* remove JobError.message emojis, padding and fancy colors
+### Doc(cli)
+* Clarify profile explanation
+---
 ## [v4.3.0](https://github.com/jipaix/xdccjs/tree/v4.3.0)
 ### Features(lib)
 * :warning: `xdccJS.download()` is now asynchronous [a1d170b1](https://github.com/JiPaix/xdccJS/commit/a1d170b1af993eb2ae70721d68930112770f1c45)
