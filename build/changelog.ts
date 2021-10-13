@@ -69,13 +69,15 @@ function postToDiscord() {
       .setColor('DARK_GREEN')
       .setThumbnail('https://github.com/JiPaix/xdccJS/raw/main/logo.png')
       .setAuthor('JiPaix', 'https://avatars.githubusercontent.com/u/26584973?v=4', 'https://github.com/JiPaix');
-
     const promises = changelog.map(async (field) => {
       embed.addField(field.split(/\n|\r\n/g)[0].replace('### ', ''), field.replace(/###(.*)(\n|\r\n)/g, '').replace(/\[(.*)]\((.*)\)/g, ''), false);
     });
     await Promise.all(promises);
     const chan = await discord.channels.fetch(process.env.DISCORD_CHANNEL_ID);
-    if (chan) await chan.send({ embeds: [embed] }).catch((e:Error) => { throw e; });
+    if (chan) {
+      await chan.send('@everyone').catch((e:Error) => { throw e; });
+      await chan.send({ embeds: [embed] }).catch((e:Error) => { throw e; });
+    }
     discord.destroy();
   });
   discord.login(process.env.DISCORD_SECRET);

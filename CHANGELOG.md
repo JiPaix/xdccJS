@@ -1,15 +1,21 @@
 # Changelog
 ## [v4.3.1](https://github.com/jipaix/xdccjs/tree/v4.3.1)
-### Fix(glob)
-- Override default username (credit: @TheFlashBold)
-### Fix(lib)
-* remove duplicate interface
-### Fix(ci)
-* fix build cmd not working
-* added build without doc
-* add codeql analyze
-* fix release and discord integration
-* build utilities are rewritten in TypeScript language
+### Features
+- added support for SSL/TLS [676d7049](https://github.com/JiPaix/xdccJS/commit/676d70493d5d833993e4741d4e118495d13a79ef)
+### Fix
+- fix connection to server being refused because of default username (credit: @TheFlashBold) [448e7786](https://github.com/JiPaix/xdccJS/commit/448e77866aa96f77515b1109d12b21d1345e5769) [cfd4101a](https://github.com/JiPaix/xdccJS/commit/cfd4101aa433ab743d1f3a817924865488d83905)
+### CI
+* fix build cmd not working [be8c24dc](https://github.com/JiPaix/xdccJS/commit/be8c24dc4882afb3608a44586264c0e6141d2abf)
+* added build without doc [a38144c8](https://github.com/JiPaix/xdccJS/commit/a38144c84ba553d74cea3e6371ed68d7ac5cc7ae)
+* add codeql analyze [9302b034](https://github.com/JiPaix/xdccJS/commit/9302b034133c071cd7b872b23fb4cc885ddbc878) [36c5c770](https://github.com/JiPaix/xdccJS/commit/36c5c77039587e998e380a34746cc5458fe7d673) 
+* fix release and discord integration [51714a6d](https://github.com/JiPaix/xdccJS/commit/51714a6d8cf14d3f59c40bf40ed8d0de347c4435)
+* build utilities are rewritten in TypeScript language [fbda950c](https://github.com/JiPaix/xdccJS/commit/fbda950cccf85db83532da385649a27d17b0aa8f)
+### Style(lib)
+* remove JobError.message emojis, padding and fancy colors [0f2e50bb](https://github.com/JiPaix/xdccJS/commit/0f2e50bba058c2a766c8f56640b6a43a81c22cf1)
+### Doc(cli)
+* Simplified explanation about profiles [e5b3c9ce](https://github.com/JiPaix/xdccJS/commit/e5b3c9ce102d73bd3975b818e3607dfd9d301ac6)
+### Chores
+* remove duplicate interface [ed84c657](https://github.com/JiPaix/xdccJS/commit/ed84c657df06e4ba9e95c4ca805030f2e14ed8cb)
 ### Chores(dev-deps)
 * bump axios from 0.21.1 to 0.22.0
 * bump commander from 8.1.0 to 8.2.0
@@ -26,10 +32,6 @@
 * bump @types/node from 16.6.1 to 16.10.3
 * bump @typescript-eslint/eslint-plugin 4.29.1 from to 4.33.0
 * bump @typescript-eslint/parser from 4.29.3 to 4.33.0
-### Style(lib)
-* remove JobError.message emojis, padding and fancy colors
-### Doc(cli)
-* Clarify profile explanation
 ---
 ## [v4.3.0](https://github.com/jipaix/xdccjs/tree/v4.3.0)
 ### Features(lib)
