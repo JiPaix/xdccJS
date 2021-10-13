@@ -13,6 +13,7 @@ export interface InterfaceCLI extends commander.Command {
 
   host?: string
   port?: number
+  tls?: boolean
   bot?: string
   download?: string[]
   path?: string
@@ -45,6 +46,7 @@ export class BaseCommander {
       .version(version)
       .option('-h, --host <server>', 'IRC server hostname')
       .option('--port <number>', 'IRC server port')
+      .option('--tls', 'enable SSL/TLS')
       .option('-b, --bot <botname>', 'xdcc bot nickname')
       .option('-d, --download <packs...>', 'pack number(s) to download')
       .option('-p, --path <path>', 'download path', path.normalize)
@@ -86,6 +88,7 @@ export class BaseCommander {
     return {
       host: this.program.host,
       port: this.program.port,
+      tls: this.program.tls,
       nickname: this.program.nickname,
       chan: this.program.channel,
       path: this.program.path,

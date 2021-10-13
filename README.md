@@ -54,7 +54,8 @@ Except for `host` every parameter is optional, but you can also define a set of 
 const opts = {
   host: 'irc.server.net', // IRC hostname                                                   - required
   port: 6660, // IRC port                                                                   - default: 6667
-  nickname: 'ItsMeJiPaix', // Nickname                                                          - default: xdccJS + random
+  tls: false, // Enable SSL/TSL Support                                                     - default false
+  nickname: 'ItsMeJiPaix', // Nickname                                                      - default: xdccJS + random
   chan: ['#candy', '#fruits'], // Array of channels                                         - default : [ ]
   path: 'downloads', // Download path or 'false'                                            - default: false (which enables piping)
   retry: 2, // Nb of retries before skip                                                    - default: 1
@@ -255,6 +256,7 @@ Options:
   -V, --version              output the version number
   -h, --host <server>        IRC server hostname
   --port <number>            IRC server port
+  --tls                      Enable SSL/TLS Support
   -b, --bot <botname>        xdcc bot nickname
   -d, --download <packs...>  pack number(s) to download
   -p, --path <path>          download path

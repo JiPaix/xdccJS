@@ -491,7 +491,7 @@ declare module 'irc-framework' {
     ping_interval?: number
     ping_timeout?: number
     transport?: new (options: any) => Connection
-    ssl?: boolean
+    tls?: boolean
     webirc?: {
       password?: string
       username?: string

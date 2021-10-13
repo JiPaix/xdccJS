@@ -4,6 +4,7 @@
 /// <reference path="./@types/irc-framework.ts"/>
 import { Client } from 'irc-framework';
 import * as net from 'net';
+import * as tls from 'tls';
 
 export interface ParamsIRC {
   /**
@@ -64,6 +65,10 @@ export interface ParamsIRC {
    * ```
    */
   verbose?: boolean
+  /**
+   * Enable TSL/SSL
+   */
+   tls?: boolean
 }
 
 export default class Connect extends Client {
@@ -79,6 +84,8 @@ export default class Connect extends Client {
 
   protected connectionTimeout!:ReturnType<typeof setTimeout>
 
+  protected tls: boolean;
+
   constructor(params: ParamsIRC) {
     super();
     this.nickname = params.nickname || 'xdccJS';
@@ -89,7 +96,8 @@ export default class Connect extends Client {
     this.port = Connect.is('port', params.port, 'number', 6667);
     this.verbose = Connect.is('verbose', params.verbose, 'boolean', false);
     this.chan = Connect.chanCheck(params.chan);
-    Connect.checkConnection(this.host, this.port).then(() => {
+    this.tls = Connect.is('verbose', params.tls, 'boolean', false);
+    Connect.checkConnection(this.host, this.port, this.tls).then(() => {
       this.connect({
         host: this.host,
         port: this.port,
@@ -97,6 +105,7 @@ export default class Connect extends Client {
         username: params.nickname,
         auto_reconnect_max_wait: 0,
         auto_reconnect_max_retries: 0,
+        ssl: this.tls,
       });
       this.onConnect();
     }).catch((e:unknown) => {
@@ -105,9 +114,19 @@ export default class Connect extends Client {
     });
   }
 
-  private static checkConnection(host:string, port:number):Promise<void> {
+  private static checkConnection(host:string, port:number, ssl:boolean):Promise<void> {
+    if (ssl) {
+      return new Promise((resolve, reject) => {
+        const socket = tls.connect({ host, port }, () => {
+          socket.end();
+          resolve();
+        }).on('error', () => {
+          reject(new Error(`UNREACHABLE HOST: "${host}:${port}"`));
+        });
+      });
+    }
     return new Promise((resolve, reject) => {
-      const socket = net.createConnection(port, host, () => {
+      const socket = net.connect(port, host, () => {
         socket.end();
         resolve();
       }).on('error', () => {
