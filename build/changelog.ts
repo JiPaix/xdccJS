@@ -1,6 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import * as fs from 'fs';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import Fd from 'form-data';
 import { Client, Intents, MessageEmbed } from 'discord.js';
 import { version } from '../package.json';
@@ -29,7 +29,7 @@ function createGitHubRelease() {
       Accept: 'application/vnd.github.v3+json',
       Authorization: `token ${process.env.PA_TOKEN}`,
     },
-  });
+  }) as Promise<AxiosResponse<{id:string}>>;
 }
 
 async function uploadAssets(id:string) {
