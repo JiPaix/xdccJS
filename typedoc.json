@@ -6,5 +6,5 @@
     "excludeProtected": true,
     "excludeExternals": true,
     "readme": "none",
-    "theme": "minimal"
+    "theme": "default"
 }
