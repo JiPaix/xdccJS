@@ -1,7 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import * as fs from 'fs';
 import axios, { AxiosResponse } from 'axios';
-import Fd from 'form-data';
 import { Client, Intents, MessageEmbed } from 'discord.js';
 import { version } from '../package.json';
 
@@ -35,7 +34,6 @@ function createGitHubRelease() {
 async function uploadAssets(id:string) {
   const files = fs.readdirSync('./executables');
   const promises = files.map(async (file) => {
-    const form = new Fd();
     const remoteFileName = file.replace('index', 'xdccJS').replace('-win', '');
     await axios.post(
       `https://uploads.github.com/repos/jipaix/xdccjs/releases/${id}/assets?name=${remoteFileName}`,
@@ -46,7 +44,7 @@ async function uploadAssets(id:string) {
         headers: {
           Accept: 'application/vnd.github.v3+json',
           Authorization: `token ${process.env.PA_TOKEN}`,
-          ...form.getHeaders(),
+          'Content-Type': 'multipart/form-data',
         },
       },
     );
@@ -74,7 +72,7 @@ function postToDiscord() {
     });
     await Promise.all(promises);
     const chan = await discord.channels.fetch(process.env.DISCORD_CHANNEL_ID);
-    if (chan) {
+    if (chan?.isText()) {
       await chan.send('@everyone').catch((e:Error) => { throw e; });
       await chan.send({ embeds: [embed] }).catch((e:Error) => { throw e; });
     }
