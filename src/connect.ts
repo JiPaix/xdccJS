@@ -94,7 +94,7 @@ export default class Connect extends Client {
         host: this.host,
         port: this.port,
         nick: this.nickname,
-        username: this.nickname,
+        username: params.nickname,
         auto_reconnect_max_wait: 0,
         auto_reconnect_max_retries: 0,
       });
