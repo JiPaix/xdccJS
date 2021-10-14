@@ -1,9 +1,18 @@
 # Changelog
+## [v4.3.10](https://github.com/jipaix/xdccjs/tree/v4.3.10)
+### Fix
+* `TypeError` had a wrong message when `Constructor.tls` type wasn't boolean [863b4fac](https://github.com/JiPaix/xdccJS/commit/863b4facefff7afdbe3838a0fa4552eb2828ed1d) 
+### CI
+* fix github auto-release [a0ec4314](https://github.com/JiPaix/xdccJS/commit/a0ec431424b81c047f28925ab03fc66a1b269431)
+* updated code for discord.js >=13.1.0 [03f9c68f](03f9c68f408c0ff437c93e16693f4dcf039301db)
+### Doc
+* Added example for `Constructor.tls` [cece9fa8](https://github.com/JiPaix/xdccJS/commit/cece9fa839856ff66d3cb3b6bf0641ca89582932) [2182e12c](https://github.com/JiPaix/xdccJS/commit/2182e12c8a900f44e01b589e61c1235e1f2e8da4)
+---
 ## [v4.3.1](https://github.com/jipaix/xdccjs/tree/v4.3.1)
 ### Features
-- added support for SSL/TLS [676d7049](https://github.com/JiPaix/xdccJS/commit/676d70493d5d833993e4741d4e118495d13a79ef)
+* added support for SSL/TLS [676d7049](https://github.com/JiPaix/xdccJS/commit/676d70493d5d833993e4741d4e118495d13a79ef)
 ### Fix
-- fix connection to server being refused because of default username (credit: @TheFlashBold) [448e7786](https://github.com/JiPaix/xdccJS/commit/448e77866aa96f77515b1109d12b21d1345e5769) [cfd4101a](https://github.com/JiPaix/xdccJS/commit/cfd4101aa433ab743d1f3a817924865488d83905)
+* fix connection to server being refused because of default username (credit: @TheFlashBold) [448e7786](https://github.com/JiPaix/xdccJS/commit/448e77866aa96f77515b1109d12b21d1345e5769) [cfd4101a](https://github.com/JiPaix/xdccJS/commit/cfd4101aa433ab743d1f3a817924865488d83905)
 ### CI
 * fix build cmd not working [be8c24dc](https://github.com/JiPaix/xdccJS/commit/be8c24dc4882afb3608a44586264c0e6141d2abf)
 * added build without doc [a38144c8](https://github.com/JiPaix/xdccJS/commit/a38144c84ba553d74cea3e6371ed68d7ac5cc7ae)
