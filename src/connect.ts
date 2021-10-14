@@ -96,7 +96,7 @@ export default class Connect extends Client {
     this.port = Connect.is('port', params.port, 'number', 6667);
     this.verbose = Connect.is('verbose', params.verbose, 'boolean', false);
     this.chan = Connect.chanCheck(params.chan);
-    this.tls = Connect.is('verbose', params.tls, 'boolean', false);
+    this.tls = Connect.is('tls', params.tls, 'boolean', false);
     Connect.checkConnection(this.host, this.port, this.tls).then(() => {
       this.connect({
         host: this.host,
