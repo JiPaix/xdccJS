@@ -66,7 +66,12 @@ export interface ParamsIRC {
    */
   verbose?: boolean
   /**
-   * Enable TSL/SSL
+   * Enable TLS/SSL
+   * @default `false`
+   * @example
+   * ```js
+   * params.tls = true
+   * ```
    */
    tls?: boolean
 }
