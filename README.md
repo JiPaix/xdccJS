@@ -54,7 +54,7 @@ Except for `host` every parameter is optional, but you can also define a set of 
 const opts = {
   host: 'irc.server.net', // IRC hostname                                                   - required
   port: 6660, // IRC port                                                                   - default: 6667
-  tls: false, // Enable SSL/TSL Support                                                     - default false
+  tls: false, // Enable SSL/TLS Support                                                     - default false
   nickname: 'ItsMeJiPaix', // Nickname                                                      - default: xdccJS + random
   chan: ['#candy', '#fruits'], // Array of channels                                         - default : [ ]
   path: 'downloads', // Download path or 'false'                                            - default: false (which enables piping)
