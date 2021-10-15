@@ -1,4 +1,10 @@
 # Changelog
+## [v4.3.14](https://github.com/jipaix/xdccjs/tree/v4.3.14)
+### Fix(lib)
+* Fix `Job` not importing, `Job` is no longer exported as a namespace. use: `import Job from '/'` [bd0b3b28](https://github.com/JiPaix/xdccJS/commit/bd0b3b2817a80cbb50240f2da6ab766306cf94cb) (thanks to @Firstus report)
+### Fix(doc)
+* removed typos (tsl>tls) [8c013dd7](https://github.com/JiPaix/xdccJS/commit/8c013dd7f3d2a9d8d8adeceeb4164e6d6709d778)
+---
 ## [v4.3.10](https://github.com/jipaix/xdccjs/tree/v4.3.10)
 ### Fix
 * `TypeError` had a wrong message when `Constructor.tls` type wasn't boolean [863b4fac](https://github.com/JiPaix/xdccJS/commit/863b4facefff7afdbe3838a0fa4552eb2828ed1d) 
