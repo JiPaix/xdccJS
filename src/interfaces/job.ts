@@ -8,30 +8,7 @@ import { Candidate } from './candidate';
 import ProgressBar from '../lib/progress';
 import { FileInfo } from './fileinfo';
 
-export namespace Jobs {
-  export type displayedJob = {
-    /**
-     * Bot nickname
-     */
-    nick: string
-    /**
-     * Package still in queue
-     */
-    queue: number[]
-    /**
-     * Package currently downloading
-     */
-    now: number
-    /**
-     * List of file names successfuly downloaded
-     */
-    success: string[]
-    /**
-     * List of packages number that failed
-     */
-    failed: number[]
-  }
-  export class Job extends EventEmitter {
+  export default class Job extends EventEmitter {
     /**
      * Cancel Job
      * @example
@@ -107,8 +84,15 @@ export namespace Jobs {
      * // both achieve same results:
      * job.cancel()
      * job.show().cancel()
+     * ```
      */
-    public show(): displayedJob {
+    public show(): {
+      nick: string
+      queue: number[]
+      now: number
+      success: string[]
+      failed: number[]
+    } {
       const info = {
         nick: clone(this.nick),
         queue: clone(this.queue),
@@ -198,7 +182,7 @@ export namespace Jobs {
      */
     static 'error': (errorMessage:string, info:FileInfo) => Job
   }
-  export interface Job {
+  export default interface Job {
     /** @ignore */
     emit(eventType: string | symbol, ...args: unknown[]): boolean
     /** @ignore */
@@ -229,6 +213,26 @@ export namespace Jobs {
     /** @ignore */
     on(eventType: 'pipe', cb: (stream: PassThrough, fileInfo: FileInfo) => void): this
   }
-}
 
-export default Jobs.Job;
+  export type displayedJob = {
+    /**
+     * Bot nickname
+     */
+    nick: string
+    /**
+     * Package still in queue
+     */
+    queue: number[]
+    /**
+     * Package currently downloading
+     */
+    now: number
+    /**
+     * List of file names successfuly downloaded
+     */
+    success: string[]
+    /**
+     * List of packages number that failed
+     */
+    failed: number[]
+  }
