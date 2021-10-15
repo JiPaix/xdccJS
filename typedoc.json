@@ -2,9 +2,9 @@
     "name": "xdccJS",
     "entryPoints": ["./src"],
     "out": "docs",
-    "excludePrivate": true,
-    "excludeProtected": true,
-    "excludeExternals": true,
+    "excludePrivate": false,
+    "excludeProtected": false,
+    "excludeExternals": false,
     "readme": "none",
     "theme": "default"
 }
