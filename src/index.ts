@@ -196,4 +196,4 @@ export default interface XDCC {
   on(eventType: 'error', cb: (err:Error) => void): this
   on(eventType: 'pipe', cb: (stream:PassThrough, info:FileInfo) => void): this
   on(eventType: 'ready', cb: () => void): this
-}
+};
