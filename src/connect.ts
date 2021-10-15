@@ -4,7 +4,6 @@
 /// <reference path="./@types/irc-framework.ts"/>
 import { Client } from 'irc-framework';
 import * as net from 'net';
-import * as tls from 'tls';
 
 export interface ParamsIRC {
   /**
@@ -102,7 +101,7 @@ export default class Connect extends Client {
     this.verbose = Connect.is('verbose', params.verbose, 'boolean', false);
     this.chan = Connect.chanCheck(params.chan);
     this.tls = Connect.is('tls', params.tls, 'boolean', false);
-    Connect.checkConnection(this.host, this.port, this.tls).then(() => {
+    this.onConnect();
       this.connect({
         host: this.host,
         port: this.port,
@@ -111,33 +110,18 @@ export default class Connect extends Client {
         auto_reconnect_max_wait: 0,
         auto_reconnect_max_retries: 0,
         ssl: this.tls,
+        debug: true,
       });
-      this.onConnect();
-    }).catch((e:unknown) => {
-      if (e instanceof Error) this.emit('error', e);
-      if (typeof e === 'string') this.emit('error', new Error(e));
-    });
-  }
-
-  private static checkConnection(host:string, port:number, ssl:boolean):Promise<void> {
-    if (ssl) {
-      return new Promise((resolve, reject) => {
-        const socket = tls.connect({ host, port }, () => {
-          socket.end();
-          resolve();
-        }).on('error', () => {
-          reject(new Error(`UNREACHABLE HOST: "${host}:${port}"`));
-        });
-      });
-    }
-    return new Promise((resolve, reject) => {
-      const socket = net.connect(port, host, () => {
-        socket.end();
-        resolve();
-      }).on('error', () => {
-        reject(new Error(`UNREACHABLE HOST: "${host}:${port}"`));
-      });
-    });
+      this.on('debug', (msg)=> {
+        const lookout = ["socketError() ", "socketTimeout() "]
+        lookout.forEach(err => {
+          if(msg.includes(err)) {
+            const index = msg.indexOf(err)
+            const length = err.length
+            this.emit('error', new Error(msg.substring(index + length)))
+          }
+        })
+      })
   }
 
   private onConnect(): void {
