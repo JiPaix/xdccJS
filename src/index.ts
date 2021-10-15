@@ -6,6 +6,9 @@ import Downloader, { ParamsDL } from './downloader';
 import { FileInfo } from './interfaces/fileinfo';
 import Job from './interfaces/job';
 
+/**
+ * Constructor parameters
+ */
 export interface Params extends ParamsDL {
   encoding?: 'utf8'
 }
@@ -182,4 +185,15 @@ export default class XDCC extends EventEmitter {
    * ```
    */
   static 'error': (error:Error) => XDCC
+}
+
+export default interface XDCC {
+  on(eventType: string | symbol, cb: (event?: any, another?: any) => void): this
+  on(eventType: 'can-quit', cb: () => void): this
+  on(eventType: 'done', cb: (info:Job) => void): this
+  on(eventType: 'downloading', cb: (info:FileInfo, received: number, percentage: number) => void): this
+  on(eventType: 'downloaded', cb: (info:FileInfo) => void): this
+  on(eventType: 'error', cb: (err:Error) => void): this
+  on(eventType: 'pipe', cb: (stream:PassThrough, info:FileInfo) => void): this
+  on(eventType: 'ready', cb: () => void): this
 }
