@@ -1,4 +1,12 @@
 # Changelog
+## [v4.3.20](https://github.com/jipaix/xdccjs/tree/v4.3.20)
+### Fix(lib+cli)
+* checking if host and port were valid was interpreted as flood on some servers [70e125d6](https://github.com/JiPaix/xdccJS/commit/70e125d6734173b52e376c25a59aa956783c219c)
+### Chore(lib)
+* add type definitions for events [f2f55850](https://github.com/JiPaix/xdccJS/commit/f2f558508eca8fc86c038afff68b6ced803f621e)
+### CI
+* updated 16.x to `node_current` (16.11.1) [483d4512](https://github.com/JiPaix/xdccJS/commit/483d45127d437ff6e62f11e97a0cc008391a2889) [48711ec7](https://github.com/JiPaix/xdccJS/commit/48711ec7cb501c9cb1a2c0102070bdc27f968793)
+---
 ## [v4.3.14](https://github.com/jipaix/xdccjs/tree/v4.3.14)
 ### Fix(lib)
 * Fix `Job` not importing, `Job` is no longer exported as a namespace. use: `import Job from '/'` [bd0b3b28](https://github.com/JiPaix/xdccJS/commit/bd0b3b2817a80cbb50240f2da6ab766306cf94cb) (thanks to @Firstus report)
