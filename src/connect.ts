@@ -112,16 +112,16 @@ export default class Connect extends Client {
         ssl: this.tls,
         debug: true,
       });
-      this.on('debug', (msg)=> {
-        const lookout = ["socketError() ", "socketTimeout() "]
-        lookout.forEach(err => {
-          if(msg.includes(err)) {
-            const index = msg.indexOf(err)
-            const length = err.length
-            this.emit('error', new Error(msg.substring(index + length)))
+      this.on('debug', (msg) => {
+        const lookout = ["socketError() ", "socketTimeout() "];
+        lookout.forEach((err) => {
+          if (msg.includes(err)) {
+            const index = msg.indexOf(err);
+            const { length } = err;
+            this.emit('error', new Error(msg.substring(index + length)));
           }
-        })
-      })
+        });
+      });
   }
 
   private onConnect(): void {
