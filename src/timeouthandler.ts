@@ -102,7 +102,7 @@ export class TimeOut extends Connect {
     if (!candidate.timeout.eventType) {
       throw Error('no event Type');
     }
-    this.say(candidate.nick, 'XDCC CANCEL');
+    this.say(candidate.cancelNick, 'XDCC CANCEL');
     const error = new Error(candidate.timeout.message);
     this.emit(candidate.timeout.eventType, error, candidate.timeout.fileInfo);
     candidate.emit(candidate.timeout.eventType, error, candidate.timeout.fileInfo);

@@ -86,16 +86,20 @@ export class CtcpParser extends AddJob {
     }
   }
 
-  private SecurityCheck(nick: string, candidateNick: string): boolean {
-    nick = nick.toLowerCase();
-    candidateNick = candidateNick.toLowerCase();
-    if (this.secure) {
-      if (nick === candidateNick) {
-        return true;
+  private SecurityCheck(nick: string, candidate?: Job): boolean {
+      if(candidate) {
+        nick = nick.toLowerCase()
+        candidate.nick = candidate.nick.toLowerCase();
+        candidate.cancelNick = nick
+        if(this.secure) {
+          if(nick === candidate.nick) {
+            return true
+          }
+          return false
+        }
+        return true
       }
-      return false;
-    }
-    return true;
+      return false
   }
 
   private checkBeforeDL(
@@ -103,7 +107,7 @@ export class CtcpParser extends AddJob {
     candidate: Job,
   ): { fileInfo: FileInfo; candidate: Job } | undefined {
     const fileInfo = this.parseCtcp(resp.message, resp.nick);
-    if (fileInfo && this.SecurityCheck(resp.nick, candidate.nick)) {
+    if (fileInfo && this.SecurityCheck(resp.nick, candidate)) {
       this.SetupTimeout({
         candidate,
         eventType: 'error',
