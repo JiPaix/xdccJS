@@ -87,19 +87,19 @@ export class CtcpParser extends AddJob {
   }
 
   private SecurityCheck(nick: string, candidate?: Job): boolean {
-      if(candidate) {
-        nick = nick.toLowerCase()
+      if (candidate) {
+        nick = nick.toLowerCase();
         candidate.nick = candidate.nick.toLowerCase();
-        candidate.cancelNick = nick
-        if(this.secure) {
-          if(nick === candidate.nick) {
-            return true
+        candidate.cancelNick = nick;
+        if (this.secure) {
+          if (nick === candidate.nick) {
+            return true;
           }
-          return false
+          return false;
         }
-        return true
+        return true;
       }
-      return false
+      return false;
   }
 
   private checkBeforeDL(
