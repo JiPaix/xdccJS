@@ -25,6 +25,7 @@ export default class AddJob extends TimeOut {
   private static constructCandidate(target: string, range: number[]): Candidate {
     return {
       nick: target,
+      cancelNick: target,
       queue: range,
       retry: 0,
       now: 0,

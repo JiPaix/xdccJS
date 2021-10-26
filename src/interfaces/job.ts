@@ -31,6 +31,9 @@ import { FileInfo } from './fileinfo';
     nick: string
 
     /** @ignore */
+    cancelNick: string;
+
+    /** @ignore */
     now: number
 
     /** @ignore */
@@ -64,6 +67,7 @@ import { FileInfo } from './fileinfo';
       this.cancel = candidate.cancel;
       this.failures = candidate.failures;
       this.nick = candidate.nick;
+      this.cancelNick = candidate.cancelNick || candidate.nick;
       this.now = candidate.now;
       this.queue = candidate.queue;
       this.retry = candidate.retry;

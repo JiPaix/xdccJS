@@ -9,6 +9,10 @@ export interface Candidate {
    */
   nick: string
   /**
+   * Nickname of the bot cancel request should be sent (same as nick most of the time)
+   */
+  cancelNick: string
+  /**
    * Pack number in queue
    */
   queue: number[]
