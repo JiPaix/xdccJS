@@ -6,7 +6,7 @@ import { Candidate } from './interfaces/candidate';
 import { TimeOut, ParamsTimeout } from './timeouthandler';
 
 export default class AddJob extends TimeOut {
-  candidates: Job[]
+  candidates: Job[];
 
   constructor(params: ParamsTimeout) {
     super(params);

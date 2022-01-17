@@ -33,9 +33,9 @@ interface Pass {
 }
 
 export default class Downloader extends CtcpParser {
-  passivePort: number[]
+  passivePort: number[];
 
-  ip: Promise<number>
+  ip: Promise<number>;
 
   constructor(params: ParamsDL) {
     super(params);

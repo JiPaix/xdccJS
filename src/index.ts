@@ -14,7 +14,7 @@ export interface Params extends ParamsDL {
 }
 
 export default class XDCC extends EventEmitter {
-  irc: Downloader
+  irc: Downloader;
 
   constructor(params: Params) {
     super();
@@ -97,7 +97,7 @@ export default class XDCC extends EventEmitter {
    * })
    * ```
    */
-  static 'ready': () => XDCC
+  static 'ready': () => XDCC;
 
   /**
    * Event triggered when all jobs are done
@@ -110,7 +110,7 @@ export default class XDCC extends EventEmitter {
    * })
    * ```
    */
-  static 'can-quit': () => XDCC
+  static 'can-quit': () => XDCC;
 
   /**
    * Event triggered when a file is downloaded
@@ -123,7 +123,7 @@ export default class XDCC extends EventEmitter {
    * })
    * ```
    */
-  static 'downloaded': (info:FileInfo) => XDCC
+  static 'downloaded': (info:FileInfo) => XDCC;
 
   /**
    * Event triggered while a file is downloading
@@ -136,7 +136,7 @@ export default class XDCC extends EventEmitter {
    * })
    * ```
    */
-   static 'downloading': (info:FileInfo, received: number, percentage: number) => XDCC
+   static 'downloading': (info:FileInfo, received: number, percentage: number) => XDCC;
 
   /**
    * Event triggered when .download() has finished downloading all files
@@ -156,7 +156,7 @@ export default class XDCC extends EventEmitter {
    * })
    * ```
    */
-  static 'done': (job:Job) => XDCC
+  static 'done': (job:Job) => XDCC;
 
   /**
    * Event triggered when chunks of data are being received
@@ -171,7 +171,7 @@ export default class XDCC extends EventEmitter {
    * })
    * ```
    */
-  static 'pipe': (stream: PassThrough, info:FileInfo) => XDCC
+  static 'pipe': (stream: PassThrough, info:FileInfo) => XDCC;
 
   /**
    * Event triggered when a download fails.
@@ -184,7 +184,7 @@ export default class XDCC extends EventEmitter {
    * })
    * ```
    */
-  static 'error': (error:Error) => XDCC
+  static 'error': (error:Error) => XDCC;
 }
 
 export default interface XDCC {
@@ -196,4 +196,4 @@ export default interface XDCC {
   on(eventType: 'error', cb: (err:Error) => void): this
   on(eventType: 'pipe', cb: (stream:PassThrough, info:FileInfo) => void): this
   on(eventType: 'ready', cb: () => void): this
-}
+};

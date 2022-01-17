@@ -76,17 +76,17 @@ export interface ParamsIRC {
 }
 
 export default class Connect extends Client {
-  protected chan: string[]
+  protected chan: string[];
 
-  protected verbose: boolean
+  protected verbose: boolean;
 
-  protected host: string
+  protected host: string;
 
-  protected nickname: string
+  protected nickname: string;
 
-  protected port: number
+  protected port: number;
 
-  protected connectionTimeout!:ReturnType<typeof setTimeout>
+  protected connectionTimeout!:ReturnType<typeof setTimeout>;
 
   protected tls: boolean;
 

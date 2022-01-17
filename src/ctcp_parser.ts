@@ -47,11 +47,11 @@ export interface ParamsCTCP extends ParamsTimeout {
   secure?: boolean
 }
 export class CtcpParser extends AddJob {
-  path: string | boolean
+  path: string | boolean;
 
-  secure: boolean
+  secure: boolean;
 
-  protected resumequeue: ResumeQueue[] = []
+  protected resumequeue: ResumeQueue[] = [];
 
   constructor(params: ParamsCTCP) {
     super(params);
