@@ -32,7 +32,7 @@ export interface InterfaceCLI extends commander.Command {
 }
 
 export class BaseCommander {
-  program: InterfaceCLI
+  program: InterfaceCLI;
 
   constructor() {
     this.program = program;

@@ -41,11 +41,11 @@ interface TimeoutSetup {
   fileInfo?: FileInfo
 }
 export class TimeOut extends Connect {
-  protected portInUse: number[]
+  protected portInUse: number[];
 
-  retry: number
+  retry: number;
 
-  timeout: number
+  timeout: number;
 
   constructor(params: ParamsTimeout) {
     super(params);

@@ -22,28 +22,28 @@ import { FileInfo } from './fileinfo';
      * })
      * ```
      */
-    cancel?: () => void
+    cancel?: () => void;
 
     /** @ignore */
-    failures: number[]
+    failures: number[];
 
     /** @ignore */
-    nick: string
+    nick: string;
 
     /** @ignore */
     cancelNick: string;
 
     /** @ignore */
-    now: number
+    now: number;
 
     /** @ignore */
-    queue: number[]
+    queue: number[];
 
     /** @ignore */
-    retry: number
+    retry: number;
 
     /** @ignore */
-    success: string[]
+    success: string[];
 
     /** @ignore */
     timeout: {
@@ -60,7 +60,7 @@ import { FileInfo } from './fileinfo';
       socket?: net.Socket
       pick?: number
       clear: () => void
-    }
+    };
 
     constructor(candidate: Candidate) {
       super();
@@ -131,7 +131,7 @@ import { FileInfo } from './fileinfo';
    * })
    * ```
    */
-  static 'downloaded': (info:FileInfo) => Job
+  static 'downloaded': (info:FileInfo) => Job;
 
   /**
    * Event triggered while a file is downloading
@@ -144,7 +144,7 @@ import { FileInfo } from './fileinfo';
    * })
    * ```
    */
-   static 'downloading': (info:FileInfo, received:number, percentage: number) => Job
+   static 'downloading': (info:FileInfo, received:number, percentage: number) => Job;
 
    /**
    * Event triggered when .download() has finished downloading all files
@@ -157,7 +157,7 @@ import { FileInfo } from './fileinfo';
    * })
    * ```
    */
-  static 'done': (job:Job) => Job
+  static 'done': (job:Job) => Job;
 
   /**
    * Event triggered when chunks of data are being received
@@ -172,7 +172,7 @@ import { FileInfo } from './fileinfo';
    * })
    * ```
    */
-    static 'pipe': (stream: PassThrough, info:FileInfo) => Job
+    static 'pipe': (stream: PassThrough, info:FileInfo) => Job;
 
     /**
      * Event triggered when job is canceled/interrupted
@@ -184,7 +184,7 @@ import { FileInfo } from './fileinfo';
      * })
      * ```
      */
-    static 'error': (errorMessage:string, info:FileInfo) => Job
+    static 'error': (errorMessage:string, info:FileInfo) => Job;
   }
   export default interface Job {
     /** @ignore */
