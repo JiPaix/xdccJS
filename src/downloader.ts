@@ -3,7 +3,7 @@
 import { PassThrough } from 'stream';
 import * as net from 'net';
 import * as fs from 'fs';
-import { v4 } from 'public-ip';
+import publicIp from 'public-ip';
 import { CtcpParser, ParamsCTCP } from './ctcp_parser';
 import { FileInfo } from './interfaces/fileinfo';
 import Job from './interfaces/job';
@@ -47,7 +47,7 @@ export default class Downloader extends CtcpParser {
   }
 
   static async getIp(): Promise<number> {
-    const string = await v4();
+    const string = await publicIp.v4();
     const d = string.split('.');
     return ((+d[0] * 256 + +d[1]) * 256 + +d[2]) * 256 + +d[3];
   }
