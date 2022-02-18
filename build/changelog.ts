@@ -66,7 +66,11 @@ function postToDiscord() {
       .setTimestamp(Date.now())
       .setColor('DARK_GREEN')
       .setThumbnail('https://github.com/JiPaix/xdccJS/raw/main/logo.png')
-      .setAuthor('JiPaix', 'https://avatars.githubusercontent.com/u/26584973?v=4', 'https://github.com/JiPaix');
+      .setAuthor({
+        name: 'JiPaix',
+        iconURL: 'https://avatars.githubusercontent.com/u/26584973?v=4',
+        url: 'https://github.com/JiPaix',
+      });
     const promises = changelog.map(async (field) => {
       embed.addField(field.split(/\n|\r\n/g)[0].replace('### ', ''), field.replace(/###(.*)(\n|\r\n)/g, '').replace(/\[(.*)]\((.*)\)/g, ''), false);
     });
