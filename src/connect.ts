@@ -3,7 +3,6 @@
 /* eslint-disable @typescript-eslint/triple-slash-reference */
 /// <reference path="./@types/irc-framework.ts"/>
 import { Client } from 'irc-framework';
-import * as net from 'net';
 
 export interface ParamsIRC {
   /**
