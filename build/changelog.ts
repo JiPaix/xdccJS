@@ -18,17 +18,20 @@ const changelog = fs.readFileSync('./CHANGELOG.md').toString().split('---')[0].s
 changelog.shift();
 
 function createGitHubRelease() {
-  return axios.post('https://api.github.com/repos/jipaix/xdccjs/releases', {
-    tag_name: `v${version}`,
-    name: version,
-    body: changelog.join(''),
-  },
-  {
-    headers: {
-      Accept: 'application/vnd.github.v3+json',
-      Authorization: `token ${process.env.PA_TOKEN}`,
+  return axios.post(
+    'https://api.github.com/repos/jipaix/xdccjs/releases',
+    {
+      tag_name: `v${version}`,
+      name: version,
+      body: changelog.join(''),
     },
-  }) as Promise<AxiosResponse<{id:string}>>;
+    {
+      headers: {
+        Accept: 'application/vnd.github.v3+json',
+        Authorization: `token ${process.env.PA_TOKEN}`,
+      },
+    },
+  ) as Promise<AxiosResponse<{id:string}>>;
 }
 
 async function uploadAssets(id:string) {
