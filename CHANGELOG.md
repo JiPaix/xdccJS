@@ -1,4 +1,8 @@
 # Changelog
+## [v4.3.207](https://github.com/jipaix/xdccjs/tree/v4.3.207)
+### Chores(dev-deps, deps)
+* updated all depedencies
+---
 ## [v4.3.20](https://github.com/jipaix/xdccjs/tree/v4.3.20)
 ### Fix(lib+cli)
 * checking if host and port were valid was interpreted as flood on some servers [70e125d6](https://github.com/JiPaix/xdccJS/commit/70e125d6734173b52e376c25a59aa956783c219c)
