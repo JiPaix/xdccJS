@@ -101,26 +101,26 @@ export default class Connect extends Client {
     this.chan = Connect.chanCheck(params.chan);
     this.tls = Connect.is('tls', params.tls, 'boolean', false);
     this.onConnect();
-      this.connect({
-        host: this.host,
-        port: this.port,
-        nick: this.nickname,
-        username: params.nickname || 'xdccJS',
-        auto_reconnect_max_wait: 0,
-        auto_reconnect_max_retries: 0,
-        ssl: this.tls,
-        debug: true,
+    this.connect({
+      host: this.host,
+      port: this.port,
+      nick: this.nickname,
+      username: params.nickname || 'xdccJS',
+      auto_reconnect_max_wait: 0,
+      auto_reconnect_max_retries: 0,
+      ssl: this.tls,
+      debug: true,
+    });
+    this.on('debug', (msg) => {
+      const lookout = ['socketError() ', 'socketTimeout() '];
+      lookout.forEach((err) => {
+        if (msg.includes(err)) {
+          const index = msg.indexOf(err);
+          const { length } = err;
+          this.emit('error', new Error(msg.substring(index + length)));
+        }
       });
-      this.on('debug', (msg) => {
-        const lookout = ["socketError() ", "socketTimeout() "];
-        lookout.forEach((err) => {
-          if (msg.includes(err)) {
-            const index = msg.indexOf(err);
-            const { length } = err;
-            this.emit('error', new Error(msg.substring(index + length)));
-          }
-        });
-      });
+    });
   }
 
   private onConnect(): void {
