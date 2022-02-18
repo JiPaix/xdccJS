@@ -91,7 +91,10 @@ export default class Profiles extends BaseCommander {
       xdccJS.quit();
       const filePath = path.join(this.profilePath, `${this.program.saveProfile}.json`);
       fs.writeFileSync(filePath, JSON.stringify(this.xdccBINOPTS(true)));
-      fs.writeFileSync(this.defaultProfilePath, JSON.stringify({ profile: this.program.saveProfile }),);
+      fs.writeFileSync(
+        this.defaultProfilePath,
+        JSON.stringify({ profile: this.program.saveProfile }),
+      );
       this.availableProfiles = this.initFolder();
       this.log(`%info% ${this.program.saveProfile} set as new default profile`);
     }
@@ -100,7 +103,10 @@ export default class Profiles extends BaseCommander {
   private setProfile(profile: string): void {
     const search = `${profile}.json`;
     if (this.availableProfiles.includes(search)) {
-      fs.writeFileSync(this.defaultProfilePath, JSON.stringify({ profile: this.program.setProfile }),);
+      fs.writeFileSync(
+        this.defaultProfilePath,
+        JSON.stringify({ profile: this.program.setProfile }),
+      );
       this.log(`%success% Set ${profile} as new default profile`);
     } else {
       this.log(`%danger% Profile ${profile} doesn't exist`);
