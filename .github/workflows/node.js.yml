@@ -46,7 +46,7 @@ jobs:
         registry-url: 'https://registry.npmjs.org'
     - run: npm install
       if: steps.version-updated.outputs.has-updated
-    - run: npm publish
+    - uses: JS-DevTools/npm-publish@v1
       if: steps.version-updated.outputs.has-updated
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      with:
+        token: ${{ secrets.NPM_AUTH_TOKEN }}
