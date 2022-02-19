@@ -5,8 +5,8 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { ParamsTimeout } from './timeouthandler';
 import AddJob from './addjob';
-import { FileInfo } from './interfaces/fileinfo';
-import Job from './interfaces/job';
+import type { FileInfo } from './interfaces/fileinfo';
+import type Job from './interfaces/job';
 
 interface ResumeQueue extends FileInfo {
   nick: string
@@ -87,19 +87,19 @@ export class CtcpParser extends AddJob {
   }
 
   private SecurityCheck(nick: string, candidate?: Job): boolean {
-      if (candidate) {
-        nick = nick.toLowerCase();
-        candidate.nick = candidate.nick.toLowerCase();
-        candidate.cancelNick = nick;
-        if (this.secure) {
-          if (nick === candidate.nick) {
-            return true;
-          }
-          return false;
+    if (candidate) {
+      nick = nick.toLowerCase();
+      candidate.nick = candidate.nick.toLowerCase();
+      candidate.cancelNick = nick;
+      if (this.secure) {
+        if (nick === candidate.nick) {
+          return true;
         }
-        return true;
+        return false;
       }
-      return false;
+      return true;
+    }
+    return false;
   }
 
   private checkBeforeDL(

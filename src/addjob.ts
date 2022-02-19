@@ -2,8 +2,9 @@
 /* eslint-disable no-param-reassign */
 import * as net from 'net';
 import Job from './interfaces/job';
-import { Candidate } from './interfaces/candidate';
-import { TimeOut, ParamsTimeout } from './timeouthandler';
+import { TimeOut } from './timeouthandler';
+import type { Candidate } from './interfaces/candidate';
+import type { ParamsTimeout } from './timeouthandler';
 
 export default class AddJob extends TimeOut {
   candidates: Job[];

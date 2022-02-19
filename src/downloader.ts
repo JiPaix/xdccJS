@@ -5,10 +5,10 @@ import * as net from 'net';
 import * as fs from 'fs';
 import publicIp from 'public-ip';
 import { CtcpParser, ParamsCTCP } from './ctcp_parser';
-import { FileInfo } from './interfaces/fileinfo';
-import Job from './interfaces/job';
 import * as ProgressBar from './lib/progress';
 import Connect from './connect';
+import type { FileInfo } from './interfaces/fileinfo';
+import type Job from './interfaces/job';
 
 export interface ParamsDL extends ParamsCTCP {
   /**

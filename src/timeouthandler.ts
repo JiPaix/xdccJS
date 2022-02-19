@@ -1,11 +1,12 @@
 /* eslint-disable no-param-reassign */
-import { PassThrough } from 'stream';
-import * as fs from 'fs';
-import * as net from 'net';
-import Job from './interfaces/job';
-import Connect, { ParamsIRC } from './connect';
-import { FileInfo } from './interfaces/fileinfo';
+import type { PassThrough } from 'stream';
+import type * as fs from 'fs';
+import type * as net from 'net';
+import Connect from './connect';
 import ProgressBar from './lib/progress';
+import type Job from './interfaces/job';
+import type { ParamsIRC } from './connect';
+import type { FileInfo } from './interfaces/fileinfo';
 
 export interface ParamsTimeout extends ParamsIRC {
   /**

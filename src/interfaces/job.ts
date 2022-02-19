@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { EventEmitter } from 'eventemitter3';
+import type TypedEmitter from 'typed-emitter';
 import { clone } from 'lodash';
-import { PassThrough } from 'stream';
+import type { PassThrough } from 'stream';
 import * as fs from 'fs';
 import * as net from 'net';
 import { Candidate } from './candidate';

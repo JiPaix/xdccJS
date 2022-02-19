@@ -1,8 +1,11 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-classes-per-file */
 import { EventEmitter } from 'eventemitter3';
-import { PassThrough } from 'stream';
+import type TypedEmitter from 'typed-emitter';
+import type { PassThrough } from 'stream';
 import Downloader, { ParamsDL } from './downloader';
+import type { FileInfo } from './interfaces/fileinfo';
+import type Job from './interfaces/job';
 
 type MessageEvents = {
   'can-quit' : () => void,
