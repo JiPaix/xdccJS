@@ -5,15 +5,89 @@ import type TypedEmitter from 'typed-emitter';
 import type { PassThrough } from 'stream';
 import Downloader, { ParamsDL } from './downloader';
 import type { FileInfo } from './interfaces/fileinfo';
-import type Job from './interfaces/job';
+import type { Job, JobMessageEvents } from './interfaces/job';
+import type { Candidate } from './interfaces/candidate';
 
-type MessageEvents = {
+export type { Job, JobMessageEvents } from './interfaces/job';
+export type { FileInfo } from './interfaces/fileinfo';
+export type { Candidate } from './interfaces/candidate';
+
+export type GlobalMessageEvents = {
+  /**
+   * Event triggered when all jobs are done
+   * @example
+   * ```js
+   * xdccJS.on('can-quit', () => xdccJS.quit())
+   * ```
+   */
   'can-quit' : () => void,
+  /**
+   * Event triggered when .download() has finished downloading all files
+   * @example
+   * ```js
+   * xdccJS.on('ready', () => {
+   *   const job1 = xdccJS.download('bot-A', '20-30')
+   *   const job2 = xdccJS.download('bot-B', 33)
+   * })
+   *
+   * xdccJS.on('done', (job) => {
+   *   if(job.nick === 'bot-A') console.log('done with bot-A')
+   *   if(job.nick === 'bot-B') console.log('done with bot-B')
+   * })
+   * ```
+   */
   done: (job:Job) => void,
+  /**
+   * Event triggered while a file is downloading
+   * @example
+   * ```js
+   * xdccJS.on('downloading', (fileInfo, received, percentage) => {
+   *   console.log(`${fileInfo.file} @ ${received} of ${fileInfo.length} [${percentage}%]`)
+   * })
+   * ```
+   */
   downloading: (fileInfo:FileInfo, received: number, percentage: number) => void,
+  /**
+   * Event triggered when a file has been downloaded
+   * @example
+   * ```js
+   * xdccJS.on('downloaded', (fileInfo) => {
+   *   console.log(`${fileInfo.file} saved to ${fileInfo.filePath}`)
+   * })
+   * ```
+   */
   downloaded: (info:FileInfo) => void,
+  /**
+   * Event triggered when a download fails
+   * @example
+   * ```js
+   * xdccJS.on('error', (errorMessage, fileInfo) => {
+   *  console.log(`${fileInfo.file} failed to download: ${errorMessage}`)
+   * })
+   * ```
+   */
   error: (error:Error, fileInfo?:FileInfo) => void,
+  /**
+   * Event triggered when chunks of data are being received
+   * @example
+   * ```js
+   * xdccJS.on('pipe', (stream, fileInfo) => {
+   *  console.log('sarting download of', fileInfo.file)
+   *  stream.pipe(somewhere)
+   * })
+   * ```
+   */
   pipe: (stream: PassThrough, info:FileInfo) => void,
+  /**
+   * Event triggered when a download from the job starts and is ready to be piped
+   * @example
+   * ```js
+   * xdccJS.on('ready', () => {
+   *   console.log('xdccJS is ready to download')
+   *   xdccJS.download('bot', '20-30')
+   * })
+   * ```
+   */
   ready: () => void
 }
 
@@ -24,7 +98,7 @@ export interface Params extends ParamsDL {
   encoding?: 'utf8'
 }
 
-export default class XDCC extends (EventEmitter as new () => TypedEmitter<MessageEvents>) {
+export default class XDCC extends (EventEmitter as new () => TypedEmitter<GlobalMessageEvents>) {
   irc: Downloader;
 
   constructor(params: Params) {

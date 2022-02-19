@@ -8,9 +8,9 @@ import { CtcpParser, ParamsCTCP } from './ctcp_parser';
 import * as ProgressBar from './lib/progress';
 import Connect from './connect';
 import type { FileInfo } from './interfaces/fileinfo';
-import type Job from './interfaces/job';
+import type { Job } from './interfaces/job';
 
-export interface ParamsDL extends ParamsCTCP {
+export type ParamsDL = ParamsCTCP & {
   /**
    * Array of ports for passive DCC
    * @default `5001`

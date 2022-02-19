@@ -4,7 +4,7 @@
 /// <reference path="./@types/irc-framework.ts"/>
 import { Client } from 'irc-framework';
 
-export interface ParamsIRC {
+export type ParamsIRC = {
   /**
    * IRC server's hostname
    * @example

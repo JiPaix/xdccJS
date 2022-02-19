@@ -6,13 +6,13 @@ import * as fs from 'fs';
 import { ParamsTimeout } from './timeouthandler';
 import AddJob from './addjob';
 import type { FileInfo } from './interfaces/fileinfo';
-import type Job from './interfaces/job';
+import type { Job } from './interfaces/job';
 
 interface ResumeQueue extends FileInfo {
   nick: string
 }
 
-export interface ParamsCTCP extends ParamsTimeout {
+export type ParamsCTCP = ParamsTimeout & {
   /**
    * Download path
    * @default `false`

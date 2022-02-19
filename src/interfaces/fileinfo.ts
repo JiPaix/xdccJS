@@ -2,7 +2,7 @@
  * File informations
  * @asMemberOf XDCC
  */
-export interface FileInfo {
+export type FileInfo = {
   /** Type of transfert (send or resume) */
   type: string
   /** Filename */

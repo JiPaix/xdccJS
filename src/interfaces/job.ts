@@ -9,16 +9,71 @@ import { Candidate } from './candidate';
 import ProgressBar from '../lib/progress';
 import { FileInfo } from './fileinfo';
 
-type MessageEvents = {
+export type JobMessageEvents = {
+  /**
+   * Event triggered when a download from the job fails
+   * @example
+   * ```js
+   * job.on('error', (errorMessage, fileInfo) => {
+   *   console.log(`${fileInfo.file} failed to download: ${errorMessage}`)
+   * })
+   * ```
+   */
   error: (errorMessage:string, fileInfo?: FileInfo) => void,
+  /**
+   * Event triggered when all files from the job have been downloaded
+   * @example
+   * ```js
+   * job.on('done', () => {
+   *   console.log('done')
+   * })
+   * ```
+   */
   done: (endCandidate: {nick:string, success: string[], failed: number[]}) => void,
+  /**
+   * Event triggered when a file from the job is downloaded
+   * @example
+   * ```js
+   * job.on('downloaded', (fileInfo) => {
+   *  console.log(`${fileInfo.file} saved to ${fileInfo.filePath}`)
+   * })
+   * ```
+   */
   downloaded: (fileInfo: FileInfo) => void,
+  /**
+   * Event triggered while a file from the job is downloading
+   * @example
+   * ```js
+   * job.on('downloading', (fileInfo, received, percentage) => {
+   *  console.log(`${fileInfo.file} @ ${received} of ${fileInfo.length} [${percentage}%]`)
+   * })
+   * ```
+   */
   downloading: (fileInfo: FileInfo, received: number, percentage: number) => void,
+  /**
+   * Event triggered when a download from the job starts and is ready to be piped
+   * @example
+   * ```js
+   * job.on('data', (stream) => {
+   *  stream.on('data', (chunk) => {
+   *   console.log(chunk)
+   * })
+   * ```
+   */
   pipe: (stream: PassThrough | fs.WriteStream, fileInfo: FileInfo) => void,
+  /**
+   * Event triggered when a job is cancelled
+   * @example
+   * ```js
+   * job.on('cancel', (jobInfo) => {
+   *  console.log('cancelled downloads from', jobInfo.nick)
+   * })
+   * ```
+   */
   cancel: (candidate: Candidate, errorMessage:string, fileInfo: FileInfo) => void,
 }
 
-export default class Job extends (EventEmitter as new () => TypedEmitter<MessageEvents>) {
+export class Job extends (EventEmitter as new () => TypedEmitter<JobMessageEvents>) {
   /**
      * Cancel Job
      * @example

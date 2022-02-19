@@ -1,7 +1,7 @@
 /* eslint-disable prefer-destructuring */
 /* eslint-disable no-param-reassign */
 import * as net from 'net';
-import Job from './interfaces/job';
+import { Job } from './interfaces/job';
 import { TimeOut } from './timeouthandler';
 import type { Candidate } from './interfaces/candidate';
 import type { ParamsTimeout } from './timeouthandler';

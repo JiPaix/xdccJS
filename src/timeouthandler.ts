@@ -4,11 +4,11 @@ import type * as fs from 'fs';
 import type * as net from 'net';
 import Connect from './connect';
 import ProgressBar from './lib/progress';
-import type Job from './interfaces/job';
+import type { Job } from './interfaces/job';
 import type { ParamsIRC } from './connect';
 import type { FileInfo } from './interfaces/fileinfo';
 
-export interface ParamsTimeout extends ParamsIRC {
+export type ParamsTimeout = ParamsIRC & {
   /**
    * Number of retries when a download fails
    * @default `1`
