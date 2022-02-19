@@ -135,8 +135,11 @@ const arrayOfJobs = await xdccJS.jobs()
 1. Get job progress status :
     ```js
     let status = job1.show()
+    let isdone = job1.isDone()
     console.log(status)
     //=> { name: 'a-bot', queue: [98], now: 62, sucess: ['file.txt'], failed: [50] }
+    console.log(isdone)
+    //=> false
     ```
 2. Cancel a Job
     ```js
