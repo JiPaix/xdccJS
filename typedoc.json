@@ -6,5 +6,6 @@
     "excludeProtected": false,
     "excludeExternals": false,
     "readme": "none",
-    "theme": "default"
+    "theme": "default",
+    "tsconfig": "./tsconfig.json"
 }
