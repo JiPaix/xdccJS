@@ -42,11 +42,11 @@ jobs:
     - uses: actions/setup-node@v2
       if: steps.version-updated.outputs.has-updated
       with:
-        node-version: "16.11.1"
+        node-version: "16.x"
         registry-url: 'https://registry.npmjs.org'
-    - run: npm install
+    - run: |
+        npm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
+        npm publish
       if: steps.version-updated.outputs.has-updated
-    - uses: JS-DevTools/npm-publish@v1
-      if: steps.version-updated.outputs.has-updated
-      with:
-        token: ${{ secrets.NPM_AUTH_TOKEN }}
+      env:
+        NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
