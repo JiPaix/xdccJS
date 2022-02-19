@@ -12,14 +12,14 @@ It can also be used as a <a href="#command-line-interface">command-line</a> down
 
 ## Table of contents
 - [API](#api)
-  - [Import and Require](#importrequire)
-  - [Configuration](#configuration)
+  - [Getting Started](#getting-started)
+  - [List of options](#options)
   - [Download](#download)
-    - [jobs](#jobs)
-    - [events](#events)
-    - [use pipes](#pipes)
+    - [Jobs](#jobs)
+    - [Events](#events)
+    - [Piping](#pipes)
   - [(Auto) disconnect from IRC](#disconnect)
-  - [Advanced IRC commands](#advanced-irc-commands)
+  - [Advanced IRC commands and middlewares](#advanced-irc-commands)
 - [CLI](#command-line-interface)
   - [Installation](#installation-1)
   - [Options](#options)
@@ -30,25 +30,44 @@ It can also be used as a <a href="#command-line-interface">command-line</a> down
 # Installation
 [![NPM](https://nodei.co/npm/xdccjs.png?compact=true)](https://nodei.co/npm/xdccjs/)
 # API
-## Import/require
+## Getting started
+There's three different way to import/require xdccJS depending on which environment it is running:
+### CommonJS
 ```js
-const XDCC = require('xdccjs').default
-// or
+const XDCC = require('xdccjs')
+const xdccJS = new XDCC.default({/*..options..*/})
+```
+### Modules
+```js
 import XDCC from 'xdccjs'
+const xdccJS = new XDCC.default({/*..options..*/})
 ```
-## Configuration
-
-**Minimal configuration :** 
+### TypeScript
+```ts
+import XDCC from 'xdccjs'
+const xdccJS = new XDCC({/*..options..*/})
+```
+### Example
 ```js
-let opts = {
-  host: 'irc.server.net', // will use default port 6667
-  path: '/my/download/folder' // absolute and relative paths both work
-}
+const XDCC = require('xdccjs')
 
-const xdccJS = new XDCC(opts)
+const xdccJS = new XDCC.default({
+  host: 'irc.server.net',
+  port: 6667,
+  chan: ['#welcome', '#fansub'],
+  nickname: 'Leon',
+  path: '/home/leon/downloads'
+})
+
+xdccJS.on('ready', () => {
+  xdccJS.download('XDCC|BOT_RED', 5)
+  xdccJS.download('XDCC|BOT_GREEN', '1-3, 55, 100-200')
+  xdccJS.download('XDCC|BOT_BLUE', [12, 7, 10, 20])
+  xdccJS.download('XDCC|BOT_ALPHA', ['5', '6'])
+})
 ```
-**Advanced configuration :**
-Except for `host` every parameter is optional, but you can also define a set of options to your preference :  
+### Options
+Every parameter is optional, except for `host`.
 
 ```js
 const opts = {
@@ -66,49 +85,42 @@ const opts = {
   secure: false, // Allow/Deny files sent by bot with different name than the one requested - default: true
 }
 ```
-
-## Download
->xdccJS.**download( bot** : string, **packets** : string | number | number[] **)**
+### Download
+>xdccJS.**download( bot** : string, **packets** : string | number | number[] | string[] **)**  
+`download()` is asynchronous and returns a `Job`
 ```js
-xdccJS.on('ready', () => {
-  xdccJS.download('XDCC|BLUE', '1-3, 8, 55')
-  xdccJS.download('XDCC|YELLOW', 4)
-  xdccJS.download('XDCC|RED', [12, 7, 10, 20])
-  xdccJS.download('XDCC|PURPLE', ['1', '3', '10', '20'])
+xdccJS.on('ready', async () => {
+  const blue = await xdccJS.download('XDCC|BLUE', '1-3, 8, 55')
+  const yellow = await xdccJS.download('XDCC|YELLOW', 4)
+  const red = await xdccJS.download('XDCC|RED', [12, 7, 10, 20])
+  const purple = await xdccJS.download('XDCC|PURPLE', ['1', '3', '10', '20'])
 })
 ```
 ### Jobs
-**.download() is asynchronous and returns a job**
-```js
-const job1 = await xdccJS.download('a-bot', [33, 50, 62, 98])
-const job2 = await xdccJS.download('XDCC|RED', [1, 3, 10, 20])
-xdccJS.download('XDCC|CYAN').then(job3 => {
-  // do something
-})
-```
-#### Jobs offer three options :
-- Get job progress status :
-  ```js
-  let status = job1.show()
-  console.log(status)
-  //=> { name: 'a-bot', queue: [98], now: 62, sucess: ['file.txt'], failed: [50] }
-  ```
-- Cancel a Job
-  ```js
-  job2.cancel()
-  ```
-- Events (see [events documentation](#Events))
+`Job`s are `download()` instances which are tied to the target nickname.  
+calling `download()` multiple times for the same target will update current job.
 
-**Jobs are stored by bot nickname :** `.download()` will update matching jobs
 ```js
 xdccJS.on('ready', async () => {
-  const job1 = await xdccJS.download('XDCC|BLUE', '1-3, 8, 55') // job1 is created
-  const job2 = await xdccJS.download('XDCC|RED', [1, 3, 10, 20]) // job2 is created
-  await xdccJS.download('XDCC|BLUE', 23) // job1 is updated
-  await xdccJS.download('XDCC|RED', '150-155') // job2 is updated
+  // jobs are automatically updated
+  const job1 = await xdccJS.download('BOT-A', 1)
+  const job2 = await xdccJS.download('BOT-A', 2)
+  const job3 = await xdccJS.download('BOT-A', 3)
+  job1 === job2 //=> true
+  job2 === job3 //=> true
+
+  // but each "target" has its own job
+  const job4 = await xdccJS.download('DIFFERENT_TARGET', 4)
+  job1 === job4 //=> false
+
+  // once a job's done, its lifetime ends
+  job1.on('done', async () => {
+    const job5 = await xdccJS.download('BOT-A', 5)
+    job1 === job4 //=> false
+  })
 })
 ```
-**You can also search jobs** with :`xdccJS.jobs()`
+#### You can also retrieve on going jobs
 
 > xdccJS.**jobs( bot** : string | undefined **)**
 
@@ -119,7 +131,29 @@ const job = await xdccJS.jobs('bot-name')
 // retrieve all jobs at once
 const arrayOfJobs = await xdccJS.jobs()
 ```
+#### Jobs offer three options :
+1. Get job progress status :
+    ```js
+    let status = job1.show()
+    console.log(status)
+    //=> { name: 'a-bot', queue: [98], now: 62, sucess: ['file.txt'], failed: [50] }
+    ```
+2. Cancel a Job
+    ```js
+    job2.cancel()
+    ```
+3. Events to track progress (see [events documentation](#Events))
+    ```js
+    job.on('downloaded', (fileInfo) => {
+      //=> a file has been downloaded
+    })
 
+    job.on('done', () => {
+      //=> job has finished downloading all requested packages
+    })
+
+    // more below..
+    ```
 ### Events
 **Most events are accessible both from xdccJS or a Job scope**
 
@@ -128,7 +162,7 @@ const arrayOfJobs = await xdccJS.jobs()
 
 > [**xdccJS**].on( **'ready'** ) : *xdccJS is ready to download*
   - ```js
-    xdccJS.on('ready', async ()=> {
+    xdccJS.on('ready', async () => {
       // download() here
     })
     ```
