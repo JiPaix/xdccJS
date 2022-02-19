@@ -3,8 +3,16 @@
 import { EventEmitter } from 'eventemitter3';
 import { PassThrough } from 'stream';
 import Downloader, { ParamsDL } from './downloader';
-import { FileInfo } from './interfaces/fileinfo';
-import Job from './interfaces/job';
+
+type MessageEvents = {
+  'can-quit' : () => void,
+  done: (job:Job) => void,
+  downloading: (fileInfo:FileInfo, received: number, percentage: number) => void,
+  downloaded: (info:FileInfo) => void,
+  error: (error:Error, fileInfo?:FileInfo) => void,
+  pipe: (stream: PassThrough, info:FileInfo) => void,
+  ready: () => void
+}
 
 /**
  * Constructor parameters
@@ -13,10 +21,11 @@ export interface Params extends ParamsDL {
   encoding?: 'utf8'
 }
 
-export default class XDCC extends EventEmitter {
+export default class XDCC extends (EventEmitter as new () => TypedEmitter<MessageEvents>) {
   irc: Downloader;
 
   constructor(params: Params) {
+    // eslint-disable-next-line constructor-super
     super();
     this.irc = new Downloader(params);
     this.listen();
@@ -33,7 +42,8 @@ export default class XDCC extends EventEmitter {
       this.emit('downloaded', f);
     });
     this.irc.on('done', (job) => {
-      this.emit('done', job);
+      const safeJob = job as Job;
+      this.emit('done', safeJob);
     });
     this.irc.on('pipe', (stream, f) => {
       this.emit('pipe', stream, f);
@@ -85,115 +95,4 @@ export default class XDCC extends EventEmitter {
     if (results.length) return results;
     return undefined;
   }
-
-  /**
-   * Event triggered when xdccJS is ready to download
-   * @category Connection
-   * @event ready
-   * @example
-   * ```js
-   * xdccJS.on('ready', () => {
-   *  xdccJS.download('XDCC|BOT', 23)
-   * })
-   * ```
-   */
-  static 'ready': () => XDCC;
-
-  /**
-   * Event triggered when all jobs are done
-   * @category Connection
-   * @event can-quit
-   * @example
-   * ```js
-   * xdccJS.on('can-quit', () => {
-   *  xdccJS.quit()
-   * })
-   * ```
-   */
-  static 'can-quit': () => XDCC;
-
-  /**
-   * Event triggered when a file is downloaded
-   * @category Download
-   * @event downloaded
-   * @example
-   * ```js
-   * xdccJS.on('downloaded', fileInfo => {
-   *    console.log('file available @: ' + fileInfo.filePath)
-   * })
-   * ```
-   */
-  static 'downloaded': (info:FileInfo) => XDCC;
-
-  /**
-   * Event triggered while a file is downloading
-   * @category Download
-   * @event downloading
-   * @example
-   * ```js
-   * xdccJS.on('downloading', (fileInfo, received, percentage) => {
-   *    console.log(`${fileInfo.file} @ ${received} of ${fileInfo.length} [${percentage}%]`)
-   * })
-   * ```
-   */
-   static 'downloading': (info:FileInfo, received: number, percentage: number) => XDCC;
-
-  /**
-   * Event triggered when .download() has finished downloading all files
-   * @category Download
-   * @event done
-   * @example
-   * ```js
-   * xdccJS.on('ready', () => {
-   *    xdccJS.download('XDCC|BLUE', '23-25, 102, 300')
-   *    xdccJS.download('XDCC|RED', 1152)
-   * })
-   *
-   * xdccJS.on('done', job => {
-   *    console.log('Finished all jobs from :' + job.nick)
-   *    //=> Finished all jobs from XDCC|BLUE
-   *    //=> Finished all jobs from XDCC|RED
-   * })
-   * ```
-   */
-  static 'done': (job:Job) => XDCC;
-
-  /**
-   * Event triggered when chunks of data are being received
-   * @category Download
-   * @event pipe
-   * @remark only works if `xdccJS.path = false`
-   * @example
-   * ```js
-   * xdccJS.on('pipe', (stream, fileInfo) => {
-   *  console.log('starting download of: ' + fileInfo.file)
-   *  stream.pipe(somerwhere)
-   * })
-   * ```
-   */
-  static 'pipe': (stream: PassThrough, info:FileInfo) => XDCC;
-
-  /**
-   * Event triggered when a download fails.
-   * @category Connection
-   * @event error
-   * @example
-   * ```js
-   * xdccJS.on('error', (e) => {
-   *   throw e
-   * })
-   * ```
-   */
-  static 'error': (error:Error) => XDCC;
 }
-
-export default interface XDCC {
-  on(eventType: string | symbol, cb: (event?: any, another?: any) => void): this
-  on(eventType: 'can-quit', cb: () => void): this
-  on(eventType: 'done', cb: (info:Job) => void): this
-  on(eventType: 'downloading', cb: (info:FileInfo, received: number, percentage: number) => void): this
-  on(eventType: 'downloaded', cb: (info:FileInfo) => void): this
-  on(eventType: 'error', cb: (err:Error) => void): this
-  on(eventType: 'pipe', cb: (stream:PassThrough, info:FileInfo) => void): this
-  on(eventType: 'ready', cb: () => void): this
-};

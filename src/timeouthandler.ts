@@ -105,7 +105,7 @@ export class TimeOut extends Connect {
     this.say(candidate.cancelNick, 'XDCC CANCEL');
     const error = new Error(candidate.timeout.message);
     this.emit(candidate.timeout.eventType, error, candidate.timeout.fileInfo);
-    candidate.emit(candidate.timeout.eventType, error, candidate.timeout.fileInfo);
+    candidate.emit(candidate.timeout.eventType, error.message, candidate.timeout.fileInfo);
     if (this.verbose) {
       const msg = `%danger% ${candidate.timeout.message}`;
       if (candidate.timeout.bar) {

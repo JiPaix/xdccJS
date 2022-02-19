@@ -8,8 +8,17 @@ import { Candidate } from './candidate';
 import ProgressBar from '../lib/progress';
 import { FileInfo } from './fileinfo';
 
-  export default class Job extends EventEmitter {
-    /**
+type MessageEvents = {
+  error: (errorMessage:string, fileInfo?: FileInfo) => void,
+  done: (endCandidate: {nick:string, success: string[], failed: number[]}) => void,
+  downloaded: (fileInfo: FileInfo) => void,
+  downloading: (fileInfo: FileInfo, received: number, percentage: number) => void,
+  pipe: (stream: PassThrough | fs.WriteStream, fileInfo: FileInfo) => void,
+  cancel: (candidate: Candidate, errorMessage:string, fileInfo: FileInfo) => void,
+}
+
+export default class Job extends (EventEmitter as new () => TypedEmitter<MessageEvents>) {
+  /**
      * Cancel Job
      * @example
      * ```js
@@ -22,35 +31,35 @@ import { FileInfo } from './fileinfo';
      * })
      * ```
      */
-    cancel?: () => void;
+  cancel?: () => void;
 
-    /** @ignore */
-    failures: number[];
+  /** @ignore */
+  failures: number[];
 
-    /** @ignore */
-    nick: string;
+  /** @ignore */
+  nick: string;
 
-    /** @ignore */
-    cancelNick: string;
+  /** @ignore */
+  cancelNick: string;
 
-    /** @ignore */
-    now: number;
+  /** @ignore */
+  now: number;
 
-    /** @ignore */
-    queue: number[];
+  /** @ignore */
+  queue: number[];
 
-    /** @ignore */
-    retry: number;
+  /** @ignore */
+  retry: number;
 
-    /** @ignore */
-    success: string[];
+  /** @ignore */
+  success: string[];
 
-    /** @ignore */
-    timeout: {
+  /** @ignore */
+  timeout: {
       bar?: ProgressBar
       fileInfo?: FileInfo
       to?: ReturnType<typeof setTimeout>
-      eventType?: string
+      eventType?: 'error' | 'cancel'
       message?: string
       padding?: number
       delay?: number
@@ -62,20 +71,21 @@ import { FileInfo } from './fileinfo';
       clear: () => void
     };
 
-    constructor(candidate: Candidate) {
-      super();
-      this.cancel = candidate.cancel;
-      this.failures = candidate.failures;
-      this.nick = candidate.nick;
-      this.cancelNick = candidate.cancelNick || candidate.nick;
-      this.now = candidate.now;
-      this.queue = candidate.queue;
-      this.retry = candidate.retry;
-      this.success = candidate.success;
-      this.timeout = candidate.timeout;
-    }
+  constructor(candidate: Candidate) {
+    // eslint-disable-next-line constructor-super
+    super();
+    this.cancel = candidate.cancel;
+    this.failures = candidate.failures;
+    this.nick = candidate.nick;
+    this.cancelNick = candidate.cancelNick || candidate.nick;
+    this.now = candidate.now;
+    this.queue = candidate.queue;
+    this.retry = candidate.retry;
+    this.success = candidate.success;
+    this.timeout = candidate.timeout;
+  }
 
-    /**
+  /**
      * return current job
      * @example
      * ```js
@@ -90,135 +100,38 @@ import { FileInfo } from './fileinfo';
      * job.show().cancel()
      * ```
      */
-    public show(): {
+  public show(): {
       nick: string
       queue: number[]
       now: number
       success: string[]
       failed: number[]
-    } {
-      const info = {
-        nick: clone(this.nick),
-        queue: clone(this.queue),
-        now: clone(this.now),
-        success: clone(this.success),
-        failed: clone(this.failures),
-        cancel: this.cancel,
-      };
-      return info;
-    }
+      } {
+    const info = {
+      nick: clone(this.nick),
+      queue: clone(this.queue),
+      now: clone(this.now),
+      success: clone(this.success),
+      failed: clone(this.failures),
+      cancel: this.cancel,
+    };
+    return info;
+  }
 
-    /**
+  /**
      * check if Job is done
      * const job = await xdccJS.download('bot', '1-5')
      * job.isDone() //=> false
      */
-    public isDone(): boolean {
-      if (this.queue.length) {
-        return false;
-      }
-      return true;
+  public isDone(): boolean {
+    if (this.queue.length) {
+      return false;
     }
-
-  /**
-   * Event triggered when a file is downloaded
-   * @category Download
-   * @event downloaded
-   * @example
-   * ```js
-   * job.on('downloaded', fileInfo => {
-   *    console.log('file available @: ' + fileInfo.filePath)
-   * })
-   * ```
-   */
-  static 'downloaded': (info:FileInfo) => Job;
-
-  /**
-   * Event triggered while a file is downloading
-   * @category Download
-   * @event downloading
-   * @example
-   * ```js
-   * job.on('downloading', (fileInfo, received, percentage) => {
-   *    console.log(`${fileInfo.file} @ ${received} of ${fileInfo.length} [${percentage}%]`)
-   * })
-   * ```
-   */
-   static 'downloading': (info:FileInfo, received:number, percentage: number) => Job;
-
-   /**
-   * Event triggered when .download() has finished downloading all files
-   * @category Download
-   * @event done
-   * @example
-   * ```js
-   * job.on('done', job => {
-   *  console.log('Finished all jobs from :' + job.nick) //=> Finished all jobs from XDCC|BLUE
-   * })
-   * ```
-   */
-  static 'done': (job:Job) => Job;
-
-  /**
-   * Event triggered when chunks of data are being received
-   * @category Download
-   * @event pipe
-   * @remark only works if `xdccJS.path = false`
-   * @example
-   * ```js
-   * job.on('pipe', (stream, fileInfo) => {
-   *  console.log('starting download of: ' + fileInfo.file)
-   *  stream.pipe(somerwhere)
-   * })
-   * ```
-   */
-    static 'pipe': (stream: PassThrough, info:FileInfo) => Job;
-
-    /**
-     * Event triggered when job is canceled/interrupted
-     * @event error
-     * @example
-     * ```js
-     * job.on('error', (message, info) => {
-     *  console.log(message) //=> Cannot connect to XDCC|Something@113.5.0.1:3550
-     * })
-     * ```
-     */
-    static 'error': (errorMessage:string, info:FileInfo) => Job;
+    return true;
   }
-  export default interface Job {
-    /** @ignore */
-    emit(eventType: string | symbol, ...args: unknown[]): boolean
-    /** @ignore */
-    emit(eventType: 'error', errorMessage: string, fileInfo: FileInfo|undefined): this
-    /** @ignore */
-    emit(
-      eventType: 'done',
-      endCandidate: {
-        nick: string
-        success: string[]
-        failures: number[]
-      }
-    ): this
-    /** @ignore */
-    emit(eventType: 'downloaded', fileInfo: FileInfo): this
-    /** @ignore */
-    emit(eventType: 'downloading', fileInfo: FileInfo, received: number, percentage: number): this
-    /** @ignore */
-    on(eventType: 'downloading', cb: (fileInfo: FileInfo, received: number, percentage: number) => void): this
-    /** @ignore */
-    on(eventType: string | symbol, cb: (event?: unknown, ...args: unknown[]) => void): this
-    /** @ignore */
-    on(eventType: 'error', cb: (errorMessage: string, fileInfo: FileInfo) => void): this
-    /** @ignore */
-    on(eventType: 'done', cb: (endCandidate: { nick: string; success: string[]; failures: number[] }) => void): this
-    /** @ignore */
-    on(eventType: 'downloaded', cb: (fileInfo: FileInfo) => void): this
-    /** @ignore */
-    on(eventType: 'pipe', cb: (stream: PassThrough, fileInfo: FileInfo) => void): this
-  }
+}
 
-  export type displayedJob = {
+export type displayedJob = {
     /**
      * Bot nickname
      */
