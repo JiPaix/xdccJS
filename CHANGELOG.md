@@ -1,4 +1,22 @@
 # Changelog
+## [v4.4.0](https://github.com/jipaix/xdccjs/tree/v4.4.0)
+
+### Refactor(lib)
+* use of `import type` instead of `import` when necessary
+* better typing:
+  * add export for interfaces `Candidate`
+  * add export for class `Job`
+  * add export for typed events: `GlobalMessageEvents` and `JobMessageEvents`
+### Docs(lib)
+* add `job.isDone()` to README
+### Style(lib)
+* remove unused imports
+* fix wrong indents
+### Chores(dev-deps)
+* add `typed-emitter` dependency
+### Breaking changes :warning:
+* xdccJS now requires node >=14
+---
 ## [v4.3.209](https://github.com/jipaix/xdccjs/tree/v4.3.207)
 ### Fix(CI)
 * CI Hotfix for [v4.3.207](https://github.com/jipaix/xdccjs/tree/v4.3.207)
