@@ -1,4 +1,10 @@
 # Changelog
+## [v4.4.1](https://github.com/jipaix/xdccjs/tree/v4.4.0)
+## Fix + Chore(deps)
+* fix issue within commonjs context
+* remove `public-ip`
+* add "custom" `getIp` function
+---
 ## [v4.4.0](https://github.com/jipaix/xdccjs/tree/v4.4.0)
 
 ### Refactor(lib)
