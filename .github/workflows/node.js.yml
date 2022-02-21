@@ -10,6 +10,8 @@ jobs:
   build:
     if: "!contains(github.event.head_commit.message, '[ci skip]')"
     runs-on: ubuntu-latest
+    outputs:
+      has-updated: ${{ steps.version-updated.outputs.has-updated }}
     strategy:
       matrix:
         node-version: ["14.x", "16.x", "17.x"]
@@ -20,34 +22,32 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - name: Running build without doc
-      run: npm install && node ./node_modules/ts-node/dist/bin.js ./build/copyfiles.ts && node ./node_modules/typescript/bin/tsc
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v1
+    - run: |
+        npm install
+        node ./node_modules/ts-node/dist/bin.js ./build/copyfiles.ts
+        node ./node_modules/typescript/bin/tsc
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
-  publish:
-    if: github.ref == 'refs/heads/main'
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
     - uses: MontyD/package-json-updated-action@1.0.1
       id: version-updated
       with:
         path: package.json
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  publish:
+    needs: build
+    if: github.ref == 'refs/heads/main' && needs.build.outputs.has-updated
+    runs-on: ubuntu-latest
+    steps:
     - uses: actions/checkout@v2
-      if: steps.version-updated.outputs.has-updated
     - uses: actions/setup-node@v2
-      if: steps.version-updated.outputs.has-updated
       with:
         node-version: "16.x"
         registry-url: 'https://registry.npmjs.org'
     - run: |
-        npm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
         npm install
         npm publish
-      if: steps.version-updated.outputs.has-updated
       env:
-        NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
