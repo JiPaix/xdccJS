@@ -1,10 +1,10 @@
 # Changelog
 ## [v4.4.8](https://github.com/jipaix/xdccjs/tree/v4.4.0)
-## Fix(lib) + Chore(deps)
+### Fix(lib) + Chore(deps)
 * fix issue within commonjs context
 * remove `public-ip`
 * add "custom" `getIp` function
-## Fix(ci)
+### Fix(ci)
 * fix automated releases on npm
 * update discord bot to new API
 ---
