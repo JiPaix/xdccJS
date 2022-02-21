@@ -46,6 +46,7 @@ jobs:
         registry-url: 'https://registry.npmjs.org'
     - run: |
         npm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
+        npm install
         npm publish
       if: steps.version-updated.outputs.has-updated
       env:
