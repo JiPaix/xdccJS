@@ -5,7 +5,7 @@ import * as net from 'net';
 import * as fs from 'fs';
 import * as http from 'http';
 import { CtcpParser, ParamsCTCP } from './ctcp_parser';
-import ProgressBar from './lib/progress';
+import * as ProgressBar from './lib/progress';
 import Connect from './connect';
 import type { FileInfo } from './interfaces/fileinfo';
 import type { Job } from './interfaces/job';
