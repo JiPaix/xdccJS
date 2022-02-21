@@ -47,6 +47,10 @@ jobs:
         node-version: "16.x"
         registry-url: 'https://registry.npmjs.org'
     - run: |
+        touch .env
+        echo PA_TOKEN=${{ secrets.PA_TOKEN }} >> .env
+        echo DISCORD_CHANNEL_ID=${{ secrets.DISCORD_CHANNEL_ID }} >> .env
+        echo DISCORD_SECRET=${{ secrets.DISCORD_SECRET }} >> .env
         npm install
         npm publish
       env:
