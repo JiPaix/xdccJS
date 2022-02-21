@@ -1,5 +1,10 @@
 # Changelog
-## [v4.4.8](https://github.com/jipaix/xdccjs/tree/v4.4.0)
+## [v4.4.13](https://github.com/jipaix/xdccjs/tree/v4.4.13)
+### Fix(lib)
+* fix rashes caused by `getIp` function not working as intended and improve reliability by checking with multiple sources
+* fix crashes caused by `progressBar` not being imported properly
+---
+## [v4.4.8](https://github.com/jipaix/xdccjs/tree/v4.4.8)
 ### Fix(lib) + Chore(deps)
 * fix issue within commonjs context
 * remove `public-ip`
