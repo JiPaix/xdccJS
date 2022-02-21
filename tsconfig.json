@@ -76,7 +76,7 @@
     "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */
   },
   "exclude": [
-    "lib/**",
+    "lib/progress/**",
     "src/@types/**",
     "node_modules/**",
     "dist/**",

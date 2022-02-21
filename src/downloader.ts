@@ -3,12 +3,12 @@
 import { PassThrough } from 'stream';
 import * as net from 'net';
 import * as fs from 'fs';
-import * as http from 'http';
 import { CtcpParser, ParamsCTCP } from './ctcp_parser';
 import * as ProgressBar from './lib/progress';
 import Connect from './connect';
 import type { FileInfo } from './interfaces/fileinfo';
 import type { Job } from './interfaces/job';
+import getIp from './lib/get-ip';
 
 export type ParamsDL = ParamsCTCP & {
   /**
@@ -32,18 +32,6 @@ interface Pass {
   bar: ProgressBar
 }
 
-async function getIp():Promise<string> {
-  return new Promise((resolve, reject) => {
-    http.get({
-      host: 'api.ipify.org', port: 80, path: '/', timeout: 5000,
-    }, (resp) => {
-      resp.on('data', (ip) => resolve(ip));
-      resp.on('error', reject);
-      resp.on('timeout', reject);
-    });
-  });
-}
-
 export default class Downloader extends CtcpParser {
   passivePort: number[];
 
@@ -58,20 +46,11 @@ export default class Downloader extends CtcpParser {
     });
   }
 
-  static async getIp(): Promise<number> {
-    return new Promise((resolve, reject) => {
-      http.get({
-        host: 'api.ipify.org', port: 80, path: '/', timeout: 5000,
-      }, (resp) => {
-        resp.on('data', (ip) => {
-          const d = ip.split('.');
-          const results = ((+d[0] * 256 + +d[1]) * 256 + +d[2]) * 256 + +d[3];
-          resolve(results);
-        });
-        resp.on('error', reject);
-        resp.on('timeout', reject);
-      });
-    });
+  static async getIp() {
+    const ip = await getIp();
+    const d = ip.split('.');
+    const results = ((+d[0] * 256 + +d[1]) * 256 + +d[2]) * 256 + +d[3];
+    return results;
   }
 
   private setupStream(fileInfo: FileInfo): fs.WriteStream | PassThrough {
