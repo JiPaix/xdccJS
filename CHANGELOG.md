@@ -1,4 +1,8 @@
 # Changelog
+## [v4.4.17](https://github.com/jipaix/xdccjs/tree/v4.4.17)
+### Fix(lib)
+* fix download timed out when connection to bot is unstable
+---
 ## [v4.4.16](https://github.com/jipaix/xdccjs/tree/v4.4.16)
 ### Fix(lib)
 * moved download timeout outside condition: since 4.4.14 the "no data" timeout was moved in a condition which wasn't reached at the end of the download
