@@ -1,4 +1,8 @@
 # Changelog
+## [v4.4.15](https://github.com/jipaix/xdccjs/tree/v4.4.15)
+### Fix(lib)
+* replacing `node-fetch` dependency with `axios`
+---
 ## [v4.4.14](https://github.com/jipaix/xdccjs/tree/v4.4.14)
 ### Fix(lib)
 * fix download randomly failing: closing `passthrough` too early.

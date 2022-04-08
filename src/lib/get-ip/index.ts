@@ -1,25 +1,17 @@
 /* eslint-disable no-async-promise-executor */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
-import fetch, { Response } from 'node-fetch';
+
+import axios, { AxiosResponse } from 'axios';
 
 type raceResults = [
-  PromiseSettledResult<Response>,
-  PromiseSettledResult<Response>,
-  PromiseSettledResult<Response>
+  PromiseSettledResult<AxiosResponse<string>>,
+  PromiseSettledResult<AxiosResponse<string>>,
+  PromiseSettledResult<AxiosResponse<string>>,
 ];
 
-async function fetchWithTimeout(resource:string) {
-  const options = { timeout: 1000 };
-
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), options.timeout);
-  const response = await fetch(resource, {
-    ...options,
-    signal: controller.signal,
-  });
-  clearTimeout(id);
-  return response;
+async function fetchWithTimeout(source:string) {
+  return axios.get(source, { timeout: 1000 });
 }
 
 async function fetchIp() {
@@ -35,7 +27,7 @@ async function findBestResults(res: raceResults): Promise<string> {
   return new Promise(async (resolve, reject) => {
     for (const [i, result] of res.entries()) {
       if (result.status === 'fulfilled') {
-        const text = await result.value.text();
+        const text = result.value.data;
         const ip = ipRegex.exec(text);
         if (ip) {
           resolve(ip[0]);
