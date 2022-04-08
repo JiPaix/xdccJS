@@ -135,9 +135,34 @@ export default class Downloader extends CtcpParser {
       pick,
       bar,
     };
+    client.setTimeout(10000);
+    this.onTimeOut(pass);
     this.onData(pass);
     this.onEnd(pass);
     this.onError(pass);
+  }
+
+  private onTimeOut(args: Pass): void {
+    args.client.on('timeout', () => {
+      this.SetupTimeout({
+        candidate: args.candidate,
+        eventType: 'error',
+        message: 'Timeout',
+        delay: 0,
+        disconnectAfter: {
+          stream: args.stream,
+          server: args.server,
+          socket: args.client,
+          pick: args.pick,
+          bar: args.bar,
+        },
+        padding: 6,
+        fileInfo: args.fileInfo,
+        executeLater: () => {
+          this.redownload(args.candidate, args.fileInfo);
+        },
+      });
+    });
   }
 
   private onError(args: Pass): void {
@@ -193,7 +218,6 @@ export default class Downloader extends CtcpParser {
   }
 
   private onData(args: Pass): void {
-    args.candidate.timeout.clear();
     const sendBuffer = Buffer.alloc(8);
     let received = 0;
     args.client.on('data', (data) => {
@@ -205,25 +229,12 @@ export default class Downloader extends CtcpParser {
       received += data.length;
       sendBuffer.writeBigInt64BE(BigInt(received), 0);
       args.client.write(sendBuffer);
-      this.SetupTimeout({
-        candidate: args.candidate,
-        eventType: 'error',
-        message: '%danger% Timeout: Not receiving data',
-        padding: 6,
-        disconnectAfter: {
-          stream: args.stream,
-          socket: args.client,
-          server: args.server,
-          bar: args.bar,
-          pick: args.pick,
-        },
-        delay: 2,
-        fileInfo: args.fileInfo,
-      });
       if (this.verbose && args.bar) args.bar.tick(data.length);
-      if (received !== args.fileInfo.length) {
+      if (received < args.fileInfo.length) {
         args.candidate.emit('downloading', args.fileInfo, received, (received / args.fileInfo.length) * 100);
         this.emit('downloading', args.fileInfo, received, (received / args.fileInfo.length) * 100);
+      } else {
+        args.client.end();
       }
     });
   }
