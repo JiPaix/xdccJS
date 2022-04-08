@@ -1,4 +1,8 @@
 # Changelog
+## [v4.4.14](https://github.com/jipaix/xdccjs/tree/v4.4.14)
+### Fix(lib)
+* fix download randomly failing: closing `passthrough` too early.
+---
 ## [v4.4.13](https://github.com/jipaix/xdccjs/tree/v4.4.13)
 ### Fix(lib)
 * fix rashes caused by `getIp` function not working as intended and improve reliability by checking with multiple sources
