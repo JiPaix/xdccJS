@@ -176,7 +176,7 @@ export default class Downloader extends CtcpParser {
   }
 
   private onEnd(args: Pass): void {
-    args.client.on('end', () => {
+    args.client.on('close', () => {
       this.print('%success% done.', 6);
       args.candidate.timeout.clear();
       args.candidate.success.push(args.fileInfo.file);
@@ -186,7 +186,6 @@ export default class Downloader extends CtcpParser {
         });
       }
       args.stream.end();
-      args.client.end();
       this.emit('downloaded', args.fileInfo);
       args.candidate.emit('downloaded', args.fileInfo);
       this.emit('next', args.candidate, this.verbose);
@@ -205,12 +204,8 @@ export default class Downloader extends CtcpParser {
       received += data.length;
       sendBuffer.writeBigInt64BE(BigInt(received), 0);
       args.client.write(sendBuffer);
-      if (this.verbose && args.bar) {
-        args.bar.tick(data.length);
-      }
-      if (received === args.fileInfo.length) {
-        args.client.end();
-      } else {
+      if (this.verbose && args.bar) args.bar.tick(data.length);
+      if (received !== args.fileInfo.length) {
         args.candidate.emit('downloading', args.fileInfo, received, (received / args.fileInfo.length) * 100);
         this.emit('downloading', args.fileInfo, received, (received / args.fileInfo.length) * 100);
         this.SetupTimeout({
