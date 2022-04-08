@@ -1,4 +1,8 @@
 # Changelog
+## [v4.4.16](https://github.com/jipaix/xdccjs/tree/v4.4.16)
+### Fix(lib)
+* moved download timeout outside condition: since 4.4.14 the "no data" timeout was moved in a condition which wasn't reached at the end of the download
+---
 ## [v4.4.15](https://github.com/jipaix/xdccjs/tree/v4.4.15)
 ### Fix(lib)
 * replacing `node-fetch` dependency with `axios`
