@@ -1,4 +1,8 @@
 # Changelog
+## [v4.4.18](https://github.com/jipaix/xdccjs/tree/v4.4.18)
+### Fix(lib)
+* fixing the fix
+---
 ## [v4.4.17](https://github.com/jipaix/xdccjs/tree/v4.4.17)
 ### Fix(lib)
 * fix download timed out when connection to bot is unstable

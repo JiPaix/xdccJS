@@ -222,6 +222,7 @@ export default class Downloader extends CtcpParser {
     let received = 0;
     args.client.on('data', (data) => {
       if (received === 0 && !this.path) {
+        args.candidate.timeout.clear();
         args.candidate.emit('pipe', args.stream, args.fileInfo);
         this.emit('pipe', args.stream, args.fileInfo);
       }
