@@ -1,4 +1,8 @@
 # Changelog
+## [v4.4.19](https://github.com/jipaix/xdccjs/tree/v4.4.19)
+### Fix(lib)
+* clear connection timeout on download start
+---
 ## [v4.4.18](https://github.com/jipaix/xdccjs/tree/v4.4.18)
 ### Fix(lib)
 * fixing the fix
