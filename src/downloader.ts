@@ -193,6 +193,7 @@ export default class Downloader extends CtcpParser {
   }
 
   private onData(args: Pass): void {
+    args.candidate.timeout.clear();
     const sendBuffer = Buffer.alloc(8);
     let received = 0;
     args.client.on('data', (data) => {
@@ -204,25 +205,25 @@ export default class Downloader extends CtcpParser {
       received += data.length;
       sendBuffer.writeBigInt64BE(BigInt(received), 0);
       args.client.write(sendBuffer);
+      this.SetupTimeout({
+        candidate: args.candidate,
+        eventType: 'error',
+        message: '%danger% Timeout: Not receiving data',
+        padding: 6,
+        disconnectAfter: {
+          stream: args.stream,
+          socket: args.client,
+          server: args.server,
+          bar: args.bar,
+          pick: args.pick,
+        },
+        delay: 2,
+        fileInfo: args.fileInfo,
+      });
       if (this.verbose && args.bar) args.bar.tick(data.length);
       if (received !== args.fileInfo.length) {
         args.candidate.emit('downloading', args.fileInfo, received, (received / args.fileInfo.length) * 100);
         this.emit('downloading', args.fileInfo, received, (received / args.fileInfo.length) * 100);
-        this.SetupTimeout({
-          candidate: args.candidate,
-          eventType: 'error',
-          message: '%danger% Timeout: Not receiving data',
-          padding: 6,
-          disconnectAfter: {
-            stream: args.stream,
-            socket: args.client,
-            server: args.server,
-            bar: args.bar,
-            pick: args.pick,
-          },
-          delay: 2,
-          fileInfo: args.fileInfo,
-        });
       }
     });
   }
