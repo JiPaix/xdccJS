@@ -71,7 +71,7 @@
     "typescript": "^4.6.3"
   },
   "dependencies": {
-    "axios": "^0.26.1",
+    "axios": "^0.27.2",
     "commander": "^9.1.0",
     "eventemitter3": "^4.0.7",
     "irc-framework": "^4.12.1",
