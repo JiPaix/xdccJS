@@ -1,4 +1,8 @@
 # Changelog
+## [v4.4.20](https://github.com/jipaix/xdccjs/tree/v4.4.20)
+### Fix(lib)
+* expose xdccJS events
+---
 ## [v4.4.19](https://github.com/jipaix/xdccjs/tree/v4.4.19)
 ### Fix(lib)
 * clear connection timeout on download start
