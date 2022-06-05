@@ -1,4 +1,8 @@
 # Changelog
+## [Unreleased](https://github.com/jipaix/xdccjs/tree/main)
+### Chore(dev-deps)
+* updating dev-dependencies to their latest version
+---
 ## [v4.4.21](https://github.com/jipaix/xdccjs/tree/v4.4.21)
 ### Feat(lib)
 * Job.cancel() is now always defined
