@@ -40,9 +40,10 @@ export default class AddJob extends TimeOut {
     };
   }
 
-  protected makeCancelable(candidate: Job, client?: net.Socket): () => void {
+  protected makeCancelable(candidate: Candidate, client?: net.Socket): () => void {
     const fn = (): void => {
       candidate.timeout.clear();
+      this.say(candidate.cancelNick, 'XDCC CANCEL');
       if (client) {
         const cancel = new Error('cancel');
         client.destroy(cancel);
@@ -59,9 +60,9 @@ export default class AddJob extends TimeOut {
     let candidate = this.getCandidate(target);
     if (!candidate) {
       const base = AddJob.constructCandidate(target, range);
+      base.cancel = this.makeCancelable(base);
       const newCand = new Job(base);
       AddJob.makeClearable(newCand);
-      newCand.cancel = this.makeCancelable(newCand);
       this.candidates.push(newCand);
       candidate = this.getCandidate(target);
     } else {

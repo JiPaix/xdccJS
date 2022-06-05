@@ -87,7 +87,7 @@ export class Job extends (EventEmitter as new () => TypedEmitter<JobMessageEvent
      * })
      * ```
      */
-  cancel?: () => void;
+  cancel: () => void;
 
   /** @ignore */
   failures: number[];
@@ -130,6 +130,7 @@ export class Job extends (EventEmitter as new () => TypedEmitter<JobMessageEvent
   constructor(candidate: Candidate) {
     // eslint-disable-next-line constructor-super
     super();
+    if (!candidate.cancel) throw new Error('candidate must be passed to makeCancelable first');
     this.cancel = candidate.cancel;
     this.failures = candidate.failures;
     this.nick = candidate.nick;

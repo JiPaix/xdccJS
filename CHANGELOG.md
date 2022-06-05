@@ -1,4 +1,10 @@
 # Changelog
+## [v4.4.21](https://github.com/jipaix/xdccjs/tree/v4.4.21)
+### Feat(lib)
+* Job.cancel() is now always defined
+### Fix(lib)
+* Job.cancel() wasn't sending "XDCC CANCEL" message 
+---
 ## [v4.4.20](https://github.com/jipaix/xdccjs/tree/v4.4.20)
 ### Fix(lib)
 * expose xdccJS events
