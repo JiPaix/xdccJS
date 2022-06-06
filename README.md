@@ -73,7 +73,10 @@ Every parameter is optional, except for `host`.
 const opts = {
   host: 'irc.server.net', // IRC hostname                                                   - required
   port: 6660, // IRC port                                                                   - default: 6667
-  tls: false, // Enable SSL/TLS Support                                                     - default false
+  tls: {
+    enable: true, // Enable TLS Support                                                     - default: false
+    rejectUnauthorized: true, // Reject self-signed certificates                            - default: false
+  }, 
   nickname: 'ItsMeJiPaix', // Nickname                                                      - default: xdccJS + random
   chan: ['#candy', '#fruits'], // Array of channels                                         - default : [ ]
   path: 'downloads', // Download path or 'false'                                            - default: false (which enables piping)
@@ -82,7 +85,7 @@ const opts = {
   verbose: true, // Display download progress and jobs status                               - default: false
   randomizeNick: false, // Add random numbers at end of nickname                            - default: true
   passivePort: [5000, 5001, 5002], // Array of port(s) to use with Passive DCC              - default: [5001]
-  secure: false, // Allow/Deny files sent by bot with different name than the one requested - default: true
+  botNameMatch: false, // Block downloads if the bot's name does not match the request      - default: true
 }
 ```
 ### Download
@@ -290,26 +293,27 @@ npm install xdccjs -g
 ## Options
 ```
 Options:
-  -V, --version              output the version number
+  -V, --version              Output the version number
   -h, --host <server>        IRC server hostname
   --port <number>            IRC server port
   --tls                      Enable SSL/TLS Support
-  -b, --bot <botname>        xdcc bot nickname
-  -d, --download <packs...>  pack number(s) to download
-  -p, --path <path>          download path
-  -n, --nickname <nickname>  Your IRC nickname
-  -c, --channel [chan...]    channel(s) to join (without #)
-  -r, --retry <number>       number of attempts before skipping pack
-  -q, --quiet                disable console output
-  --passive-port <number>    port used for passive dccs
+  --allow-insecure           Allow self-signed certificate (tls needs to be enabled)
+  -b, --bot <botname>        XDCC bot nickname
+  -d, --download <packs...>  Pack number(s) to download
+  -p, --path <path>          Download path
+  -n, --nickname <nickname>  Your nickname
+  -c, --channel [chan...]    Channel(s) to join (without #)
+  -r, --retry <number>       Number of attempts before skipping pack
+  -q, --quiet                Disable console output
+  --passive-port <number>    Port used for passive dccs
   --no-randomize             Disable nickname randomization
-  -w, --wait [number]        wait time (in seconds) in channel(s) before sending download request (default: 0)
-  --no-secure                Allow files sent by bot with different name than the one requested
-  --save-profile [string]    save current options as a profile
-  --delete-profile [string]  delete profile
-  --set-profile [string]     set profile as default
-  --list-profile             list all available profiles
-  --help                     display help for command
+  -w, --wait [number]        Wait time (in seconds) in channel(s) before sending download request (default: 0)
+  --botNameMatch             Block downloads if the bot's name does not match the request
+  --save-profile [string]    Save current options as a profile
+  --delete-profile [string]  Delete profile
+  --set-profile [string]     Set profile as default
+  --list-profile             List all available profiles
+  --help                     Display help for command
 ```
 ## Usage
 ```bash

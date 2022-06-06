@@ -1,7 +1,20 @@
 # Changelog
-## [Unreleased](https://github.com/jipaix/xdccjs/tree/main)
-### Chore(dev-deps)
-* updating dev-dependencies to their latest version
+## [v4.5.0](https://github.com/jipaix/xdccjs/tree/v4.5.0)
+### Fix(lib+cli)
+* add option to allow/reject connection on TLS enabled server with self-signed certificates
+* CLI user can use the `--no-insecure` option to enable this feature.
+### BREAKING CHANGES (cli)
+* remove parameter `--no-secure` that allowed downloads if the bot's name did not match the requested
+* add parameter `--bot-name-match` to block downloads if bot's name does not match the requested
+### BREAKING CHANGES (lib)
+* renamed parameter `secure` to `botNameMatch` to avoid confusion with `tls`
+* optional parameter **`tls` is no longer a boolean**
+```js
+ params.tls = { 
+   enable: false, // required
+   rejectUnauthorized: false // optional - default false
+ }
+```
 ---
 ## [v4.4.21](https://github.com/jipaix/xdccjs/tree/v4.4.21)
 ### Feat(lib)

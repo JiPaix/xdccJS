@@ -148,6 +148,6 @@ export default class Profiles extends BaseCommander {
     if (this.program.bot) this.defaultProfile[1].bot = this.program.bot;
     this.defaultProfile[0].randomizeNick = this.program.randomize;
     this.defaultProfile[1].wait = this.program.wait;
-    this.defaultProfile[0].secure = this.program.secure;
+    this.defaultProfile[0].botNameMatch = this.program.botNameMatch;
   }
 }

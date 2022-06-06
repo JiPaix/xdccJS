@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/member-delimiter-style */
 /* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable @typescript-eslint/triple-slash-reference */
@@ -64,14 +65,28 @@ export type ParamsIRC = {
    */
   verbose?: boolean
   /**
-   * Enable TLS/SSL
-   * @default `false`
-   * @example
-   * ```js
-   * params.tls = true
-   * ```
+   * TLS/SSL
    */
-   tls?: boolean
+   tls?: {
+     /**
+      * Enable TLS/SSL
+      * @default `false`
+      * @example
+      * ```js
+      * params.tls = { enable: true }
+      * ```
+      */
+     enable: boolean,
+     /**
+      * (optional) Reject self-signed certificates
+      * @default `false`
+      * @example
+      * ```js
+      * params.tls = { enable: true, rejectUnauthorized: true }
+      * ```
+      */
+     rejectUnauthorized?: boolean
+   }
 }
 
 export default class Connect extends Client {
@@ -87,7 +102,10 @@ export default class Connect extends Client {
 
   protected connectionTimeout!:ReturnType<typeof setTimeout>;
 
-  protected tls: boolean;
+  protected tls: {
+    enable: boolean,
+    rejectUnauthorized?: boolean
+  };
 
   constructor(params: ParamsIRC) {
     super();
@@ -99,7 +117,13 @@ export default class Connect extends Client {
     this.port = Connect.is('port', params.port, 'number', 6667);
     this.verbose = Connect.is('verbose', params.verbose, 'boolean', false);
     this.chan = Connect.chanCheck(params.chan);
-    this.tls = Connect.is('tls', params.tls, 'boolean', false);
+    if (params.tls) {
+      params.tls.enable = Connect.is('tls.enable', params.tls.enable, 'boolean', false);
+      params.tls.rejectUnauthorized = Connect.is('tls.rejectUnauthorized', params.tls.rejectUnauthorized, 'boolean', true);
+    } else {
+      params.tls = { enable: false, rejectUnauthorized: true };
+    }
+    this.tls = params.tls;
     this.onConnect();
     this.connect({
       host: this.host,
@@ -108,7 +132,8 @@ export default class Connect extends Client {
       username: params.nickname || 'xdccJS',
       auto_reconnect_max_wait: 0,
       auto_reconnect_max_retries: 0,
-      ssl: this.tls,
+      ssl: this.tls.enable,
+      rejectUnauthorized: this.tls.rejectUnauthorized,
       debug: true,
     });
     this.on('debug', (msg) => {

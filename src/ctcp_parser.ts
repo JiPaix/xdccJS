@@ -35,27 +35,27 @@ export type ParamsCTCP = ParamsTimeout & {
    * */
   path?: string | false
   /**
-   * Allow/Deny files sent by bot with different name than the one requested.
+   * Block downloads if the bot's name does not match the request
    * @example
    * ```js
-   * // with secure = true
-   * xdccJS.download('XDCC|SECURE', 1)
-   * //=> Only accept files comming from 'XDCC|SECURE'
+   * // with botNameMatch = true
+   * xdccJS.download('BOT-A', 1)
+   * //=> Only accept files comming from 'BOT-A'
    * ```js
    *
    */
-  secure?: boolean
+   botNameMatch?: boolean
 }
 export class CtcpParser extends AddJob {
   path: string | boolean;
 
-  secure: boolean;
+  botNameMatch: boolean;
 
   protected resumequeue: ResumeQueue[] = [];
 
   constructor(params: ParamsCTCP) {
     super(params);
-    this.secure = CtcpParser.is('secure', params.secure, 'boolean', true);
+    this.botNameMatch = CtcpParser.is('botNameMatch', params.botNameMatch, 'boolean', true);
     this.path = CtcpParser.pathCheck(params.path);
     this.on('ctcp request', (resp: { [prop: string]: string }): void => {
       const isDownloadRequest = this.checkBeforeDL(resp, this.candidates[0]);
@@ -91,7 +91,7 @@ export class CtcpParser extends AddJob {
       nick = nick.toLowerCase();
       candidate.nick = candidate.nick.toLowerCase();
       candidate.cancelNick = nick;
-      if (this.secure) {
+      if (this.botNameMatch) {
         if (nick === candidate.nick) {
           return true;
         }

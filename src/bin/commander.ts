@@ -14,6 +14,7 @@ export interface InterfaceCLI extends commander.Command {
   host?: string
   port?: number
   tls?: boolean
+  noInsecure?: boolean
   bot?: string
   download?: string[]
   path?: string
@@ -22,7 +23,7 @@ export interface InterfaceCLI extends commander.Command {
   retry?: number
   passivePort?: number
   randomize?: boolean
-  secure?: boolean
+  botNameMatch?: boolean
   wait?: number
   quiet?: boolean
   saveProfile?: string
@@ -45,8 +46,9 @@ export class BaseCommander {
       .name('xdccJS')
       .version(version)
       .option('-h, --host <server>', 'IRC server hostname')
-      .option('--port <number>', 'IRC server port')
+      .option('--port <number>', 'IRC server port', BaseCommander.parseIfNotInt)
       .option('--tls', 'enable SSL/TLS')
+      .option('--no-insecure', 'Reject self-signed SSL/TLS certificates')
       .option('-b, --bot <botname>', 'xdcc bot nickname')
       .option('-d, --download <packs...>', 'pack number(s) to download')
       .option('-p, --path <path>', 'download path', path.normalize)
@@ -62,7 +64,7 @@ export class BaseCommander {
         BaseCommander.parseIfNotInt,
         0,
       )
-      .option('--no-secure', 'Allow files sent by bot with different name than the one requested')
+      .option('--bot-name-match', 'Block downloads if bot name does not match')
       .option('--save-profile <string>', 'save current options as a profile')
       .option('--delete-profile <string>', 'delete profile')
       .option('--set-profile <string>', 'set profile as default')
@@ -88,7 +90,10 @@ export class BaseCommander {
     return {
       host: this.program.host,
       port: this.program.port,
-      tls: this.program.tls,
+      tls: {
+        enable: this.program.tls || false,
+        rejectUnauthorized: this.program.noInsecure || false,
+      },
       nickname: this.program.nickname,
       chan: this.program.channel,
       path: this.program.path,
@@ -96,7 +101,7 @@ export class BaseCommander {
       randomizeNick: this.program.randomize,
       passivePort: [this.program.passivePort || 5001],
       verbose: !this.program.quiet,
-      secure: this.program.secure,
+      botNameMatch: this.program.botNameMatch,
     };
   }
 
