@@ -110,7 +110,7 @@ To avoid this behavior you need to provide a [regex](https://www.w3schools.com/j
 const opts = {
   host: 'irc.server.com',
   timeout: 20 // defaut is 30
-  queue: /request(.*)queued(.*)\d+\/\d+$/g
+  queue: /request(.*)queued(.*)\d+\/\d+$/gi
   //=> excepted bot queue message: "Your request has been queued: position x/x"
 }
 const xdccJS = new XDCC(opts)
@@ -417,7 +417,7 @@ xdccJS --delete-profile "my_profile"
     ```
 - an example with `--queue` regex:
   - ```bash
-      xdccJS --host "irc.server.com" --bot "SOME_BOT" --download "1-100" --queue "/download(.*)\d+\sout\sof\s\d+\/gi"
+      xdccJS --host "irc.server.com" --bot "SOME_BOT" --download "1-100" --queue "/request(.*)queued(.*)\d+\/\d+$/gi"
       # excepted bot queue message: "Your request has been queued: position x/x"
     ```
   - see [why is queue important](#download-queue-detection) and [w3schools JavaScript RegExp Reference](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) if you're clueless about regexes
