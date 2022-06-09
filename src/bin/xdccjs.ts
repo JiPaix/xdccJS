@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+import * as readline from 'readline';
 import XDCC, { Params } from '../index';
 import BinError from './errorhandler';
 import Profiles from './profiles';
@@ -55,16 +56,16 @@ export default class XdccJSbin extends Profiles {
 
   private writeMSG(time: number): void {
     if (!this.program.quiet) {
-      process.stderr.cursorTo(1);
+      readline.cursorTo(process.stderr, 1);
       process.stderr.write(Connect.replace(`%info% waiting: ${time}`));
-      process.stderr.clearLine(1);
+      readline.clearLine(process.stderr, 1);
     }
   }
 
   private clearMSG(): void {
     if (!this.program.quiet) {
-      process.stderr.clearLine(0);
-      process.stderr.cursorTo(0);
+      readline.clearLine(process.stderr, 0);
+      readline.cursorTo(process.stderr, 0);
     }
   }
 
