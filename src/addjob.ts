@@ -1,6 +1,7 @@
 /* eslint-disable prefer-destructuring */
 /* eslint-disable no-param-reassign */
 import * as net from 'net';
+import type { MessageEventArgs } from 'irc-framework';
 import { Job } from './interfaces/job';
 import { TimeOut } from './timeouthandler';
 import type { Candidate } from './interfaces/candidate';
@@ -71,9 +72,34 @@ export default class AddJob extends TimeOut {
       candidate.queue = tmp.sort((a, b) => a - b);
     }
     if (this.candidates.length === 1 && candidate.now === 0) {
+      this.passMessage(candidate);
       this.emit('request', { target, packets: candidate.queue });
     }
     return candidate;
+  }
+
+  private passMessage(job:Job) {
+    const listener = (event: MessageEventArgs) => {
+      if (typeof event.type === 'undefined') return;
+      const regexp = this.queue ? new RegExp(this.queue) : undefined;
+      const regex = regexp && regexp.test(event.message);
+      if (event.nick === job.nick || event.nick === job.cancelNick) {
+        job.emit('message', { nick: event.nick, type: event.type, message: event.message });
+        if (!regex) {
+          this.print(
+            `%yellow%@${job.nick}%reset%: %cyan%${event.message}%reset%`,
+            8,
+          );
+        }
+      }
+    };
+    this.on('message', listener);
+    this.on('notice', listener);
+    job.on('done', () => {
+      this.removeListener('message', listener);
+      this.removeListener('notice', listener);
+      job.removeAllListeners();
+    });
   }
 
   private static async parsePackets(packets: string | string[] | number | number[])
@@ -140,7 +166,10 @@ export default class AddJob extends TimeOut {
     candidate.queue = candidate.queue.filter(
       (pending) => pending.toString() !== candidate.now.toString(),
     );
-    this.say(candidate.nick, `xdcc send ${candidate.now}`);
+    if (this.queue) {
+      const regex = this.queue;
+      this.DisableTimeOutOnQueue(candidate, regex);
+    }
     this.SetupTimeout({
       candidate,
       eventType: 'error',
@@ -152,6 +181,7 @@ export default class AddJob extends TimeOut {
       `%success% sending command: /MSG %yellow%${candidate.nick}%reset% xdcc send %yellow%${candidate.now.toString()}`,
       4,
     );
+    this.say(candidate.nick, `xdcc send ${candidate.now}`);
   }
 
   public getCandidate(target: string): Job {

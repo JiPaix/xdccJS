@@ -24,6 +24,10 @@ export type ParamsTimeout = ParamsIRC & {
    * @default `30`
    */
   timeout?: number
+  /**
+   * Queue Regex
+   */
+  queue?: RegExp
 }
 interface TimeoutSetup {
   candidate: Job
@@ -48,11 +52,17 @@ export class TimeOut extends Connect {
 
   timeout: number;
 
+  queue?: RegExp;
+
   constructor(params: ParamsTimeout) {
     super(params);
     this.portInUse = [];
     this.retry = Connect.is('retry', params.retry, 'number', 1);
     this.timeout = Connect.is('timeout', params.timeout, 'number', 30);
+    if (params.queue && !(params.queue instanceof RegExp)) {
+      throw Error('queue must be a RegExp');
+    }
+    this.queue = params.queue;
   }
 
   protected SetupTimeout(obj: TimeoutSetup): void {
@@ -69,6 +79,25 @@ export class TimeOut extends Connect {
       obj.candidate.timeout.bar = obj.disconnectAfter.bar;
     }
     this.TOstart(obj.candidate, obj.delay);
+  }
+
+  protected DisableTimeOutOnQueue(job: Job, regex: RegExp) {
+    const listener = (ev: {
+      nick: string;
+      type: string;
+      message: string;
+    }) => {
+      const regexp = new RegExp(regex);
+      if (regexp.test(ev.message)) {
+        this.print(
+          `%success% %info% You have been %cyan%queued%reset% by %yellow%${job.nick}%reset%, please wait.`,
+          6,
+        );
+        job.timeout.clear();
+        job.removeListener('message', listener);
+      }
+    };
+    job.on('message', listener);
   }
 
   private TOendStreams(candidate: Job): this {

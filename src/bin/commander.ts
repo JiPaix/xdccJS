@@ -24,6 +24,7 @@ export interface InterfaceCLI extends commander.Command {
   passivePort?: number
   randomize?: boolean
   botNameMatch?: boolean
+  queue?: RegExp
   wait?: number
   quiet?: boolean
   saveProfile?: string
@@ -65,6 +66,7 @@ export class BaseCommander {
         0,
       )
       .option('--bot-name-match', 'Block downloads if bot name does not match')
+      .option('--queue <string>', 'Regex to determine if the bot queued the request', BaseCommander.toRegex)
       .option('--save-profile <string>', 'save current options as a profile')
       .option('--delete-profile <string>', 'delete profile')
       .option('--set-profile <string>', 'set profile as default')
@@ -76,6 +78,17 @@ export class BaseCommander {
     const number = parseInt(numstring, 10);
     if (Number.isNaN(number)) throw new BinError('%danger% option --port must be a number');
     return number;
+  }
+
+  private static toRegex(string: string): RegExp {
+    // from https://stackoverflow.com/a/874742
+    const flags = string.replace(/.*\/([gimy]*)$/, '$1');
+    const pattern = string.replace(new RegExp(`^/(.*?)/${flags}$`), '$1');
+    try {
+      return new RegExp(pattern, flags);
+    } catch (e) {
+      throw new BinError('%danger% Invalid regex, eg. %grey%--queue /you\\shave\\sbeen\\squeued/gi');
+    }
   }
 
   protected log(string: string, pad = 0): void {
@@ -102,6 +115,7 @@ export class BaseCommander {
       passivePort: [this.program.passivePort || 5001],
       verbose: !this.program.quiet,
       botNameMatch: this.program.botNameMatch,
+      queue: this.program.queue,
     };
   }
 

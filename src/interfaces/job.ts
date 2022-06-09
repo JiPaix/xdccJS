@@ -71,6 +71,8 @@ export type JobMessageEvents = {
    * ```
    */
   cancel: (candidate: Candidate, errorMessage:string, fileInfo: FileInfo) => void,
+
+  message: (messageEvent: { nick:string, type: string, message: string}) => void,
 }
 
 export class Job extends (EventEmitter as new () => TypedEmitter<JobMessageEvents>) {
