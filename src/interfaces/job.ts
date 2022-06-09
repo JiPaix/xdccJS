@@ -70,7 +70,7 @@ export type JobMessageEvents = {
    * })
    * ```
    */
-  cancel: (candidate: Candidate, errorMessage:string, fileInfo: FileInfo) => void,
+  cancel: (candidate: Candidate, errorMessage:string, fileInfo?: FileInfo) => void,
 
   message: (messageEvent: { nick:string, type: string, message: string}) => void,
 }
@@ -129,11 +129,13 @@ export class Job extends (EventEmitter as new () => TypedEmitter<JobMessageEvent
       clear: () => void
     };
 
-  constructor(candidate: Candidate) {
+  constructor(candidate: Candidate, cancelFn: () => void) {
     // eslint-disable-next-line constructor-super
     super();
-    if (!candidate.cancel) throw new Error('candidate must be passed to makeCancelable first');
-    this.cancel = candidate.cancel;
+    this.cancel = () => {
+      cancelFn();
+      this.emit('cancel', candidate, 'cancelled by client');
+    };
     this.failures = candidate.failures;
     this.nick = candidate.nick;
     this.cancelNick = candidate.cancelNick || candidate.nick;

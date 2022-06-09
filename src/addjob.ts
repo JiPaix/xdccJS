@@ -62,8 +62,8 @@ export default class AddJob extends TimeOut {
     let candidate = this.getCandidate(target);
     if (!candidate) {
       const base = AddJob.constructCandidate(target, range);
-      base.cancel = this.makeCancelable(base);
-      const newCand = new Job(base);
+      const cancelFn = this.makeCancelable(base);
+      const newCand = new Job(base, cancelFn);
       AddJob.makeClearable(newCand);
       this.candidates.push(newCand);
       candidate = this.getCandidate(target);
