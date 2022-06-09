@@ -41,8 +41,7 @@ export type ParamsCTCP = ParamsTimeout & {
    * // with botNameMatch = true
    * xdccJS.download('BOT-A', 1)
    * //=> Only accept files comming from 'BOT-A'
-   * ```js
-   *
+   * ```
    */
    botNameMatch?: boolean
 }

@@ -1,4 +1,24 @@
 # Changelog
+## [v4.5.7](https://github.com/jipaix/xdccjs/tree/v4.5.6)
+### Feat(cli)
+* add `message` event to jobs
+### Feat(lib+cli)
+* messages sent by the current job's bot are printed out
+* add `queue` constructor parameters (CLI: `--queue`) which expect a regex to detect if the bot has moved you to a queue
+```console
+xdccJS --host "irc.server.com" --bot "SOME_BOT" --download "1-100" --queue "/download(.*)\d+\sout\sof\s\d+\/gi"
+# will match strings like : download "[somestuff] some files.pdf" pending, 10 out of 30
+```
+```js
+params.queue = /download(.*)\d+\sout\sof\s\d+\/gi
+```
+### Fix(lib+cli)
+* crashing when running in a non-TTY environment
+* download bar not rendering new lines when a download is interrupted
+### Fix(lib)
+* cancel message/event wasn't triggered if there was no active downloads
+```
+---
 ## [v4.5.0](https://github.com/jipaix/xdccjs/tree/v4.5.0)
 ### Fix(lib+cli)
 * add option to allow/reject connection on TLS enabled server with self-signed certificates

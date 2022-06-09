@@ -15,6 +15,7 @@ It can also be used as a <a href="#command-line-interface">command-line</a> down
   - [Getting Started](#getting-started)
   - [List of options](#options)
   - [Download](#download)
+    - [Download queue detection](#download-queue-detection)
     - [Jobs](#jobs)
     - [Events](#events)
     - [Piping](#pipes)
@@ -86,6 +87,7 @@ const opts = {
   randomizeNick: false, // Add random numbers at end of nickname                            - default: true
   passivePort: [5000, 5001, 5002], // Array of port(s) to use with Passive DCC              - default: [5001]
   botNameMatch: false, // Block downloads if the bot's name does not match the request      - default: true
+  queue: /soMething(.*)maTching/g // Regex matching the bot's message when you're request is moved to a queue
 }
 ```
 ### Download
@@ -97,6 +99,25 @@ xdccJS.on('ready', async () => {
   const yellow = await xdccJS.download('XDCC|YELLOW', 4)
   const red = await xdccJS.download('XDCC|RED', [12, 7, 10, 20])
   const purple = await xdccJS.download('XDCC|PURPLE', ['1', '3', '10', '20'])
+})
+```
+#### Download queue detection
+xdccJS will timeout any request after a certain amount of time when no file is sent (see [Options.timeout](#options)), Which is exactly what happens when a bot puts you into queue. 
+
+To avoid this behavior you need to provide a [regex](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) matching the bot "queue message".
+
+```js
+const opts = {
+  host: 'irc.server.com',
+  timeout: 20 // defaut is 30
+  queue: /request(.*)queued(.*)\d+\/\d+$/g
+  //=> excepted bot queue message: "Your request has been queued: position x/x"
+}
+const xdccJS = new XDCC(opts)
+
+xdccJS.on('ready', async () =>{
+  const queued = await xdccJS.download('BOT_WITH_LARGE_QUEUE', '1-5')
+  //=> if the bot sends a message matching the regex, download won't fail
 })
 ```
 ### Jobs
@@ -237,6 +258,12 @@ const arrayOfJobs = await xdccJS.jobs()
       console.log(fileInfo) //=> { file: 'filename.pdf', filePath: 'pipe', length: 5844849 }
     })
     ```
+> [**Job**].on( **'cancel'** ) : *Job canceled by user*  
+  - ```js
+    job.on('cancel', (message) => {
+      console.error(message) //=> "cancelled by user"
+    })
+    ```
 ### Pipes
 In order to use pipes xdccJS need to be initialized with path option set to false
 ```js
@@ -309,6 +336,7 @@ Options:
   --no-randomize             Disable nickname randomization
   -w, --wait [number]        Wait time (in seconds) in channel(s) before sending download request (default: 0)
   --botNameMatch             Block downloads if the bot's name does not match the request
+  --queue                    Regex to detect when a bot moves your request into a queue
   --save-profile [string]    Save current options as a profile
   --delete-profile [string]  Delete profile
   --set-profile [string]     Set profile as default
@@ -323,7 +351,7 @@ Alternatively, if you want to pipe the file just ommit the `--path` option  :
 ```bash
 xdccJS --host irc.server.net --bot "XDCC-BOT|RED" --download 110 | vlc -
 ```
-**I recommend using double quotes between the `bot name` and `download path`** as they often both include unescaped characeters or whitespaces
+**I recommend using double quotation marks between the `bot name` and `download path`** as they often both include unescaped characeters or whitespaces, **They are mandatory when using between `--queue`'s regex** (_see [examples below](#fyi)_)
 ## Profiles
 You can use profiles to automatically load predefined options on startup
 ### How to use profiles
@@ -387,6 +415,12 @@ xdccJS --delete-profile "my_profile"
       # fixed
       --path "/home/user/my folder" --bot "XDCC|BOT" --download 123-125 
     ```
+- an example with `--queue` regex:
+  - ```bash
+      xdccJS --host "irc.server.com" --bot "SOME_BOT" --download "1-100" --queue "/download(.*)\d+\sout\sof\s\d+\/gi"
+      # excepted bot queue message: "Your request has been queued: position x/x"
+    ```
+  - see [why is queue important](#download-queue-detection) and [w3schools JavaScript RegExp Reference](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) if you're clueless about regexes
 
 ## Documentation
 Full documentation is available <a href="https://jipaix.github.io/xdccJS/classes/default.html">here</a>

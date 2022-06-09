@@ -1,6 +1,6 @@
 {
   "name": "xdccjs",
-  "version": "4.5.0",
+  "version": "4.5.7",
   "description": "download files from XDCC bots on IRC, complete implementation of the XDCC protocol",
   "engines": {
     "node": ">=14.0.0"
@@ -52,9 +52,9 @@
     "@types/chai": "^4.3.1",
     "@types/lodash": "^4.14.182",
     "@types/mocha": "^9.1.1",
-    "@types/node": "^17.0.40",
-    "@typescript-eslint/eslint-plugin": "^5.27.0",
-    "@typescript-eslint/parser": "^5.27.0",
+    "@types/node": "^17.0.41",
+    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "@typescript-eslint/parser": "^5.27.1",
     "chai": "^4.3.6",
     "discord.js": "^13.7.0",
     "dotenv": "^16.0.1",
