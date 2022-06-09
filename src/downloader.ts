@@ -172,7 +172,7 @@ export default class Downloader extends CtcpParser {
         eventType: e.message === 'cancel' ? 'cancel' : 'error',
         message:
           e.message === 'cancel'
-            ? `Job cancelled: %cyan%${args.candidate.nick}`
+            ? `Cancelled: %cyan%${args.candidate.nick}`
             : `Connection error: %yellow%${e.message}`,
         delay: 0,
         disconnectAfter: {

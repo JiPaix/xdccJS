@@ -50,6 +50,7 @@ export default class AddJob extends TimeOut {
       } else {
         this.candidates = this.candidates.filter((x) => x.nick !== candidate.nick);
       }
+      this.print(`%danger% %cyan%cancelling%reset% %yellow%${candidate.nick}%reset%'s job`, 6);
     };
     return fn;
   }
