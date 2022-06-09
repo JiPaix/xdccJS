@@ -172,7 +172,7 @@ export default class Downloader extends CtcpParser {
         eventType: e.message === 'cancel' ? 'cancel' : 'error',
         message:
           e.message === 'cancel'
-            ? `Cancelled: %cyan%${args.candidate.nick}`
+            ? 'Cancelled by user'
             : `Connection error: %yellow%${e.message}`,
         delay: 0,
         disconnectAfter: {
@@ -182,7 +182,7 @@ export default class Downloader extends CtcpParser {
           pick: args.pick,
           bar: args.bar,
         },
-        padding: 6,
+        padding: 4,
         fileInfo: args.fileInfo,
         executeLater: () => {
           if (e.message === 'cancel') {
@@ -201,7 +201,8 @@ export default class Downloader extends CtcpParser {
   }
 
   private onEnd(args: Pass): void {
-    args.client.on('close', () => {
+    args.client.on('close', (e) => {
+      if (e) return;
       this.print('%success% done.', 6);
       args.candidate.timeout.clear();
       args.candidate.success.push(args.fileInfo.file);

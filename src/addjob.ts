@@ -49,9 +49,9 @@ export default class AddJob extends TimeOut {
         const cancel = new Error('cancel');
         client.destroy(cancel);
       } else {
+        this.print('Cancelled by user', 4);
         this.candidates = this.candidates.filter((x) => x.nick !== candidate.nick);
       }
-      this.print(`%danger% %cyan%cancelling%reset% %yellow%${candidate.nick}%reset%'s job`, 6);
     };
     return fn;
   }
@@ -199,6 +199,7 @@ export default class AddJob extends TimeOut {
         candidate.emit('done', candidate.show());
         this.emit('done', candidate.show());
         if (verbose && candidate.failures.length) {
+          let message = `%danger% couldn't download pack: %yellow%${candidate.failures}%reset% from %yellow%${candidate.nick}%reset%`;
           if (candidate.failures.length > 1) {
           /**
            * Credit to CertainPerformance on stackoverflow
@@ -208,10 +209,9 @@ export default class AddJob extends TimeOut {
            */
             const firsts = candidate.failures.slice(0, candidate.failures.length - 1);
             const last = candidate.failures[candidate.failures.length - 1];
-            this.print(`%danger% couldn't download packs: %yellow%${`${firsts.join(', ')} and ${last}`}%reset% from %yellow%${candidate.nick}%reset%`, 4);
-          } else {
-            this.print(`%danger% couldn't download pack: %yellow%${candidate.failures}%reset% from %yellow%${candidate.nick}%reset%`, 4);
+            message = `%danger% couldn't download packs: %yellow%${`${firsts.join(', ')} and ${last}`}%reset% from %yellow%${candidate.nick}%reset%`;
           }
+          this.print(message, 6);
         }
         if (!this.candidates.length) {
           this.emit('can-quit');
