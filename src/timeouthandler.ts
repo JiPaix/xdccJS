@@ -139,10 +139,9 @@ export class TimeOut extends Connect {
     if (this.verbose) {
       const msg = `%danger% ${candidate.timeout.message}`;
       if (candidate.timeout.bar) {
-        candidate.timeout.bar.interrupt(''.padStart(candidate.timeout.padding || 0) + Connect.replace(msg), false);
-      } else {
-        this.print(msg, candidate.timeout.padding);
+        candidate.timeout.bar.interrupt(' ', false);
       }
+      this.print(`${msg}`, candidate.timeout.padding);
     }
   }
 

@@ -1,3 +1,4 @@
+const readline = require('readline');
 /*!
  * node-progress
  * Copyright(c) 2011 TJ Holowaychuk <tj@vision-media.ca>
@@ -177,9 +178,9 @@ ProgressBar.prototype.render = function (tokens, force) {
   if (this.tokens) for (var key in this.tokens) str = str.replace(':' + key, this.tokens[key])
 
   if (this.lastDraw !== str) {
-    this.stream.cursorTo(0)
+    readline.cursorTo(this.stream, 0)
     this.stream.write(str)
-    this.stream.clearLine(1)
+    readline.clearLine(this.stream, 1)
     this.lastDraw = str
   }
 }
@@ -212,15 +213,11 @@ ProgressBar.prototype.update = function (ratio, tokens) {
  */
 
 ProgressBar.prototype.interrupt = function (message, draw) {
-  // clear the current line
-  this.stream.clearLine()
-  // move the cursor to the start of the line
-  this.stream.cursorTo(0)
-  // write the message text
+  readline.clearLine(this.stream, 0)
+  readline.cursorTo(this.stream, 0)
+  // // write the message text
   this.stream.write(message)
-  // terminate the line after writing the message
-  this.stream.write('\n')
-  // re-display the progress bar with its lastDraw
+  // // re-display the progress bar with its lastDraw
   if (draw) {
     this.stream.write(this.lastDraw)
   }
@@ -235,10 +232,13 @@ ProgressBar.prototype.interrupt = function (message, draw) {
 ProgressBar.prototype.terminate = function () {
   if (this.clear) {
     if (this.stream.clearLine) {
-      this.stream.clearLine()
-      this.stream.cursorTo(0)
+      readline.clearLine(this.stream, 0)
+      // this.stream.clearLine()
+      readline.cursorTo(this.stream, 0)
+      // this.stream.cursorTo(0)
     }
   } else {
+    readline.cursorTo(this.stream, 0)
     this.stream.write('\n')
   }
 }
