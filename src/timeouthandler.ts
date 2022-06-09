@@ -90,7 +90,7 @@ export class TimeOut extends Connect {
       const regexp = new RegExp(regex);
       if (regexp.test(ev.message)) {
         this.print(
-          `%success% %info% You have been %cyan%queued%reset% by %yellow%${job.nick}%reset%, please wait.`,
+          `%info% You have been %cyan%queued%reset% by %yellow%${job.nick}%reset%, please wait.`,
           6,
         );
         job.timeout.clear();
