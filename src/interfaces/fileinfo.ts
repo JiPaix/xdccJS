@@ -16,7 +16,7 @@ export type FileInfo = {
   /** File length in bytes */
   length: number
   /** Token (passive DCC) */
-  token: number
+  token: number|string
   /** Resume Position */
   position?: number
 }
