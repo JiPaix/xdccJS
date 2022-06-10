@@ -22,11 +22,11 @@ It can also be used as a <a href="#command-line-interface">command-line</a> down
 - [(Auto) disconnect from IRC](#disconnect)
 - [Advanced IRC commands and middlewares](#advanced-irc-commands)
 - [CLI](#command-line-interface)
-- [Installation](#installation-1)
-- [Options](#options)
-- [Usage](#usage)
-- [Profiles](#profiles)
-- [Important notes](#fyi)
+  - [Installation](#installation-1)
+  - [Options](#options)
+  - [Usage](#usage)
+  - [Profiles](#profiles)
+  - [Important notes](#fyi)
 
 # Installation
 [![NPM](https://nodei.co/npm/xdccjs.png?compact=true)](https://nodei.co/npm/xdccjs/)
