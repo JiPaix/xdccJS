@@ -25,6 +25,7 @@ export interface InterfaceCLI extends commander.Command {
   randomize?: boolean
   botNameMatch?: boolean
   queue?: RegExp
+  timeout?: number
   wait?: number
   quiet?: boolean
   saveProfile?: string
@@ -55,7 +56,7 @@ export class BaseCommander {
       .option('-p, --path <path>', 'download path', path.normalize)
       .option('-n, --nickname <nickname>', 'Your IRC nickname')
       .option('-c, --channel [chan...]', 'channel(s) to join (without #)')
-      .option('-r, --retry <number>', 'number of attempts before skipping pack', BaseCommander.parseIfNotInt)
+      .option('-t --timeout <number>', 'timeout for each download', (k:string) => BaseCommander.parseIfNotInt(k, 'timeout'))
       .option('-q, --quiet', 'disable console output')
       .option('--passive-port <number>', 'port used for passive dccs', BaseCommander.parseIfNotInt)
       .option('--no-randomize', 'Disable nickname randomization')
@@ -116,6 +117,7 @@ export class BaseCommander {
       verbose: !this.program.quiet,
       botNameMatch: this.program.botNameMatch,
       queue: this.program.queue,
+      timeout: this.program.timeout,
     };
   }
 
