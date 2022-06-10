@@ -12,21 +12,21 @@ It can also be used as a <a href="#command-line-interface">command-line</a> down
 
 ## Table of contents
 - [API](#api)
-  - [Getting Started](#getting-started)
-  - [List of options](#options)
-  - [Download](#download)
+- [Getting Started](#getting-started)
+- [List of options](#options)
+- [Download](#download)
     - [Download queue detection](#download-queue-detection)
     - [Jobs](#jobs)
     - [Events](#events)
     - [Piping](#pipes)
-  - [(Auto) disconnect from IRC](#disconnect)
-  - [Advanced IRC commands and middlewares](#advanced-irc-commands)
+- [(Auto) disconnect from IRC](#disconnect)
+- [Advanced IRC commands and middlewares](#advanced-irc-commands)
 - [CLI](#command-line-interface)
-  - [Installation](#installation-1)
-  - [Options](#options)
-  - [Usage](#usage)
-  - [Profiles](#profiles)
-  - [Important notes](#fyi)
+- [Installation](#installation-1)
+- [Options](#options)
+- [Usage](#usage)
+- [Profiles](#profiles)
+- [Important notes](#fyi)
 
 # Installation
 [![NPM](https://nodei.co/npm/xdccjs.png?compact=true)](https://nodei.co/npm/xdccjs/)
@@ -188,13 +188,13 @@ const arrayOfJobs = await xdccJS.jobs()
  
 
 > [**xdccJS**].on( **'ready'** ) : *xdccJS is ready to download*
-  - ```js
+- ```js
     xdccJS.on('ready', async () => {
       // download() here
     })
     ```
 > [**xdccJS** | **Job**].on( **'downloading'** ) : *Data is being received (a file is downloading)*
-  - ```js
+- ```js
     xdccJS.on('downloading', (fileInfo, received, percentage) => {
       console.log(fileInfo) //=> { file: 'filename.pdf', filePath: '/path/to/filename.pdf', length: 5844849 }
       console.log(`downloading: '${fileInfo.file}'`) //=> downloading: 'your file.pdf'
@@ -205,7 +205,7 @@ const arrayOfJobs = await xdccJS.jobs()
     })
     ```
 > [**xdccJS** | **Job**].on( **'downloaded'** ) : *A file successfully downloaded*
-  - ```js
+- ```js
     xdccJS.on('downloaded', (fileInfo) => {
       console.log(fileInfo.filePath) //=> /home/user/xdccJS/downloads/myfile.pdf
     })
@@ -218,7 +218,7 @@ const arrayOfJobs = await xdccJS.jobs()
     })
     ```
 > [**xdccJS** | **Job**].on( **'done'** ) : *A job has no remaining package in queue*
-  - ```js
+- ```js
     xdccJS.on('done', (job) => {
       console.log(job.show())
         //=> { name: 'a-bot', queue: [98], now: 62, sucess: ['file.txt'], failed: [50] }
@@ -231,7 +231,7 @@ const arrayOfJobs = await xdccJS.jobs()
     })
     ```
 > [**xdccJS** | **Job**].on( **'pipe'** ) : *A pipe is available (see [pipe documentation](#pipes)*)
-  - ```js
+- ```js
     xdccJS.on('pipe', (stream, fileInfo) => {
       stream.pipe(somewhere)
       console.log(fileInfo)
@@ -245,21 +245,21 @@ const arrayOfJobs = await xdccJS.jobs()
     })
     ```
 > [**xdccJS**].on( **'error'** ) : *Connection Errors*  
-  - ```js
+- ```js
     xdccJS.on('error', (err) => {
       err instanceof Error //=> true
       console.error(err.message) //=> UNREACHABLE HOST 1.1.1.1:6667
     })
     ```
 > [**Job**].on( **'error'** ) : *Job interrupted/canceled or connexion with bot unreachable*  
-  - ```js
+- ```js
     job.on('error', (message, fileInfo) => {
       console.error(message) //=> timeout: no response from XDCC|BLUE
       console.log(fileInfo) //=> { file: 'filename.pdf', filePath: 'pipe', length: 5844849 }
     })
     ```
 > [**Job**].on( **'cancel'** ) : *Job canceled by user*  
-  - ```js
+- ```js
     job.on('cancel', (message) => {
       console.error(message) //=> "cancelled by user"
     })
@@ -319,29 +319,29 @@ npm install xdccjs -g
 ```  
 ## Options
 ```
-Options:
-  -V, --version              Output the version number
-  -h, --host <server>        IRC server hostname
-  --port <number>            IRC server port
-  --tls                      Enable SSL/TLS Support
-  --allow-insecure           Allow self-signed certificate (tls needs to be enabled)
-  -b, --bot <botname>        XDCC bot nickname
-  -d, --download <packs...>  Pack number(s) to download
-  -p, --path <path>          Download path
-  -n, --nickname <nickname>  Your nickname
-  -c, --channel [chan...]    Channel(s) to join (without #)
-  -r, --retry <number>       Number of attempts before skipping pack
-  -q, --quiet                Disable console output
-  --passive-port <number>    Port used for passive dccs
-  --no-randomize             Disable nickname randomization
-  -w, --wait [number]        Wait time (in seconds) in channel(s) before sending download request (default: 0)
-  --botNameMatch             Block downloads if the bot's name does not match the request
-  --queue                    Regex to detect when a bot moves your request into a queue
-  --save-profile [string]    Save current options as a profile
-  --delete-profile [string]  Delete profile
-  --set-profile [string]     Set profile as default
-  --list-profile             List all available profiles
-  --help                     Display help for command
+-V, --version              output the version number
+-h, --host <server>        IRC server hostname - required
+--port <number>            IRC server port - default: 6667
+-n, --nickname <nickname>  Your nickname - default: xdccJS
+--no-randomize             Disable nickname randomization - optional
+-c, --channel <chans...>   Channel(s) to join - optional
+-p, --path <path>          Download path - optional
+-b, --bot <botname>        XDCC bot nickname - required
+-d, --download <packs...>  Pack number(s) to download - required
+--passive-port <number>    Port to use for passive dccs - optional
+-r, --retry <number>       Number of attempts before skipping pack - optional
+-t --timeout <number>      Time in seconds before a download is considered timed out - optional
+-w, --wait <number>        Time to wait before sending download request - optional
+--bot-name-match           Block downloads if bot name does not match - optional
+--queue <RegExp>           Regex to determine if the bot queued the request - optional
+--tls                      enable SSL/TLS - optional
+--no-insecure              Reject self-signed SSL/TLS certificates - optional
+--save-profile <string>    save current options as a profile - optional
+--delete-profile <string>  delete profile - optional
+--set-profile <string>     set profile as default - optional
+--list-profile             list all available profiles - optional
+-q, --quiet                Disable console output - optional
+--help                     display help for command
 ```
 ## Usage
 ```bash
@@ -393,14 +393,14 @@ xdccJS --delete-profile "my_profile"
  ```
 ## FYI
 - hashtags for channels and packs are optional :
-  - ```bash
+- ```bash
       --channel "#my-channel" --download "#132"
       # is the same as
       --channel "my-channel" --download "132" 
     ```
 - given options prevails over the one provided by profiles :
-  - except for `--host`, which results in xdccJS ignoring the current profile
-  - example: 
+- except for `--host`, which results in xdccJS ignoring the current profile
+- example: 
     ```bash
         # current profile has --wait 5, but this time you need --wait 50
         xdccJS --bot "mybot" --download "125-130" --wait 50
@@ -409,18 +409,18 @@ xdccJS --delete-profile "my_profile"
         # ignores ALL profile options
         xdccJS --host "irc.mywnewserver.org"
 - options `--bot` and `--path` often contains special characters and/or whitespaces :
-  - ```bash
+- ```bash
       # this wont work
       --path /home/user/my folder --bot XDCC|BOT --download 123-125
       # fixed
       --path "/home/user/my folder" --bot "XDCC|BOT" --download 123-125 
     ```
 - an example with `--queue` regex:
-  - ```bash
+- ```bash
       xdccJS --host "irc.server.com" --bot "SOME_BOT" --download "1-100" --queue "/request(.*)queued(.*)\d+\/\d+$/gi"
       # excepted bot queue message: "Your request has been queued: position x/x"
     ```
-  - see [why is queue important](#download-queue-detection) and [w3schools JavaScript RegExp Reference](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) if you're clueless about regexes
+- see [why is queue important](#download-queue-detection) and [w3schools JavaScript RegExp Reference](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) if you're clueless about regexes
 
 ## Documentation
 Full documentation is available <a href="https://jipaix.github.io/xdccJS/classes/default.html">here</a>

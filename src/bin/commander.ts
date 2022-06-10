@@ -47,32 +47,31 @@ export class BaseCommander {
       .storeOptionsAsProperties()
       .name('xdccJS')
       .version(version)
-      .option('-h, --host <server>', 'IRC server hostname')
-      .option('--port <number>', 'IRC server port', (k:string) => BaseCommander.parseIfNotInt(k, 'port'))
-      .option('--tls', 'enable SSL/TLS')
-      .option('--no-insecure', 'Reject self-signed SSL/TLS certificates')
-      .option('-b, --bot <botname>', 'xdcc bot nickname')
-      .option('-d, --download <packs...>', 'pack number(s) to download')
-      .option('-p, --path <path>', 'download path', path.normalize)
-      .option('-n, --nickname <nickname>', 'Your IRC nickname')
-      .option('-c, --channel [chan...]', 'channel(s) to join (without #)')
-      .option('-r, --retry <number>', 'number of attempts before skipping pack', (k:string) => BaseCommander.parseIfNotInt(k, 'retry'))
-      .option('-t --timeout <number>', 'timeout for each download', (k:string) => BaseCommander.parseIfNotInt(k, 'timeout'))
-      .option('-q, --quiet', 'disable console output')
-      .option('--passive-port <number>', 'port used for passive dccs', (k:string) => BaseCommander.parseIfNotInt(k, 'passive-port'))
-      .option('--no-randomize', 'Disable nickname randomization')
+      .option('-h, --host <server>', 'IRC server hostname - \x1b[1mrequired\x1b[0m')
+      .option('--port <number>', 'IRC server port - \x1b[1mdefault: 6667\x1b[0m', (k:string) => BaseCommander.parseIfNotInt(k, 'port'))
+      .option('-n, --nickname <nickname>', 'Your nickname - \x1b[1mdefault: xdccJS\x1b[0m')
+      .option('--no-randomize', 'Disable nickname randomization - \x1b[1mdefault: randomize\x1b[0m')
+      .option('-c, --channel <chans...>', 'Channel(s) to join - \x1b[1moptional\x1b[0m')
+      .option('-p, --path <path>', 'Download path - \x1b[1moptional\x1b[0m', path.normalize)
+      .option('-b, --bot <botname>', 'XDCC bot nickname - \x1b[1mrequired\x1b[0m')
+      .option('-d, --download <packs...>', 'Packs to download - \x1b[1mrequired\x1b[0m')
+      .option('--passive-port <number>', 'Port to use for passive dccs - \x1b[1moptional\x1b[0m', (k:string) => BaseCommander.parseIfNotInt(k, 'passive-port'))
+      .option('-r, --retry <number>', 'Number of attempts before skipping pack - \x1b[1moptional\x1b[0m', (k:string) => BaseCommander.parseIfNotInt(k, 'retry'))
+      .option('-t --timeout <number>', 'Time in seconds before a download is considered timed out - \x1b[1moptional\x1b[0m', (k:string) => BaseCommander.parseIfNotInt(k, 'timeout'))
       .option(
-        '-w, --wait [number]',
-        'wait time (in seconds) in channel(s) before sending download request',
+        '-w, --wait <number>',
+        'Time to wait before sending download request - \x1b[1moptional\x1b[0m',
         (k:string) => BaseCommander.parseIfNotInt(k, 'wait'),
-        0,
       )
-      .option('--bot-name-match', 'Block downloads if bot name does not match')
-      .option('--queue <string>', 'Regex to determine if the bot queued the request', BaseCommander.toRegex)
-      .option('--save-profile <string>', 'save current options as a profile')
-      .option('--delete-profile <string>', 'delete profile')
-      .option('--set-profile <string>', 'set profile as default')
-      .option('--list-profile', 'list all available profiles')
+      .option('--bot-name-match', 'Block downloads if bot name does not match - \x1b[1moptional\x1b[0m')
+      .option('--queue <RegExp>', 'Regex to determine if the bot queued the request - \x1b[1moptional\x1b[0m', BaseCommander.toRegex)
+      .option('--tls', 'enable SSL/TLS - \x1b[1moptional\x1b[0m')
+      .option('--no-insecure', 'Reject self-signed SSL/TLS certificates - \x1b[1moptional\x1b[0m')
+      .option('--save-profile <string>', 'save current options as a profile - \x1b[1moptional\x1b[0m')
+      .option('--delete-profile <string>', 'delete profile - \x1b[1moptional\x1b[0m')
+      .option('--set-profile <string>', 'set profile as default - \x1b[1moptional\x1b[0m')
+      .option('--list-profile', 'list all available profiles - \x1b[1moptional\x1b[0m')
+      .option('-q, --quiet', 'Disable console output - \x1b[1moptional\x1b[0m')
       .parse();
   }
 
