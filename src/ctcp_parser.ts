@@ -198,7 +198,7 @@ export class CtcpParser extends AddJob {
       port: parseInt(parts[4], 10),
       position: 0,
       length: parseInt(parts[5], 10),
-      token: parseInt(parts[6], 10),
+      token: parts[6],
     };
   }
 

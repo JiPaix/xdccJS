@@ -25,6 +25,7 @@ export interface InterfaceCLI extends commander.Command {
   randomize?: boolean
   botNameMatch?: boolean
   queue?: RegExp
+  timeout?: number
   wait?: number
   quiet?: boolean
   saveProfile?: string
@@ -47,7 +48,7 @@ export class BaseCommander {
       .name('xdccJS')
       .version(version)
       .option('-h, --host <server>', 'IRC server hostname')
-      .option('--port <number>', 'IRC server port', BaseCommander.parseIfNotInt)
+      .option('--port <number>', 'IRC server port', (k:string) => BaseCommander.parseIfNotInt(k, 'port'))
       .option('--tls', 'enable SSL/TLS')
       .option('--no-insecure', 'Reject self-signed SSL/TLS certificates')
       .option('-b, --bot <botname>', 'xdcc bot nickname')
@@ -55,14 +56,15 @@ export class BaseCommander {
       .option('-p, --path <path>', 'download path', path.normalize)
       .option('-n, --nickname <nickname>', 'Your IRC nickname')
       .option('-c, --channel [chan...]', 'channel(s) to join (without #)')
-      .option('-r, --retry <number>', 'number of attempts before skipping pack', BaseCommander.parseIfNotInt)
+      .option('-r, --retry <number>', 'number of attempts before skipping pack', (k:string) => BaseCommander.parseIfNotInt(k, 'retry'))
+      .option('-t --timeout <number>', 'timeout for each download', (k:string) => BaseCommander.parseIfNotInt(k, 'timeout'))
       .option('-q, --quiet', 'disable console output')
-      .option('--passive-port <number>', 'port used for passive dccs', BaseCommander.parseIfNotInt)
+      .option('--passive-port <number>', 'port used for passive dccs', (k:string) => BaseCommander.parseIfNotInt(k, 'passive-port'))
       .option('--no-randomize', 'Disable nickname randomization')
       .option(
         '-w, --wait [number]',
         'wait time (in seconds) in channel(s) before sending download request',
-        BaseCommander.parseIfNotInt,
+        (k:string) => BaseCommander.parseIfNotInt(k, 'wait'),
         0,
       )
       .option('--bot-name-match', 'Block downloads if bot name does not match')
@@ -74,9 +76,9 @@ export class BaseCommander {
       .parse();
   }
 
-  private static parseIfNotInt(numstring: string): number {
+  private static parseIfNotInt(numstring: string, optName:string): number {
     const number = parseInt(numstring, 10);
-    if (Number.isNaN(number)) throw new BinError('%danger% option --port must be a number');
+    if (Number.isNaN(number)) throw new BinError(`%danger% option --${optName} must be a number`);
     return number;
   }
 
@@ -116,6 +118,7 @@ export class BaseCommander {
       verbose: !this.program.quiet,
       botNameMatch: this.program.botNameMatch,
       queue: this.program.queue,
+      timeout: this.program.timeout,
     };
   }
 

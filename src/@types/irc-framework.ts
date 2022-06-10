@@ -283,7 +283,7 @@ declare module 'irc-framework' {
     tags: { [key: string]: string }
     target: string
     time?: any
-    type: 'privmsg' | 'action' // TODO
+    type: 'privmsg' | 'action' | 'notice' // TODO
   }
   export interface FileInfo {
     /** Type of transfert (send or resume) */

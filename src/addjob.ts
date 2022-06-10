@@ -83,9 +83,10 @@ export default class AddJob extends TimeOut {
       if (typeof event.type === 'undefined') return;
       const regexp = this.queue ? new RegExp(this.queue) : undefined;
       const regex = regexp && regexp.test(event.message);
+      const toMe = event.target.toLocaleLowerCase() === this.nickname.toLocaleLowerCase();
       if (event.nick === job.nick || event.nick === job.cancelNick) {
         job.emit('message', { nick: event.nick, type: event.type, message: event.message });
-        if (!regex) {
+        if (!regex && toMe) {
           this.print(
             `%yellow%@${job.nick}%reset%: %cyan%${event.message}%reset%`,
             8,

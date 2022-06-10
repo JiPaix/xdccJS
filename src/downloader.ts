@@ -135,7 +135,7 @@ export default class Downloader extends CtcpParser {
       pick,
       bar,
     };
-    client.setTimeout(10000);
+    client.setTimeout(this.timeout * 1000);
     this.onTimeOut(pass);
     this.onData(pass);
     this.onEnd(pass);
@@ -232,7 +232,13 @@ export default class Downloader extends CtcpParser {
       args.stream.write(data);
       received += data.length;
       sendBuffer.writeBigInt64BE(BigInt(received), 0);
-      args.client.write(sendBuffer);
+      args.client.write(sendBuffer, (e) => {
+        if (e && received === args.fileInfo.length) {
+          args.client.destroy();
+        } else if (e) {
+          args.client.destroy(e);
+        }
+      });
       if (this.verbose && args.bar) args.bar.tick(data.length);
       if (received < args.fileInfo.length) {
         args.candidate.emit('downloading', args.fileInfo, received, (received / args.fileInfo.length) * 100);
