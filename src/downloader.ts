@@ -135,7 +135,7 @@ export default class Downloader extends CtcpParser {
       pick,
       bar,
     };
-    client.setTimeout(10000);
+    client.setTimeout(this.timeout * 1000);
     this.onTimeOut(pass);
     this.onData(pass);
     this.onEnd(pass);
