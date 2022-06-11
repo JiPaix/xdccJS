@@ -79,15 +79,17 @@ const opts = {
     rejectUnauthorized: true, // Reject self-signed certificates                            - default: false
   }, 
   nickname: 'ItsMeJiPaix', // Nickname                                                      - default: xdccJS + random
-  chan: ['#candy', '#fruits'], // Array of channels                                         - default : [ ]
+  chan: ['#candy', '#fruits'], // Array of channels                                         - default : [ ] (no chan)
   path: 'downloads', // Download path or 'false'                                            - default: false (which enables piping)
+  nickServ: 'my password', // Authenticate to NickServ                                      - default: undefined (disabled)
   retry: 2, // Nb of retries before skip                                                    - default: 1
   timeout: 50, // Nb of seconds before a download is considered timed out                   - default: 30
   verbose: true, // Display download progress and jobs status                               - default: false
   randomizeNick: false, // Add random numbers at end of nickname                            - default: true
   passivePort: [5000, 5001, 5002], // Array of port(s) to use with Passive DCC              - default: [5001]
   botNameMatch: false, // Block downloads if the bot's name does not match the request      - default: true
-  queue: /soMething(.*)maTching/g // Regex matching the bot's message when you're request is moved to a queue
+  queue: /soMething(.*)maTching/g //                                                        - default: undefined (disabled)
+  // ^ Regex matching the bot's message when you're request is moved to a queue    
 }
 ```
 ### Download
@@ -328,6 +330,7 @@ npm install xdccjs -g
 -p, --path <path>          Download path - optional
 -b, --bot <botname>        XDCC bot nickname - required
 -d, --download <packs...>  Pack number(s) to download - required
+--nickserv <password>      Authenticate to NickServ - default: disabled
 --passive-port <number>    Port to use for passive dccs - optional
 -r, --retry <number>       Number of attempts before skipping pack - optional
 -t --timeout <number>      Time in seconds before a download is considered timed out - optional
