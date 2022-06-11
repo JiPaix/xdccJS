@@ -1,4 +1,16 @@
 # Changelog
+## [v4.5.28](https://github.com/jipaix/xdccjs/tree/v4.5.28)
+### Feat(lib)
+* add `nickServ` parameter to authenticate with NickServ (password only, use nickname as login)
+### Feat(cli)
+* add option `--nickserv` to authenticate with NickServ (password only, use nickname as login)
+* add option `-t, --timeout`
+### Fix(lib)
+* only print bot messages directly addressed to you (message sent to channels are ignored)
+* transfert timeout duration is no longer fixed to 10 seconds, use `timeout` parameter instead
+* fix/handle `write ECONNRESET` errors when bot disconnects without sending a "FIN" packet
+* accept alphanumeric tokens (ctcp negociation)
+---
 ## [v4.5.7](https://github.com/jipaix/xdccjs/tree/v4.5.6)
 ### Feat(cli)
 * add `message` event to jobs
