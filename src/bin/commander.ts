@@ -27,6 +27,7 @@ export interface InterfaceCLI extends commander.Command {
   queue?: RegExp
   timeout?: number
   wait?: number
+  nickserv?: string
   quiet?: boolean
   saveProfile?: string
   deleteProfile?: string
@@ -55,6 +56,7 @@ export class BaseCommander {
       .option('-p, --path <path>', 'Download path - \x1b[1moptional\x1b[0m', path.normalize)
       .option('-b, --bot <botname>', 'XDCC bot nickname - \x1b[1mrequired\x1b[0m')
       .option('-d, --download <packs...>', 'Packs to download - \x1b[1mrequired\x1b[0m')
+      .option('--nickserv <password>', 'Authenticate to NickServ - \x1b[1mdefault: disabled\x1b[0m')
       .option('--passive-port <number>', 'Port to use for passive dccs - \x1b[1moptional\x1b[0m', (k:string) => BaseCommander.parseIfNotInt(k, 'passive-port'))
       .option('-r, --retry <number>', 'Number of attempts before skipping pack - \x1b[1moptional\x1b[0m', (k:string) => BaseCommander.parseIfNotInt(k, 'retry'))
       .option('-t --timeout <number>', 'Time in seconds before a download is considered timed out - \x1b[1moptional\x1b[0m', (k:string) => BaseCommander.parseIfNotInt(k, 'timeout'))
@@ -118,6 +120,7 @@ export class BaseCommander {
       botNameMatch: this.program.botNameMatch,
       queue: this.program.queue,
       timeout: this.program.timeout,
+      nickServ: this.program.nickserv,
     };
   }
 
