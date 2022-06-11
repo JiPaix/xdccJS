@@ -92,7 +92,12 @@ export type ParamsIRC = {
       */
      rejectUnauthorized?: boolean
    }
-   /** NickServ password */
+   /**
+    * NickServ password
+    * @example
+    * ```js
+    * params.nickServ = 'my_password'
+    */
    nickServ?: string
 }
 
