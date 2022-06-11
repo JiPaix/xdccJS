@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable @typescript-eslint/triple-slash-reference */
 /// <reference path="./@types/irc-framework.ts"/>
-import { Client } from 'irc-framework';
+import { Client, MessageEventArgs } from 'irc-framework';
 
 export type ParamsIRC = {
   /**
@@ -92,6 +92,8 @@ export type ParamsIRC = {
       */
      rejectUnauthorized?: boolean
    }
+   /** NickServ password */
+   nickServ?: string
 }
 
 export default class Connect extends Client {
@@ -113,6 +115,9 @@ export default class Connect extends Client {
   };
 
   protected timeout: number;
+
+  private nickservPassword?: string;
+
   constructor(params: ParamsIRC) {
     super();
     this.nickname = params.nickname || 'xdccJS';
@@ -130,6 +135,7 @@ export default class Connect extends Client {
       params.tls = { enable: false, rejectUnauthorized: true };
     }
     this.tls = params.tls;
+    this.nickservPassword = params.nickServ;
     this.timeout = Connect.is('timeout', params.timeout, 'number', 30);
     this.onConnect();
     this.connect({
@@ -156,12 +162,61 @@ export default class Connect extends Client {
   }
 
   private onConnect(): void {
-    this.on('connected', () => {
+    this.on('connected', async () => {
       clearTimeout(this.connectionTimeout);
       this.chan.forEach((chan) => this.join(chan));
       this.print(`%success% connected to : %bold%%yellow%${this.host}`);
+      if (this.nickservPassword) {
+        try {
+          this.print('%info% identifying to %yellow%NickServ', 2);
+          await this.nickServAuth();
+        } catch (e) {
+          if (e instanceof Error) this.print(`%danger% failed: %red%${e.message}`, 2);
+          this.quit();
+          return;
+        }
+      }
       this.print(`%success% joined: [ %yellow%${this.chan.join(' ')}%reset% ]`, 2);
       this.emit('ready');
+    });
+  }
+
+  private nickServAuth():Promise<void> {
+    return new Promise((resolve, reject) => {
+      let error = '';
+      let timeout = setTimeout(() => {});
+
+      const noticeListener = (ev: MessageEventArgs) => {
+        if (ev.nick.toLocaleLowerCase() === 'nickserv') {
+          if (ev.message.includes('isn\'t registered') || ev.message.includes('incorrect')) {
+            // eslint-disable-next-line no-use-before-define
+            this.turnOff(noticeListener, rawListener, timeout);
+            reject(new Error(`${ev.message}`));
+          }
+          error = ev.message;
+        }
+      };
+
+      const rawListener = (ev: { from_server: boolean, line: string}) => {
+        if (ev.from_server) {
+          const line = ev.line.toLocaleLowerCase();
+          if (line.includes('logged in')) {
+            this.turnOff(noticeListener, rawListener, timeout);
+            resolve();
+          }
+        }
+      };
+
+      this.on('raw', rawListener);
+      this.on('notice', noticeListener);
+
+      timeout = setTimeout(() => {
+        this.off('raw', rawListener);
+        this.off('notice', noticeListener);
+        reject(new Error(`%danger% NickServ authentication failed: ${error.length ? error : 'unknown error'}`));
+      }, this.timeout * 1000);
+
+      this.say('NickServ', `identify ${this.nickservPassword}`);
     });
   }
 
@@ -175,6 +230,18 @@ export default class Connect extends Client {
       newNick = 'xdccJS';
     }
     return newNick + Math.floor(Math.random() * 999) + 1;
+  }
+
+  private turnOff(
+    // eslint-disable-next-line no-unused-vars
+    rawListener: (arg:MessageEventArgs) => void,
+    // eslint-disable-next-line no-unused-vars
+    noticeListener: (arg: { from_server: boolean, line: string}) => void,
+    timeout?: ReturnType<typeof setTimeout>,
+  ): void {
+    this.off('raw', rawListener);
+    this.off('notice', noticeListener);
+    if (timeout) clearTimeout(timeout);
   }
 
   protected static is<TypeOF extends string|number|boolean|object>(name: string, variable: unknown, type: 'string'|'number'|'boolean'|'object', def?: TypeOF): TypeOF {
