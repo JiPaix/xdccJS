@@ -65,6 +65,11 @@ export type ParamsIRC = {
    */
   verbose?: boolean
   /**
+   * Time before a download is considered timed out
+   * @default `30`
+   */
+  timeout?: number
+  /**
    * TLS/SSL
    */
    tls?: {
@@ -107,6 +112,7 @@ export default class Connect extends Client {
     rejectUnauthorized?: boolean
   };
 
+  protected timeout: number;
   constructor(params: ParamsIRC) {
     super();
     this.nickname = params.nickname || 'xdccJS';
@@ -124,6 +130,7 @@ export default class Connect extends Client {
       params.tls = { enable: false, rejectUnauthorized: true };
     }
     this.tls = params.tls;
+    this.timeout = Connect.is('timeout', params.timeout, 'number', 30);
     this.onConnect();
     this.connect({
       host: this.host,

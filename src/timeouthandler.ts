@@ -20,11 +20,6 @@ export type ParamsTimeout = ParamsIRC & {
    */
   retry?: number
   /**
-   * Time before a download is considered timed out
-   * @default `30`
-   */
-  timeout?: number
-  /**
    * Queue Regex
    */
   queue?: RegExp
@@ -50,15 +45,12 @@ export class TimeOut extends Connect {
 
   retry: number;
 
-  timeout: number;
-
   queue?: RegExp;
 
   constructor(params: ParamsTimeout) {
     super(params);
     this.portInUse = [];
     this.retry = Connect.is('retry', params.retry, 'number', 1);
-    this.timeout = Connect.is('timeout', params.timeout, 'number', 30);
     if (params.queue && !(params.queue instanceof RegExp)) {
       throw Error('queue must be a RegExp');
     }
