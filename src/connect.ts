@@ -112,6 +112,8 @@ export default class Connect extends Client {
 
   private originalNickname: string;
 
+  private nickRandomized?: boolean;
+
   protected port: number;
 
   protected connectionTimeout!:ReturnType<typeof setTimeout>;
@@ -129,9 +131,10 @@ export default class Connect extends Client {
     super();
     this.nickname = params.nickname || 'xdccJS';
     this.originalNickname = this.nickname;
+    this.nickRandomized = params.randomizeNick;
     this.nickservPassword = params.nickServ;
     if (this.nickservPassword) Connect.identifyCheck(this.nickservPassword);
-    if (params.randomizeNick || this.nickservPassword) {
+    if (this.nickRandomized || this.nickservPassword) {
       this.nickname = Connect.nickRandomizer(this.nickname);
     }
     this.host = Connect.is('host', params.host, 'string');
@@ -180,7 +183,7 @@ export default class Connect extends Client {
           this.print('%info% identifying to %yellow%NickServ', 2);
           await this.nickServAuth();
           this.changeNick(this.originalNickname);
-          this.nickname = this.originalNickname;
+          if (!this.nickRandomized) this.nickname = this.originalNickname;
         } catch (e) {
           if (e instanceof Error) this.print(`%danger% failed: %red%${e.message}`, 2);
           this.quit();
