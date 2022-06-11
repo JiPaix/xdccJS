@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable @typescript-eslint/triple-slash-reference */
 /// <reference path="./@types/irc-framework.ts"/>
-import { Client } from 'irc-framework';
+import { Client, MessageEventArgs } from 'irc-framework';
 
 export type ParamsIRC = {
   /**
@@ -65,9 +65,14 @@ export type ParamsIRC = {
    */
   verbose?: boolean
   /**
+   * Time before a download is considered timed out
+   * @default `30`
+   */
+  timeout?: number
+  /**
    * TLS/SSL
    */
-   tls?: {
+  tls?: {
      /**
       * Enable TLS/SSL
       * @default `false`
@@ -87,6 +92,13 @@ export type ParamsIRC = {
       */
      rejectUnauthorized?: boolean
    }
+   /**
+    * NickServ password
+    * @example
+    * ```js
+    * params.nickServ = 'my_password'
+    */
+   nickServ?: string
 }
 
 export default class Connect extends Client {
@@ -98,6 +110,10 @@ export default class Connect extends Client {
 
   protected nickname: string;
 
+  private originalNickname: string;
+
+  private nickRandomized?: boolean;
+
   protected port: number;
 
   protected connectionTimeout!:ReturnType<typeof setTimeout>;
@@ -107,10 +123,18 @@ export default class Connect extends Client {
     rejectUnauthorized?: boolean
   };
 
+  protected timeout: number;
+
+  private nickservPassword?: string;
+
   constructor(params: ParamsIRC) {
     super();
     this.nickname = params.nickname || 'xdccJS';
-    if (params.randomizeNick) {
+    this.originalNickname = this.nickname;
+    this.nickRandomized = params.randomizeNick;
+    this.nickservPassword = params.nickServ;
+    if (this.nickservPassword) Connect.identifyCheck(this.nickservPassword);
+    if (this.nickRandomized || this.nickservPassword) {
       this.nickname = Connect.nickRandomizer(this.nickname);
     }
     this.host = Connect.is('host', params.host, 'string');
@@ -124,6 +148,7 @@ export default class Connect extends Client {
       params.tls = { enable: false, rejectUnauthorized: true };
     }
     this.tls = params.tls;
+    this.timeout = Connect.is('timeout', params.timeout, 'number', 30);
     this.onConnect();
     this.connect({
       host: this.host,
@@ -149,12 +174,63 @@ export default class Connect extends Client {
   }
 
   private onConnect(): void {
-    this.on('connected', () => {
+    this.on('connected', async () => {
       clearTimeout(this.connectionTimeout);
       this.chan.forEach((chan) => this.join(chan));
       this.print(`%success% connected to : %bold%%yellow%${this.host}`);
+      if (this.nickservPassword) {
+        try {
+          this.print('%info% identifying to %yellow%NickServ', 2);
+          await this.nickServAuth();
+          this.changeNick(this.originalNickname);
+          if (!this.nickRandomized) this.nickname = this.originalNickname;
+        } catch (e) {
+          if (e instanceof Error) this.print(`%danger% failed: %red%${e.message}`, 2);
+          this.quit();
+          return;
+        }
+      }
       this.print(`%success% joined: [ %yellow%${this.chan.join(' ')}%reset% ]`, 2);
       this.emit('ready');
+    });
+  }
+
+  private nickServAuth():Promise<void> {
+    return new Promise((resolve, reject) => {
+      let error = '';
+      let timeout = setTimeout(() => {});
+
+      const noticeListener = (ev: MessageEventArgs) => {
+        if (ev.nick.toLocaleLowerCase() === 'nickserv') {
+          if (ev.message.includes('isn\'t registered') || ev.message.includes('incorrect')) {
+            // eslint-disable-next-line no-use-before-define
+            this.turnOff(noticeListener, rawListener, timeout);
+            reject(new Error(`${ev.message}`));
+          }
+          error = ev.message;
+        }
+      };
+
+      const rawListener = (ev: { from_server: boolean, line: string}) => {
+        if (ev.from_server) {
+          const line = ev.line.toLocaleLowerCase();
+          if (line.includes('logged in')) {
+            this.turnOff(noticeListener, rawListener, timeout);
+            resolve();
+          }
+        }
+      };
+
+      this.on('raw', rawListener);
+      this.on('notice', noticeListener);
+
+      timeout = setTimeout(() => {
+        this.off('raw', rawListener);
+        this.off('notice', noticeListener);
+        reject(new Error(`%danger% NickServ authentication failed: ${error.length ? error : 'unknown error'}`));
+      }, this.timeout * 1000);
+
+      this.say('NickServ', `identify ${this.originalNickname} ${this.nickservPassword}`);
     });
   }
 
@@ -168,6 +244,18 @@ export default class Connect extends Client {
       newNick = 'xdccJS';
     }
     return newNick + Math.floor(Math.random() * 999) + 1;
+  }
+
+  private turnOff(
+    // eslint-disable-next-line no-unused-vars
+    rawListener: (arg:MessageEventArgs) => void,
+    // eslint-disable-next-line no-unused-vars
+    noticeListener: (arg: { from_server: boolean, line: string}) => void,
+    timeout?: ReturnType<typeof setTimeout>,
+  ): void {
+    this.off('raw', rawListener);
+    this.off('notice', noticeListener);
+    if (timeout) clearTimeout(timeout);
   }
 
   protected static is<TypeOF extends string|number|boolean|object>(name: string, variable: unknown, type: 'string'|'number'|'boolean'|'object', def?: TypeOF): TypeOF {
@@ -198,6 +286,22 @@ export default class Connect extends Client {
     err.name = `${err.name} [ERR_INVALID_ARG_TYPE]`;
     err.message = 'unexpected type of \'chan\': \'string | string[] | false\' was expected\'';
     throw err;
+  }
+
+  static identifyCheck(identify: unknown) {
+    if (typeof identify !== 'string') {
+      const err = new TypeError();
+      err.name = `${err.name} [ERR_INVALID_ARG_TYPE]`;
+      err.message = 'unexpected type of \'nickServ\': \'string\' was expected\'';
+      throw err;
+    }
+
+    if (identify.split(' ').length > 1) {
+      const err = new TypeError();
+      err.name = `${err.name} [ERR_INVALID_ARG_TYPE]`;
+      err.message = 'parameter \'nickServ\': should only contain the password (no spaces)';
+      throw err;
+    }
   }
 
   private static chanHashtag(chan: string): string {
