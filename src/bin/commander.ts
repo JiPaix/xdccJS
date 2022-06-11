@@ -103,6 +103,15 @@ export class BaseCommander {
       if (this.program.saveProfile) throw new BinError('%danger% Saved profile must at least contain a host');
       throw new BinError('%danger% a hostname is required, eg. %grey%--host irc.server.net');
     }
+    if (this.program.nickserv) {
+      try {
+        Connect.identifyCheck(this.program.nickserv);
+      } catch (e) {
+        if (e instanceof TypeError) {
+          throw new BinError('%danger% option \'nickserv\' should only contain the password (no spaces), eg. %grey%--nickserv complex_password');
+        }
+      }
+    }
     return {
       host: this.program.host,
       port: this.program.port,

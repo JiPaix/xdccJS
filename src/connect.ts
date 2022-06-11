@@ -110,6 +110,8 @@ export default class Connect extends Client {
 
   protected nickname: string;
 
+  private originalNickname: string;
+
   protected port: number;
 
   protected connectionTimeout!:ReturnType<typeof setTimeout>;
@@ -126,7 +128,10 @@ export default class Connect extends Client {
   constructor(params: ParamsIRC) {
     super();
     this.nickname = params.nickname || 'xdccJS';
-    if (params.randomizeNick) {
+    this.originalNickname = this.nickname;
+    this.nickservPassword = params.nickServ;
+    if (this.nickservPassword) Connect.identifyCheck(this.nickservPassword);
+    if (params.randomizeNick || this.nickservPassword) {
       this.nickname = Connect.nickRandomizer(this.nickname);
     }
     this.host = Connect.is('host', params.host, 'string');
@@ -140,7 +145,6 @@ export default class Connect extends Client {
       params.tls = { enable: false, rejectUnauthorized: true };
     }
     this.tls = params.tls;
-    this.nickservPassword = params.nickServ;
     this.timeout = Connect.is('timeout', params.timeout, 'number', 30);
     this.onConnect();
     this.connect({
@@ -175,6 +179,8 @@ export default class Connect extends Client {
         try {
           this.print('%info% identifying to %yellow%NickServ', 2);
           await this.nickServAuth();
+          this.changeNick(this.originalNickname);
+          this.nickname = this.originalNickname;
         } catch (e) {
           if (e instanceof Error) this.print(`%danger% failed: %red%${e.message}`, 2);
           this.quit();
@@ -221,7 +227,7 @@ export default class Connect extends Client {
         reject(new Error(`%danger% NickServ authentication failed: ${error.length ? error : 'unknown error'}`));
       }, this.timeout * 1000);
 
-      this.say('NickServ', `identify ${this.nickservPassword}`);
+      this.say('NickServ', `identify ${this.originalNickname} ${this.nickservPassword}`);
     });
   }
 
@@ -277,6 +283,22 @@ export default class Connect extends Client {
     err.name = `${err.name} [ERR_INVALID_ARG_TYPE]`;
     err.message = 'unexpected type of \'chan\': \'string | string[] | false\' was expected\'';
     throw err;
+  }
+
+  static identifyCheck(identify: unknown) {
+    if (typeof identify !== 'string') {
+      const err = new TypeError();
+      err.name = `${err.name} [ERR_INVALID_ARG_TYPE]`;
+      err.message = 'unexpected type of \'nickServ\': \'string\' was expected\'';
+      throw err;
+    }
+
+    if (identify.split(' ').length > 1) {
+      const err = new TypeError();
+      err.name = `${err.name} [ERR_INVALID_ARG_TYPE]`;
+      err.message = 'parameter \'nickServ\': should only contain the password (no spaces)';
+      throw err;
+    }
   }
 
   private static chanHashtag(chan: string): string {
