@@ -72,7 +72,7 @@ export type ParamsIRC = {
   /**
    * TLS/SSL
    */
-   tls?: {
+  tls?: {
      /**
       * Enable TLS/SSL
       * @default `false`
