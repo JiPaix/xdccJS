@@ -163,7 +163,7 @@ const arrayOfJobs = await xdccJS.jobs()
     let status = job1.show()
     let isdone = job1.isDone()
     console.log(status)
-    //=> { name: 'a-bot', queue: [98], now: 62, sucess: ['file.txt'], failed: [50] }
+    //=> { name: 'a-bot', queue: [98], now: 62, success: ['file.txt'], failed: [50] }
     console.log(isdone)
     //=> false
     ```
@@ -223,13 +223,13 @@ const arrayOfJobs = await xdccJS.jobs()
 - ```js
     xdccJS.on('done', (job) => {
       console.log(job.show())
-        //=> { name: 'a-bot', queue: [98], now: 62, sucess: ['file.txt'], failed: [50] }
+        //=> { name: 'a-bot', queue: [98], now: 62, success: ['file.txt'], failed: [50] }
     })
 
     job.on('done', (job) => {
       console.log('Job2 is done!')
       console.log(job.show())
-        //=> { name: 'a-bot', queue: [98], now: 62, sucess: ['file.txt'], failed: [50] }
+        //=> { name: 'a-bot', queue: [98], now: 62, success: ['file.txt'], failed: [50] }
     })
     ```
 > [**xdccJS** | **Job**].on( **'pipe'** ) : *A pipe is available (see [pipe documentation](#pipes)*)
