@@ -1,4 +1,9 @@
 # Changelog
+## [v4.5.31](https://github.com/jipaix/xdccjs/tree/v4.5.31)
+### Fix(lib+cli)
+* fix downloads getting aborted randomly or at 99.99% completion (see [issue#503](https://github.com/JiPaix/xdccJS/issues/503#issuecomment-1166244277))
+* fixed typo
+---
 ## [v4.5.28](https://github.com/jipaix/xdccjs/tree/v4.5.28)
 ### Feat(lib)
 * add `nickServ` parameter to authenticate with NickServ (password only, use nickname as login)
