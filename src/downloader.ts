@@ -30,6 +30,8 @@ interface Pass {
   fileInfo: FileInfo
   pick?: number
   bar: ProgressBar
+  received: number,
+  bufferType: '64bit' | '32bit'
 }
 
 export default class Downloader extends CtcpParser {
@@ -134,119 +136,111 @@ export default class Downloader extends CtcpParser {
       fileInfo,
       pick,
       bar,
+      received: 0,
+      bufferType: fileInfo.length >= 4294967294 ? '64bit' : '32bit',
     };
     client.setTimeout(this.timeout * 1000);
-    this.onTimeOut(pass);
-    this.onData(pass);
-    this.onEnd(pass);
-    this.onError(pass);
+    client.on('timeout', () => this.onTimeOut(pass));
+    client.on('error', (e) => this.onError(pass, e));
+    const sendBuffer = Buffer.allocUnsafe(fileInfo.length >= 4294967294 ? 8 : 4);
+    client.on('data', (data) => this.onData(pass, data, sendBuffer));
+    client.on('close', (e) => this.onClose(pass, e));
   }
 
   private onTimeOut(args: Pass): void {
-    args.client.on('timeout', () => {
-      this.SetupTimeout({
-        candidate: args.candidate,
-        eventType: 'error',
-        message: 'Timeout',
-        delay: 0,
-        disconnectAfter: {
-          stream: args.stream,
-          server: args.server,
-          socket: args.client,
-          pick: args.pick,
-          bar: args.bar,
-        },
-        padding: 6,
-        fileInfo: args.fileInfo,
-        executeLater: () => {
-          this.redownload(args.candidate, args.fileInfo);
-        },
-      });
+    this.SetupTimeout({
+      candidate: args.candidate,
+      eventType: 'error',
+      message: 'Timeout',
+      delay: 0,
+      disconnectAfter: {
+        stream: args.stream,
+        server: args.server,
+        socket: args.client,
+        pick: args.pick,
+        bar: args.bar,
+      },
+      padding: 6,
+      fileInfo: args.fileInfo,
+      executeLater: () => {
+        this.redownload(args.candidate, args.fileInfo);
+      },
     });
   }
 
-  private onError(args: Pass): void {
-    args.client.on('error', (e: Error) => {
-      this.SetupTimeout({
-        candidate: args.candidate,
-        eventType: e.message === 'cancel' ? 'cancel' : 'error',
-        message:
+  private onError(args: Pass, e: Error): void {
+    if (args.received === args.fileInfo.length) return;
+    this.SetupTimeout({
+      candidate: args.candidate,
+      eventType: e.message === 'cancel' ? 'cancel' : 'error',
+      message:
           e.message === 'cancel'
             ? 'Cancelled by user'
             : `Connection error: %yellow%${e.message}`,
-        delay: 0,
-        disconnectAfter: {
-          stream: args.stream,
-          server: args.server,
-          socket: args.client,
-          pick: args.pick,
-          bar: args.bar,
-        },
-        padding: 4,
-        fileInfo: args.fileInfo,
-        executeLater: () => {
-          if (e.message === 'cancel') {
-            args.candidate.failures.push(args.candidate.now);
-            args.candidate.queue = [];
-            if (fs.existsSync(args.fileInfo.filePath)) {
-              fs.unlinkSync(args.fileInfo.filePath);
-            }
-            this.emit('next', args.candidate, this.verbose);
-          } else {
-            this.redownload(args.candidate, args.fileInfo);
+      delay: 0,
+      disconnectAfter: {
+        stream: args.stream,
+        server: args.server,
+        socket: args.client,
+        pick: args.pick,
+        bar: args.bar,
+      },
+      padding: 4,
+      fileInfo: args.fileInfo,
+      executeLater: () => {
+        if (e.message === 'cancel') {
+          args.candidate.failures.push(args.candidate.now);
+          args.candidate.queue = [];
+          if (fs.existsSync(args.fileInfo.filePath)) {
+            fs.unlinkSync(args.fileInfo.filePath);
           }
-        },
-      });
+          this.emit('next', args.candidate, this.verbose);
+        } else {
+          this.redownload(args.candidate, args.fileInfo);
+        }
+      },
     });
   }
 
-  private onEnd(args: Pass): void {
-    args.client.on('close', (e) => {
-      if (e) return;
-      this.print('%success% done.', 6);
+  private onClose(args: Pass, e: boolean): void {
+    if (e && args.received !== args.fileInfo.length) return;
+    this.print('%success% done.', 6);
+    args.candidate.timeout.clear();
+    args.candidate.success.push(args.fileInfo.file);
+    if (args.server && args.pick) {
+      args.server.close(() => {
+        this.portInUse = this.portInUse.filter((p) => p !== args.pick);
+      });
+    }
+    args.stream.end();
+    this.emit('downloaded', args.fileInfo);
+    args.candidate.emit('downloaded', args.fileInfo);
+    this.emit('next', args.candidate, this.verbose);
+  }
+
+  private onData(args: Pass, data: Buffer, sendBuffer: Buffer): void {
+    if (args.received === 0) {
       args.candidate.timeout.clear();
-      args.candidate.success.push(args.fileInfo.file);
-      if (args.server && args.pick) {
-        args.server.close(() => {
-          this.portInUse = this.portInUse.filter((p) => p !== args.pick);
-        });
+      if (!this.path) {
+        args.candidate.emit('pipe', args.stream, args.fileInfo);
+        this.emit('pipe', args.stream, args.fileInfo);
       }
-      args.stream.end();
-      this.emit('downloaded', args.fileInfo);
-      args.candidate.emit('downloaded', args.fileInfo);
-      this.emit('next', args.candidate, this.verbose);
-    });
-  }
+    }
+    args.stream.write(data);
+    args.received += data.length;
 
-  private onData(args: Pass): void {
-    const sendBuffer = Buffer.alloc(8);
-    let received = 0;
-    args.client.on('data', (data) => {
-      if (received === 0) {
-        args.candidate.timeout.clear();
-        if (!this.path) {
-          args.candidate.emit('pipe', args.stream, args.fileInfo);
-          this.emit('pipe', args.stream, args.fileInfo);
-        }
-      }
-      args.stream.write(data);
-      received += data.length;
-      sendBuffer.writeBigInt64BE(BigInt(received), 0);
-      args.client.write(sendBuffer, (e) => {
-        if (e && received === args.fileInfo.length) {
-          args.client.destroy();
-        } else if (e) {
-          args.client.destroy(e);
-        }
-      });
-      if (this.verbose && args.bar) args.bar.tick(data.length);
-      if (received < args.fileInfo.length) {
-        args.candidate.emit('downloading', args.fileInfo, received, (received / args.fileInfo.length) * 100);
-        this.emit('downloading', args.fileInfo, received, (received / args.fileInfo.length) * 100);
-      } else {
-        args.client.end();
-      }
-    });
+    if (args.bufferType === '64bit') {
+      sendBuffer.writeBigInt64BE(BigInt(args.received), 0);
+    } else {
+      sendBuffer.writeInt32BE(args.received, 0);
+    }
+
+    if (this.verbose && args.bar) args.bar.tick(data.length);
+    if (!args.client.destroyed && args.client.writable) {
+      args.client.write(sendBuffer);
+    }
+    args.candidate.emit('downloading', args.fileInfo, args.received, (args.received / args.fileInfo.length) * 100);
+    this.emit('downloading', args.fileInfo, args.received, (args.received / args.fileInfo.length) * 100);
   }
 
   protected static setupProgressBar(len: number): ProgressBar {

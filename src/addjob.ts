@@ -179,7 +179,7 @@ export default class AddJob extends TimeOut {
       delay: this.timeout,
     });
     this.print(
-      `%success% sending command: /MSG %yellow%${candidate.nick}%reset% xdcc send %yellow%${candidate.now.toString()}`,
+      `%success% sending command: /MSG %yellow%${candidate.nick}%reset% xdcc send %yellow%${candidate.now}`,
       4,
     );
     this.say(candidate.nick, `xdcc send ${candidate.now}`);
