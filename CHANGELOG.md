@@ -1,4 +1,8 @@
 # Changelog
+## [v4.5.32](https://github.com/jipaix/xdccjs/tree/v4.5.32)
+### Fix(lib+cli)
+* fix buffer overflow error for files between 2.1GB and 4.3GB
+---
 ## [v4.5.31](https://github.com/jipaix/xdccjs/tree/v4.5.31)
 ### Fix(lib+cli)
 * fix downloads getting aborted randomly or at 99.99% completion (see [issue#503](https://github.com/JiPaix/xdccJS/issues/503#issuecomment-1166244277))

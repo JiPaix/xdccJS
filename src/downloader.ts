@@ -137,17 +137,18 @@ export default class Downloader extends CtcpParser {
       pick,
       bar,
       received: 0,
-      bufferType: fileInfo.length >= 4294967294 ? '64bit' : '32bit',
+      bufferType: fileInfo.length > 4294967295 ? '64bit' : '32bit',
     };
     client.setTimeout(this.timeout * 1000);
     client.on('timeout', () => this.onTimeOut(pass));
     client.on('error', (e) => this.onError(pass, e));
-    const sendBuffer = Buffer.allocUnsafe(fileInfo.length >= 4294967294 ? 8 : 4);
+    const sendBuffer = Buffer.alloc(pass.bufferType === '64bit' ? 8 : 4);
     client.on('data', (data) => this.onData(pass, data, sendBuffer));
     client.on('close', (e) => this.onClose(pass, e));
   }
 
   private onTimeOut(args: Pass): void {
+    if (args.received === args.fileInfo.length) return;
     this.SetupTimeout({
       candidate: args.candidate,
       eventType: 'error',
@@ -230,9 +231,13 @@ export default class Downloader extends CtcpParser {
     args.received += data.length;
 
     if (args.bufferType === '64bit') {
-      sendBuffer.writeBigInt64BE(BigInt(args.received), 0);
-    } else {
-      sendBuffer.writeInt32BE(args.received, 0);
+      if (args.received <= 4294967294) sendBuffer.writeBigInt64BE(BigInt(args.received * -1), 0);
+      else sendBuffer.writeBigInt64BE(BigInt(args.received - 4294967294), 0);
+    }
+
+    if (args.bufferType === '32bit') {
+      if (args.received <= 2147483648) sendBuffer.writeInt32BE(args.received * -1, 0);
+      else sendBuffer.writeInt32BE(args.received - 2147483648, 0);
     }
 
     if (this.verbose && args.bar) args.bar.tick(data.length);
