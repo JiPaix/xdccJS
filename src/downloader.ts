@@ -231,13 +231,11 @@ export default class Downloader extends CtcpParser {
     args.received += data.length;
 
     if (args.bufferType === '64bit') {
-      if (args.received <= 4294967294) sendBuffer.writeBigInt64BE(BigInt(args.received * -1), 0);
-      else sendBuffer.writeBigInt64BE(BigInt(args.received - 4294967294), 0);
+      sendBuffer.writeBigUInt64BE(BigInt(args.received), 0);
     }
 
     if (args.bufferType === '32bit') {
-      if (args.received <= 2147483648) sendBuffer.writeInt32BE(args.received * -1, 0);
-      else sendBuffer.writeInt32BE(args.received - 2147483648, 0);
+      sendBuffer.writeUInt32BE(args.received, 0);
     }
 
     if (this.verbose && args.bar) args.bar.tick(data.length);
