@@ -1,6 +1,6 @@
 {
   "name": "xdccjs",
-  "version": "4.5.33",
+  "version": "4.5.35",
   "description": "download files from XDCC bots on IRC, complete implementation of the XDCC protocol",
   "engines": {
     "node": ">=14.0.0"
