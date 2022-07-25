@@ -423,7 +423,7 @@ xdccJS --delete-profile "my_profile"
       xdccJS --host "irc.server.com" --bot "SOME_BOT" --download "1-100" --queue "/request(.*)queued(.*)\d+\/\d+$/gi"
       # excepted bot queue message: "Your request has been queued: position x/x"
     ```
-- see [why is queue important](#download-queue-detection) and [w3schools JavaScript RegExp Reference](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) if you're clueless about regexes
+- see [why is queue important](#download-queue-detection), [w3schools JavaScript RegExp Reference](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) and [Learn about Regular Expression in Java](https://www.scaler.com/topics/regular-expression-in-java/) if you're clueless about regexes
 
 ## Documentation
 Full documentation is available <a href="https://jipaix.github.io/xdccJS/classes/default.html">here</a>
