@@ -106,7 +106,10 @@ xdccJS.on('ready', async () => {
 #### Download queue detection
 xdccJS will timeout any request after a certain amount of time when no file is sent (see [Options.timeout](#options)), Which is exactly what happens when a bot puts you into queue. 
 
-To avoid this behavior you need to provide a [regex](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) matching the bot "queue message".
+To avoid this behavior you need to provide a [regex](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) matching the bot "queue message".  
+
+If you are clueless about regexes try [regexlearn.com](https://regexlearn.com/learn/regex101) interactive tutorial.
+
 
 ```js
 const opts = {
@@ -423,7 +426,7 @@ xdccJS --delete-profile "my_profile"
       xdccJS --host "irc.server.com" --bot "SOME_BOT" --download "1-100" --queue "/request(.*)queued(.*)\d+\/\d+$/gi"
       # excepted bot queue message: "Your request has been queued: position x/x"
     ```
-- see [why is queue important](#download-queue-detection), [w3schools JavaScript RegExp Reference](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) and [Learn about Regular Expression in Java](https://www.scaler.com/topics/regular-expression-in-java/) if you're clueless about regexes
+- see [why is queue important](#download-queue-detection)
 
 ## Documentation
 Full documentation is available <a href="https://jipaix.github.io/xdccJS/classes/default.html">here</a>
