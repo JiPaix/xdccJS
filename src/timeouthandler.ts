@@ -1,12 +1,13 @@
 /* eslint-disable no-param-reassign */
-import type { PassThrough } from 'stream';
 import type * as fs from 'fs';
 import type * as net from 'net';
-import Connect from './connect';
-import ProgressBar from './lib/progress';
-import type { Job } from './interfaces/job';
+import type { PassThrough } from 'stream';
 import type { ParamsIRC } from './connect';
+import Connect from './connect';
 import type { FileInfo } from './interfaces/fileinfo';
+import type { Job } from './interfaces/job';
+import ProgressBar from './lib/progress';
+import { is } from './lib/typechecker';
 
 export type ParamsTimeout = ParamsIRC & {
   /**
@@ -50,7 +51,7 @@ export class TimeOut extends Connect {
   constructor(params: ParamsTimeout) {
     super(params);
     this.portInUse = [];
-    this.retry = Connect.is('retry', params.retry, 'number', 1);
+    this.retry = is({ name: 'retry', variable: params.retry, type: 1 });
     if (params.queue && !(params.queue instanceof RegExp)) {
       throw Error('queue must be a RegExp');
     }

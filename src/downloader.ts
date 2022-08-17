@@ -1,14 +1,15 @@
 /* eslint-disable max-len */
 /* eslint-disable no-param-reassign */
-import { PassThrough } from 'stream';
-import * as net from 'net';
 import * as fs from 'fs';
-import { CtcpParser, ParamsCTCP } from './ctcp_parser';
-import * as ProgressBar from './lib/progress';
+import * as net from 'net';
+import { PassThrough } from 'stream';
 import Connect from './connect';
+import { CtcpParser, ParamsCTCP } from './ctcp_parser';
 import type { FileInfo } from './interfaces/fileinfo';
 import type { Job } from './interfaces/job';
 import getIp from './lib/get-ip';
+import * as ProgressBar from './lib/progress';
+import { is } from './lib/typechecker';
 
 export type ParamsDL = ParamsCTCP & {
   /**
@@ -42,7 +43,7 @@ export default class Downloader extends CtcpParser {
   constructor(params: ParamsDL) {
     super(params);
     this.ip = Downloader.getIp();
-    this.passivePort = Downloader.is('passivePort', params.passivePort, 'object', [5001]);
+    this.passivePort = is({ name: 'passivePort', variable: params.passivePort, type: [5001] });
     this.on('prepareDL', (downloadrequest: { fileInfo: FileInfo; candidate: Job }) => {
       this.prepareDL(downloadrequest);
     });

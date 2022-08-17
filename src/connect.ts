@@ -1,9 +1,8 @@
 /* eslint-disable no-param-reassign */
-/* eslint-disable @typescript-eslint/member-delimiter-style */
-/* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable @typescript-eslint/triple-slash-reference */
 /// <reference path="./@types/irc-framework.ts"/>
 import { Client, MessageEventArgs } from 'irc-framework';
+import { is } from './lib/typechecker';
 
 export type ParamsIRC = {
   /**
@@ -137,18 +136,18 @@ export default class Connect extends Client {
     if (this.nickRandomized || this.nickservPassword) {
       this.nickname = Connect.nickRandomizer(this.nickname);
     }
-    this.host = Connect.is('host', params.host, 'string');
-    this.port = Connect.is('port', params.port, 'number', 6667);
-    this.verbose = Connect.is('verbose', params.verbose, 'boolean', false);
+    this.host = is({ name: 'host', variable: params.host, type: 'string' });
+    this.port = is({ name: 'port', variable: params.port, type: 6667 });
+    this.verbose = is({ name: 'verbose', variable: params.verbose, type: false });
     this.chan = Connect.chanCheck(params.chan);
     if (params.tls) {
-      params.tls.enable = Connect.is('tls.enable', params.tls.enable, 'boolean', false);
-      params.tls.rejectUnauthorized = Connect.is('tls.rejectUnauthorized', params.tls.rejectUnauthorized, 'boolean', true);
+      params.tls.enable = is({ name: 'tls.enable', variable: params.tls.enable, type: false });
+      params.tls.rejectUnauthorized = is({ name: 'tls.rejectUnauthorized', variable: params.tls.rejectUnauthorized, type: true });
     } else {
       params.tls = { enable: false, rejectUnauthorized: true };
     }
     this.tls = params.tls;
-    this.timeout = Connect.is('timeout', params.timeout, 'number', 30);
+    this.timeout = is({ name: 'timeout', variable: params.timeout, type: 30 });
     this.onConnect();
     this.connect({
       host: this.host,
@@ -256,22 +255,6 @@ export default class Connect extends Client {
     this.off('raw', rawListener);
     this.off('notice', noticeListener);
     if (timeout) clearTimeout(timeout);
-  }
-
-  protected static is<TypeOF extends string|number|boolean|object>(name: string, variable: unknown, type: 'string'|'number'|'boolean'|'object', def?: TypeOF): TypeOF {
-    // eslint-disable-next-line valid-typeof
-    if (typeof variable !== type) {
-      if (typeof def === 'undefined') {
-        const err = new TypeError();
-        err.name += ' [ERR_INVALID_ARG_TYPE]';
-        err.message = `unexpected type of '${name}': a ${type} was expected but got '${typeof variable}'`;
-        throw err;
-      } else {
-        return def;
-      }
-    } else {
-      return variable as TypeOF;
-    }
   }
 
   static chanCheck(chan?: string | string[]): string[] {
