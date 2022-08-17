@@ -14,7 +14,7 @@ export interface InterfaceCLI extends commander.Command {
   host?: string
   port?: number
   tls?: boolean
-  noInsecure?: boolean
+  insecure?: boolean
   bot?: string
   download?: string[]
   path?: string
@@ -117,7 +117,7 @@ export class BaseCommander {
       port: this.program.port,
       tls: {
         enable: this.program.tls || false,
-        rejectUnauthorized: this.program.noInsecure || false,
+        rejectUnauthorized: !this.program.insecure,
       },
       nickname: this.program.nickname,
       chan: this.program.channel,
