@@ -65,7 +65,7 @@ export class BaseCommander {
         'Time to wait before sending download request - \x1b[1moptional\x1b[0m',
         (k:string) => BaseCommander.parseIfNotInt(k, 'wait'),
       )
-      .option('--bot-name-match', 'Block downloads if bot name does not match - \x1b[1moptional\x1b[0m')
+      .option('--no-bot-name-match', 'Allow downloads from bot with nickname that doesn\'t match the request - \x1b[1moptional\x1b[0m')
       .option('--queue <RegExp>', 'Regex to determine if the bot queued the request - \x1b[1moptional\x1b[0m', BaseCommander.toRegex)
       .option('--tls', 'enable SSL/TLS - \x1b[1moptional\x1b[0m')
       .option('--no-insecure', 'Reject self-signed SSL/TLS certificates - \x1b[1moptional\x1b[0m')
@@ -126,7 +126,7 @@ export class BaseCommander {
       randomizeNick: this.program.randomize,
       passivePort: [this.program.passivePort || 5001],
       verbose: !this.program.quiet,
-      botNameMatch: this.program.botNameMatch,
+      botNameMatch: !this.program.botNameMatch,
       queue: this.program.queue,
       timeout: this.program.timeout,
       nickServ: this.program.nickserv,
