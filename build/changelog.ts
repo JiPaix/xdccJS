@@ -1,7 +1,10 @@
+/* eslint-disable comma-dangle */
 /* eslint-disable import/no-extraneous-dependencies */
-import * as fs from 'fs';
 import axios, { AxiosResponse } from 'axios';
-import { Client, Intents, MessageEmbed } from 'discord.js';
+import {
+  APIEmbedField, Client, EmbedBuilder, GatewayIntentBits
+} from 'discord.js';
+import * as fs from 'fs';
 import { version } from '../package.json';
 
 declare let process : {
@@ -57,29 +60,31 @@ async function uploadAssets(id:string) {
 
 function postToDiscord() {
   const discord = new Client({
-    intents: Intents.FLAGS.GUILDS,
+    intents: [GatewayIntentBits.Guilds],
   });
 
   discord.once('ready', async () => {
-    const embed = new MessageEmbed();
+    // preparing our fields
+    const fields:APIEmbedField[] = [];
+    changelog.forEach((line) => {
+      fields.push({ name: line.split(/\n|\r\n/g)[0].replace('### ', ''), value: line.replace(/###(.*)(\n|\r\n)/g, ''), inline: false });
+    });
+    const embed = new EmbedBuilder();
     embed
       .setTitle(`v${version} has been released`)
       .setDescription('CHANGELOG')
       .setURL(`https://github.com/JiPaix/xdccJS/releases/tag/v${version}`)
       .setTimestamp(Date.now())
-      .setColor('DARK_GREEN')
+      .setColor('DarkGreen')
       .setThumbnail('https://github.com/JiPaix/xdccJS/raw/main/logo.png')
       .setAuthor({
         name: 'JiPaix',
         iconURL: 'https://avatars.githubusercontent.com/u/26584973?v=4',
         url: 'https://github.com/JiPaix',
       });
-    const promises = changelog.map(async (field) => {
-      embed.addField(field.split(/\n|\r\n/g)[0].replace('### ', ''), field.replace(/###(.*)(\n|\r\n)/g, '').replace(/\[(.*)]\((.*)\)/g, ''), false);
-    });
-    await Promise.all(promises);
+
     const chan = await discord.channels.fetch(process.env.DISCORD_CHANNEL_ID);
-    if (chan?.isText()) {
+    if (chan?.isTextBased()) {
       await chan.send('@everyone').catch((e:Error) => { throw e; });
       await chan.send({ embeds: [embed] }).catch((e:Error) => { throw e; });
     }
