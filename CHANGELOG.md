@@ -1,15 +1,19 @@
 # Changelog
+## [UNRELEASED](https://github.com/jipaix/xdccjs/tree/main)
+### CI
+* fix post publish hook interrupting each others on error
+---
 ## [v4.5.64](https://github.com/jipaix/xdccjs/tree/v4.5.63)
 ### Fix(cli)
 * option `bot-name-match` not working: change `bot-name-match` option to `no-bot-name-match`
 * option `no-insecure` not working as intendend
----
 ### Refactor(lib)
 * supercharge function parameter for typechecking
 ### Build(dev-deps)
 * updating depedencies
 ### Chore(lib+cli)
 * remove unused generated doc
+---
 ## [v4.5.35](https://github.com/jipaix/xdccjs/tree/v4.5.35)
 ### Fix(lib+cli)
 * re-fix buffer downloads getting aborted randomly or at 99.99% completion
