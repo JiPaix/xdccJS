@@ -1,5 +1,5 @@
 # Changelog
-## [v4.5.63](https://github.com/jipaix/xdccjs/tree/v4.5.63)
+## [v4.5.64](https://github.com/jipaix/xdccjs/tree/v4.5.63)
 ### Fix(cli)
 * option `bot-name-match` not working: change `bot-name-match` option to `no-bot-name-match`
 * option `no-insecure` not working as intendend
