@@ -1,9 +1,12 @@
 # Changelog
-## [UNRELEASED](https://github.com/jipaix/xdccjs/tree/main)
+## [v4.5.69](https://github.com/jipaix/xdccjs/tree/v4.5.68)
+### Feat(lib+cli)
+* alpha support for ipv6 downloads: parameter is only required for bot using both passive dcc and IPv6
 ### Revert(lib)
 * move is() function back as a static class function. Partially revert 7233135
 ### Continuous Integration
 * fix post publish hook interrupting each others on error
+* add lint to package scripts
 ---
 ## [v4.5.64](https://github.com/jipaix/xdccjs/tree/v4.5.63)
 ### Fix(cli)
