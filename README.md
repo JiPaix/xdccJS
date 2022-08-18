@@ -93,8 +93,9 @@ const opts = {
 }
 ```
 ### Download
->xdccJS.**download( bot** : string, **packets** : string | number | number[] | string[] **)**  
-`download()` is asynchronous and returns a `Job`
+>xdccJS.**download( bot** : string, **packets** : string | number | number[] | string[], **ipv6?**: boolean **)**  
+`download()` is asynchronous and returns a `Job`  
+`ipv6` parameter is only required for bot using **both** passive dcc and IPv6
 ```js
 xdccJS.on('ready', async () => {
   const blue = await xdccJS.download('XDCC|BLUE', '1-3, 8, 55')
@@ -328,17 +329,18 @@ npm install xdccjs -g
 -h, --host <server>        IRC server hostname - required
 --port <number>            IRC server port - default: 6667
 -n, --nickname <nickname>  Your nickname - default: xdccJS
---no-randomize             Disable nickname randomization - optional
+--no-randomize             Disable nickname randomization - default: randomize
 -c, --channel <chans...>   Channel(s) to join - optional
 -p, --path <path>          Download path - optional
 -b, --bot <botname>        XDCC bot nickname - required
--d, --download <packs...>  Pack number(s) to download - required
---nickserv <password>      Your NickServ password (no spaces) - default: disabled
+-d, --download <packs...>  Packs to download - required
+--nickserv <password>      Authenticate to NickServ - default: disabled
 --passive-port <number>    Port to use for passive dccs - optional
+--ipv6                     Use IPv6, only required if bot use both passive dcc and IPv6 - default: disabled
 -r, --retry <number>       Number of attempts before skipping pack - optional
 -t --timeout <number>      Time in seconds before a download is considered timed out - optional
 -w, --wait <number>        Time to wait before sending download request - optional
---bot-name-match           Block downloads if bot name does not match - optional
+--no-bot-name-match        Allow downloads from bot with nickname that doesn't match the request - optional
 --queue <RegExp>           Regex to determine if the bot queued the request - optional
 --tls                      enable SSL/TLS - optional
 --no-insecure              Reject self-signed SSL/TLS certificates - optional

@@ -1,7 +1,8 @@
-/* eslint-disable no-async-promise-executor */
-/* eslint-disable no-await-in-loop */
+/* eslint-disable no-eval */
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-redeclare */
 /* eslint-disable no-restricted-syntax */
-
+/* eslint-disable no-async-promise-executor */
 import axios, { AxiosResponse } from 'axios';
 
 type raceResults = [
@@ -22,25 +23,33 @@ async function fetchIp() {
   return res;
 }
 
-async function findBestResults(res: raceResults): Promise<string> {
-  const ipRegex = /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/gm;
+async function findBestResults(res: raceResults): Promise<{'v6': string}>
+async function findBestResults(res: raceResults): Promise<{'v4': string}>
+async function findBestResults(res: raceResults): Promise<{'v4'?: string, 'v6'?: string}> {
+  const IpRegex = (await (eval('import("ip-regex")') as Promise<typeof import('ip-regex')>)).default;
   return new Promise(async (resolve, reject) => {
     for (const [i, result] of res.entries()) {
       if (result.status === 'fulfilled') {
         const text = result.value.data;
-        const ip = ipRegex.exec(text);
-        if (ip) {
-          resolve(ip[0]);
+        const v4 = text.match(IpRegex.v4());
+        const v6 = text.match(IpRegex.v6());
+        if (v4 && v6) {
+          resolve({ v4: v4[0], v6: v6[0] });
+        } else if (v4) {
+          resolve({ v4: v4[0] });
           break;
-        }
-        if (!ip && i === 2) {
+        } else if (v6) {
+          resolve({ v6: v6[0] });
+          break;
+        } else if (i === res.length - 1) {
           reject(new Error('Could not get IP'));
+          break;
         }
       }
     }
   });
 }
 
-export default async function getIp(): Promise<string> {
+export default async function getIp(): Promise<{'v4'?: string, 'v6'?: string}> {
   return findBestResults(await fetchIp());
 }

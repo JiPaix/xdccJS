@@ -3,7 +3,6 @@ export interface Candidate {
    * Cancel function
    */
   cancel?: () => void
-
   /**
    * Nickname of the bot
    */
@@ -22,6 +21,10 @@ export interface Candidate {
   timeout: {
     clear: () => void
   }
+  /**
+   * @ignore
+   */
+  ipv6?: boolean
   /**
    * Package number currently downloading
    */

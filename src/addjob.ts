@@ -1,11 +1,13 @@
 /* eslint-disable prefer-destructuring */
 /* eslint-disable no-param-reassign */
-import * as net from 'net';
 import type { MessageEventArgs } from 'irc-framework';
-import { Job } from './interfaces/job';
-import { TimeOut } from './timeouthandler';
+import * as net from 'net';
 import type { Candidate } from './interfaces/candidate';
+import { Job } from './interfaces/job';
 import type { ParamsTimeout } from './timeouthandler';
+import { TimeOut } from './timeouthandler';
+
+export type Packets = string | string[] | number | number[]
 
 export default class AddJob extends TimeOut {
   candidates: Job[];
@@ -24,7 +26,7 @@ export default class AddJob extends TimeOut {
     });
   }
 
-  private static constructCandidate(target: string, range: number[]): Candidate {
+  private static constructCandidate(target: string, range: number[], ipv6?:boolean): Candidate {
     return {
       nick: target,
       cancelNick: target,
@@ -33,6 +35,7 @@ export default class AddJob extends TimeOut {
       now: 0,
       failures: [],
       success: [],
+      ipv6,
       timeout: {
         clear: (): void => {
           throw Error('calling clear too soon');
@@ -56,12 +59,11 @@ export default class AddJob extends TimeOut {
     return fn;
   }
 
-  public async download(target: string, packets: string | string[] | number | number[])
-  : Promise<Job> {
+  public async download(target: string, packets: Packets, ipv6?: boolean): Promise<Job> {
     const range = await AddJob.parsePackets(packets);
     let candidate = this.getCandidate(target);
     if (!candidate) {
-      const base = AddJob.constructCandidate(target, range);
+      const base = AddJob.constructCandidate(target, range, ipv6);
       const cancelFn = this.makeCancelable(base);
       const newCand = new Job(base, cancelFn);
       AddJob.makeClearable(newCand);

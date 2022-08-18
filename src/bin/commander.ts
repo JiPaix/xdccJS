@@ -1,9 +1,9 @@
 import commander, { program } from 'commander';
 import * as path from 'path';
-import { version } from '../version.json';
-import BinError from './errorhandler';
 import { Params } from '..';
 import Connect from '../connect';
+import { version } from '../version.json';
+import BinError from './errorhandler';
 
 export type savedParams = {
   wait?: number
@@ -22,6 +22,7 @@ export interface InterfaceCLI extends commander.Command {
   channel?: string
   retry?: number
   passivePort?: number
+  ipv6?: boolean
   randomize?: boolean
   botNameMatch?: boolean
   queue?: RegExp
@@ -48,32 +49,33 @@ export class BaseCommander {
       .storeOptionsAsProperties()
       .name('xdccJS')
       .version(version)
-      .option('-h, --host <server>', 'IRC server hostname - \x1b[1mrequired\x1b[0m')
-      .option('--port <number>', 'IRC server port - \x1b[1mdefault: 6667\x1b[0m', (k:string) => BaseCommander.parseIfNotInt(k, 'port'))
-      .option('-n, --nickname <nickname>', 'Your nickname - \x1b[1mdefault: xdccJS\x1b[0m')
-      .option('--no-randomize', 'Disable nickname randomization - \x1b[1mdefault: randomize\x1b[0m')
-      .option('-c, --channel <chans...>', 'Channel(s) to join - \x1b[1moptional\x1b[0m')
-      .option('-p, --path <path>', 'Download path - \x1b[1moptional\x1b[0m', path.normalize)
-      .option('-b, --bot <botname>', 'XDCC bot nickname - \x1b[1mrequired\x1b[0m')
-      .option('-d, --download <packs...>', 'Packs to download - \x1b[1mrequired\x1b[0m')
-      .option('--nickserv <password>', 'Authenticate to NickServ - \x1b[1mdefault: disabled\x1b[0m')
-      .option('--passive-port <number>', 'Port to use for passive dccs - \x1b[1moptional\x1b[0m', (k:string) => BaseCommander.parseIfNotInt(k, 'passive-port'))
-      .option('-r, --retry <number>', 'Number of attempts before skipping pack - \x1b[1moptional\x1b[0m', (k:string) => BaseCommander.parseIfNotInt(k, 'retry'))
-      .option('-t --timeout <number>', 'Time in seconds before a download is considered timed out - \x1b[1moptional\x1b[0m', (k:string) => BaseCommander.parseIfNotInt(k, 'timeout'))
+      .option('-h, --host <server>', 'IRC server hostname \x1b[2m- required\x1b[0m')
+      .option('--port <number>', 'IRC server port \x1b[2m- default: 6667\x1b[0m', (k:string) => BaseCommander.parseIfNotInt(k, 'port'))
+      .option('-n, --nickname <nickname>', 'Your nickname \x1b[2m- default: xdccJS\x1b[0m')
+      .option('--no-randomize', 'Disable nickname randomization \x1b[2m- default: randomize\x1b[0m')
+      .option('-c, --channel <chans...>', 'Channel(s) to join \x1b[2m- optional\x1b[0m')
+      .option('-p, --path <path>', 'Download path \x1b[2m- optional\x1b[0m', path.normalize)
+      .option('-b, --bot <botname>', 'XDCC bot nickname \x1b[2m- required\x1b[0m')
+      .option('-d, --download <packs...>', 'Packs to download \x1b[2m- required\x1b[0m')
+      .option('--nickserv <password>', 'Authenticate to NickServ \x1b[2m- default: disabled\x1b[0m')
+      .option('--passive-port <number>', 'Port to use for passive dccs \x1b[2m- optional\x1b[0m', (k:string) => BaseCommander.parseIfNotInt(k, 'passive-port'))
+      .option('--ipv6', 'Use IPv6, only required if bot use \x1b[1mboth\x1b[0m passive dcc and IPv6 \x1b[2m- default: disabled\x1b[0m', false)
+      .option('-r, --retry <number>', 'Number of attempts before skipping pack \x1b[2m- optional\x1b[0m', (k:string) => BaseCommander.parseIfNotInt(k, 'retry'))
+      .option('-t --timeout <number>', 'Time in seconds before a download is considered timed out \x1b[2m- optional\x1b[0m', (k:string) => BaseCommander.parseIfNotInt(k, 'timeout'))
       .option(
         '-w, --wait <number>',
-        'Time to wait before sending download request - \x1b[1moptional\x1b[0m',
+        'Time to wait before sending download request \x1b[2m- optional\x1b[0m',
         (k:string) => BaseCommander.parseIfNotInt(k, 'wait'),
       )
-      .option('--no-bot-name-match', 'Allow downloads from bot with nickname that doesn\'t match the request - \x1b[1moptional\x1b[0m')
-      .option('--queue <RegExp>', 'Regex to determine if the bot queued the request - \x1b[1moptional\x1b[0m', BaseCommander.toRegex)
-      .option('--tls', 'enable SSL/TLS - \x1b[1moptional\x1b[0m')
-      .option('--no-insecure', 'Reject self-signed SSL/TLS certificates - \x1b[1moptional\x1b[0m')
-      .option('--save-profile <string>', 'save current options as a profile - \x1b[1moptional\x1b[0m')
-      .option('--delete-profile <string>', 'delete profile - \x1b[1moptional\x1b[0m')
-      .option('--set-profile <string>', 'set profile as default - \x1b[1moptional\x1b[0m')
-      .option('--list-profile', 'list all available profiles - \x1b[1moptional\x1b[0m')
-      .option('-q, --quiet', 'Disable console output - \x1b[1moptional\x1b[0m')
+      .option('--no-bot-name-match', 'Allow downloads from bot with nickname that doesn\'t match the request \x1b[2m- optional\x1b[0m')
+      .option('--queue <RegExp>', 'Regex to determine if the bot queued the request \x1b[2m- optional\x1b[0m', BaseCommander.toRegex)
+      .option('--tls', 'enable SSL/TLS \x1b[2m- optional\x1b[0m')
+      .option('--no-insecure', 'Reject self-signed SSL/TLS certificates \x1b[2m- optional\x1b[0m')
+      .option('--save-profile <string>', 'save current options as a profile \x1b[2m- optional\x1b[0m')
+      .option('--delete-profile <string>', 'delete profile \x1b[2m- optional\x1b[0m')
+      .option('--set-profile <string>', 'set profile as default \x1b[2m- optional\x1b[0m')
+      .option('--list-profile', 'list all available profiles \x1b[2m- optional\x1b[0m')
+      .option('-q, --quiet', 'Disable console output \x1b[2m- optional\x1b[0m')
       .parse();
   }
 

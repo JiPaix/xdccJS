@@ -194,7 +194,7 @@ export class CtcpParser extends AddJob {
       type: `${parts[0]} ${parts[1]}`,
       file: parts[2].replace(/"/g, ''),
       filePath: this.path ? path.normalize(`${this.path}/${parts[2].replace(/"/g, '')}`) : 'pipe',
-      ip: CtcpParser.uint32ToIP(parseInt(parts[3], 10)),
+      ip: CtcpParser.uint32ToIP(parts[3]),
       port: parseInt(parts[4], 10),
       position: 0,
       length: parseInt(parts[5], 10),
@@ -218,7 +218,11 @@ export class CtcpParser extends AddJob {
     return undefined;
   }
 
-  protected static uint32ToIP(n: number): string {
+  protected static uint32ToIP(value: string): string {
+    const n = parseInt(value, 10);
+    if (Number.isNaN(n)) {
+      return value;
+    }
     const byte1 = n & 255;
     const byte2 = (n >> 8) & 255;
     const byte3 = (n >> 16) & 255;

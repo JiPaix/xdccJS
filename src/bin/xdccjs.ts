@@ -1,10 +1,10 @@
 /* eslint-disable no-param-reassign */
 import * as readline from 'readline';
+import Connect from '../connect';
 import XDCC, { Params } from '../index';
+import { savedParams } from './commander';
 import BinError from './errorhandler';
 import Profiles from './profiles';
-import Connect from '../connect';
-import { savedParams } from './commander';
 
 export default class XdccJSbin extends Profiles {
   constructor() {
@@ -80,7 +80,7 @@ export default class XdccJSbin extends Profiles {
         if (start > 0) {
           this.clearMSG();
         }
-        const job = await xdccJS.download(bot, download);
+        const job = await xdccJS.download(bot, download, this.program.ipv6);
         if (!this.program.path) {
           job.on('pipe', (stream) => {
             stream.pipe(process.stdout);

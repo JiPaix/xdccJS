@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-vars */
 import { EventEmitter } from 'eventemitter3';
-import type TypedEmitter from 'typed-emitter';
-import { clone } from 'lodash';
-import type { PassThrough } from 'stream';
 import * as fs from 'fs';
+import { clone } from 'lodash';
 import * as net from 'net';
-import { Candidate } from './candidate';
+import type { PassThrough } from 'stream';
+import type TypedEmitter from 'typed-emitter';
 import ProgressBar from '../lib/progress';
+import { Candidate } from './candidate';
 import { FileInfo } from './fileinfo';
 
 export type JobMessageEvents = {
@@ -129,6 +129,9 @@ export class Job extends (EventEmitter as new () => TypedEmitter<JobMessageEvent
       clear: () => void
     };
 
+  /** @ignore */
+  ipv6: boolean | undefined;
+
   constructor(candidate: Candidate, cancelFn: () => void) {
     // eslint-disable-next-line constructor-super
     super();
@@ -144,6 +147,7 @@ export class Job extends (EventEmitter as new () => TypedEmitter<JobMessageEvent
     this.retry = candidate.retry;
     this.success = candidate.success;
     this.timeout = candidate.timeout;
+    this.ipv6 = candidate.ipv6;
   }
 
   /**

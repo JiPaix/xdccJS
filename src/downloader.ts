@@ -36,7 +36,10 @@ interface Pass {
 export default class Downloader extends CtcpParser {
   passivePort: number[];
 
-  ip: Promise<number>;
+  ip: Promise<{
+    v4: string | undefined;
+    v6: string | undefined;
+  }>;
 
   constructor(params: ParamsDL) {
     super(params);
@@ -49,9 +52,13 @@ export default class Downloader extends CtcpParser {
 
   static async getIp() {
     const ip = await getIp();
-    const d = ip.split('.');
-    const results = ((+d[0] * 256 + +d[1]) * 256 + +d[2]) * 256 + +d[3];
-    return results;
+    let v4:string|undefined;
+    if (ip.v4) {
+      const d = ip.v4.split('.');
+      const results = ((+d[0] * 256 + +d[1]) * 256 + +d[2]) * 256 + +d[3];
+      v4 = `${results}`;
+    }
+    return { v4, v6: ip.v6 };
   }
 
   private setupStream(fileInfo: FileInfo): fs.WriteStream | PassThrough {
@@ -94,7 +101,9 @@ export default class Downloader extends CtcpParser {
         this.processDL(server, client, stream, candidate, fileInfo, pick);
       });
 
-      server.listen(pick, '0.0.0.0', () => {
+      const listenIp = candidate.ipv6 ? '::' : '0.0.0.0';
+
+      server.listen(pick, listenIp, () => {
         this.ip.then((ip) => {
           this.raw(
             `PRIVMSG ${candidate.nick} ${String.fromCharCode(1)}DCC SEND ${fileInfo.file} ${ip} ${pick} ${

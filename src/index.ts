@@ -1,16 +1,17 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-classes-per-file */
 import { EventEmitter } from 'eventemitter3';
-import type TypedEmitter from 'typed-emitter';
 import type { PassThrough } from 'stream';
+import type TypedEmitter from 'typed-emitter';
+import { Packets } from './addjob';
 import Downloader, { ParamsDL } from './downloader';
 import type { FileInfo } from './interfaces/fileinfo';
-import type { Job, JobMessageEvents } from './interfaces/job';
-import type { Candidate } from './interfaces/candidate';
+import type { Job } from './interfaces/job';
 
-export type { Job, JobMessageEvents } from './interfaces/job';
-export type { FileInfo } from './interfaces/fileinfo';
 export type { Candidate } from './interfaces/candidate';
+export type { FileInfo } from './interfaces/fileinfo';
+export type { Job, JobMessageEvents } from './interfaces/job';
+export type { Packets };
 
 export type GlobalMessageEvents = {
   /**
@@ -137,6 +138,7 @@ export default class XDCC extends (EventEmitter as new () => TypedEmitter<Global
    * start jobs and download files
    * @param target bot name
    * @param packets pack number(s)
+   * @param ipv6 use ipv6: only needed for passive bots
    * @example
    * ```js
    * xdccJS.on('ready', () => {
@@ -145,8 +147,8 @@ export default class XDCC extends (EventEmitter as new () => TypedEmitter<Global
    *  xdccJS.download('XDCC|YELLOW', 4)
    * })
    */
-  download(target: string, packets: string | number | string[] | number[]):Promise<Job> {
-    return this.irc.download(target, packets);
+  download(target: string, packets: Packets, ipv6?:boolean):Promise<Job> {
+    return this.irc.download(target, packets, ipv6);
   }
 
   /**
