@@ -18,6 +18,7 @@
     "scripts": "./dist/*"
   },
   "scripts": {
+    "lint": "eslint \"src/**\"",
     "prebuild": "node ./node_modules/rimraf/bin.js dist && node ./node_modules/ts-node/dist/bin.js ./build/copyfiles.ts",
     "build": "node ./node_modules/typescript/bin/tsc ",
     "prepublishOnly": "npm run build",

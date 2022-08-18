@@ -5,3 +5,5 @@ dist
 test.*
 test/
 lib/**
+src/**/*.d.ts
+src/version.json
