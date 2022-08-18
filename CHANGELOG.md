@@ -1,6 +1,8 @@
 # Changelog
 ## [UNRELEASED](https://github.com/jipaix/xdccjs/tree/main)
-### CI
+### Revert(lib)
+* move is() function back as a static class function. Partially revert 7233135
+### Continuous Integration
 * fix post publish hook interrupting each others on error
 ---
 ## [v4.5.64](https://github.com/jipaix/xdccjs/tree/v4.5.63)

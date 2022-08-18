@@ -3,13 +3,11 @@
 import * as fs from 'fs';
 import * as net from 'net';
 import { PassThrough } from 'stream';
-import Connect from './connect';
 import { CtcpParser, ParamsCTCP } from './ctcp_parser';
 import type { FileInfo } from './interfaces/fileinfo';
 import type { Job } from './interfaces/job';
 import getIp from './lib/get-ip';
 import * as ProgressBar from './lib/progress';
-import { is } from './lib/typechecker';
 
 export type ParamsDL = ParamsCTCP & {
   /**
@@ -43,7 +41,7 @@ export default class Downloader extends CtcpParser {
   constructor(params: ParamsDL) {
     super(params);
     this.ip = Downloader.getIp();
-    this.passivePort = is({ name: 'passivePort', variable: params.passivePort, type: [5001] });
+    this.passivePort = CtcpParser.is({ name: 'passivePort', variable: params.passivePort, type: [5001] });
     this.on('prepareDL', (downloadrequest: { fileInfo: FileInfo; candidate: Job }) => {
       this.prepareDL(downloadrequest);
     });
@@ -248,7 +246,7 @@ export default class Downloader extends CtcpParser {
   }
 
   protected static setupProgressBar(len: number): ProgressBar {
-    return new ProgressBar(''.padStart(6) + Connect.replace(':roll [:bar] ETA: :eta @ :rate - :percent'), {
+    return new ProgressBar(''.padStart(6) + CtcpParser.replace(':roll [:bar] ETA: :eta @ :rate - :percent'), {
       complete: '=',
       incomplete: ' ',
       width: 20,

@@ -6,7 +6,6 @@ import * as path from 'path';
 import AddJob from './addjob';
 import type { FileInfo } from './interfaces/fileinfo';
 import type { Job } from './interfaces/job';
-import { is } from './lib/typechecker';
 import { ParamsTimeout } from './timeouthandler';
 
 interface ResumeQueue extends FileInfo {
@@ -55,7 +54,7 @@ export class CtcpParser extends AddJob {
 
   constructor(params: ParamsCTCP) {
     super(params);
-    this.botNameMatch = is({ name: 'botNameMatch', variable: params.botNameMatch, type: true });
+    this.botNameMatch = CtcpParser.is({ name: 'botNameMatch', variable: params.botNameMatch, type: true });
     this.path = CtcpParser.pathCheck(params.path);
     this.on('ctcp request', (resp: { [prop: string]: string }): void => {
       const isDownloadRequest = this.checkBeforeDL(resp, this.candidates[0]);

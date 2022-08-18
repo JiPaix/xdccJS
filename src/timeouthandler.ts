@@ -7,7 +7,6 @@ import Connect from './connect';
 import type { FileInfo } from './interfaces/fileinfo';
 import type { Job } from './interfaces/job';
 import ProgressBar from './lib/progress';
-import { is } from './lib/typechecker';
 
 export type ParamsTimeout = ParamsIRC & {
   /**
@@ -51,7 +50,7 @@ export class TimeOut extends Connect {
   constructor(params: ParamsTimeout) {
     super(params);
     this.portInUse = [];
-    this.retry = is({ name: 'retry', variable: params.retry, type: 1 });
+    this.retry = TimeOut.is({ name: 'retry', variable: params.retry, type: 1 });
     if (params.queue && !(params.queue instanceof RegExp)) {
       throw Error('queue must be a RegExp');
     }

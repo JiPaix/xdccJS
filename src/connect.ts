@@ -1,8 +1,12 @@
+/* eslint-disable no-dupe-class-members */
+/* eslint-disable lines-between-class-members */
+/* eslint-disable no-redeclare */
+/* eslint-disable no-unused-vars */
+/* lines-between-class-members */
 /* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/triple-slash-reference */
 /// <reference path="./@types/irc-framework.ts"/>
 import { Client, MessageEventArgs } from 'irc-framework';
-import { is } from './lib/typechecker';
 
 export type ParamsIRC = {
   /**
@@ -136,18 +140,18 @@ export default class Connect extends Client {
     if (this.nickRandomized || this.nickservPassword) {
       this.nickname = Connect.nickRandomizer(this.nickname);
     }
-    this.host = is({ name: 'host', variable: params.host, type: 'string' });
-    this.port = is({ name: 'port', variable: params.port, type: 6667 });
-    this.verbose = is({ name: 'verbose', variable: params.verbose, type: false });
+    this.host = Connect.is({ name: 'host', variable: params.host, type: 'string' });
+    this.port = Connect.is({ name: 'port', variable: params.port, type: 6667 });
+    this.verbose = Connect.is({ name: 'verbose', variable: params.verbose, type: false });
     this.chan = Connect.chanCheck(params.chan);
     if (params.tls) {
-      params.tls.enable = is({ name: 'tls.enable', variable: params.tls.enable, type: false });
-      params.tls.rejectUnauthorized = is({ name: 'tls.rejectUnauthorized', variable: params.tls.rejectUnauthorized, type: true });
+      params.tls.enable = Connect.is({ name: 'tls.enable', variable: params.tls.enable, type: false });
+      params.tls.rejectUnauthorized = Connect.is({ name: 'tls.rejectUnauthorized', variable: params.tls.rejectUnauthorized, type: true });
     } else {
       params.tls = { enable: false, rejectUnauthorized: true };
     }
     this.tls = params.tls;
-    this.timeout = is({ name: 'timeout', variable: params.timeout, type: 30 });
+    this.timeout = Connect.is({ name: 'timeout', variable: params.timeout, type: 30 });
     this.onConnect();
     this.connect({
       host: this.host,
@@ -311,6 +315,21 @@ export default class Connect extends Client {
         .replace(/%info%/g, '\x1b[1m\x1b[36m[i]\x1b[0m')
         .replace(/%success%/g, '\x1b[1m\x1b[32m>\x1b[0m')}\x1b[0m`
     );
+  }
+
+  static is<T, D>(opts: { name: string, variable: T, type: 'string'|'number'|'boolean'|'object'}): T
+  static is<T, D>(opts: { name: string, variable: T, type: D}): D
+  static is<T, D>(opts: { name: string, variable: T, type: 'string'|'number'|'boolean'|'object'| D }): T | D {
+    const { name, variable, type } = opts;
+    if (type === 'string' || type === 'number' || type === 'boolean' || type === 'object') {
+    // eslint-disable-next-line valid-typeof
+      if (type === typeof variable) return variable;
+      const err = new TypeError(`unexpected type of '${name}': a ${type} was expected but got '${typeof variable}'`);
+      err.name += ' [ERR_INVALID_ARG_TYPE]';
+      throw err;
+    }
+    if (typeof type === typeof variable) return variable;
+    return type;
   }
 
   protected print(string: string, padding = 0): void {
