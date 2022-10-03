@@ -411,9 +411,9 @@
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
 
 "@types/lodash@^4.14.183":
-  version "4.14.183"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.183.tgz#1173e843e858cff5b997c234df2789a4a54c2374"
-  integrity sha512-UXavyuxzXKMqJPEpFPri6Ku5F9af6ZJXUneHhvQJxavrEjuHkFp2YnDWHcxJiG7hk8ZkWqjcyNeW1s/smZv5cw==
+  version "4.14.186"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.186.tgz#862e5514dd7bd66ada6c70ee5fce844b06c8ee97"
+  integrity sha512-eHcVlLXP0c2FlMPm56ITode2AgLMSa6aJ05JTTbYbI+7EMkCEE5qk2E41d5g2lCVTqRe0GnnRFurmlCsDODrPw==
 
 "@types/mocha@^9.1.1":
   version "9.1.1"
