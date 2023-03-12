@@ -157,6 +157,7 @@ export class CtcpParser extends AddJob {
         delay: this.timeout,
         fileInfo,
       });
+      this.emit('debug', 'xdccJS:: BEFORE_TCP_REQUEST_RESUME')
       return true;
     }
     return false;
@@ -207,6 +208,7 @@ export class CtcpParser extends AddJob {
     const parts = CtcpParser.ctcpMatch(text);
     const type = `${parts[0]} ${parts[1]}`;
     if (type === 'DCC ACCEPT') {
+      this.emit('debug', 'xdccJS:: BEFORE_TCP_RESUME_ACCEPT');
       const resume = this.resumequeue.filter((q) => q.nick === nick);
       this.resumequeue = this.resumequeue.filter((q) => q.nick !== nick);
       if (resume.length) {
@@ -214,6 +216,7 @@ export class CtcpParser extends AddJob {
       }
     }
     if (type === 'DCC SEND') {
+      this.emit('debug', 'xdccJS:: BEFORE_TCP_ACCEPT');
       return this.fileInfoBuilder(parts);
     }
     return undefined;
