@@ -23,12 +23,12 @@ export type ParamsDL = ParamsCTCP & {
 
 interface Pass {
   server?: net.Server
-  client: net.Socket
+  client?: net.Socket
   stream: fs.WriteStream | PassThrough
   candidate: Job
   fileInfo: FileInfo
   pick?: number
-  bar: ProgressBar
+  bar?: ProgressBar
   received: number,
   bufferType: '64bit' | '32bit'
 }
@@ -82,6 +82,7 @@ export default class Downloader extends CtcpParser {
     const { candidate } = downloadrequest;
     const stream = this.setupStream(fileInfo);
     if (fileInfo.port === 0) {
+      this.emit('debug', 'xdccJS:: TCP_INCOMING_READY');
       const pick = this.portPicker();
       const server = net.createServer((client) => {
         this.SetupTimeout({
@@ -110,9 +111,21 @@ export default class Downloader extends CtcpParser {
               fileInfo.length
             } ${fileInfo.token}${String.fromCharCode(1)}`,
           );
+        }).catch((e) => {
+          const pass = {
+            server,
+            stream,
+            candidate,
+            fileInfo,
+            pick,
+            received: 0,
+            bufferType: fileInfo.length > 4294967295 ? '64bit' : '32bit' as '64bit' | '32bit',
+          };
+          this.onError(pass, e);
         });
       });
     } else {
+      this.emit('debug', 'xdccJS:: TCP_OUTGOING_READY');
       const client = net.connect(fileInfo.port, fileInfo.ip);
       this.processDL(undefined, client, stream, candidate, fileInfo, undefined);
     }
@@ -152,11 +165,13 @@ export default class Downloader extends CtcpParser {
     client.on('error', (e) => this.onError(pass, e));
     const sendBuffer = Buffer.alloc(pass.bufferType === '64bit' ? 8 : 4);
     client.on('data', (data) => this.onData(pass, data, sendBuffer));
+    client.once('data', () => this.emit('debug', 'xdccJS:: TCP_DOWNLOADING'));
     client.on('close', (e) => this.onClose(pass, e));
   }
 
   private onTimeOut(args: Pass): void {
     if (args.received === args.fileInfo.length) return;
+    this.emit('debug', 'xdccJS:: TCP_TIMEOUT');
     this.SetupTimeout({
       candidate: args.candidate,
       eventType: 'error',
@@ -179,6 +194,10 @@ export default class Downloader extends CtcpParser {
 
   private onError(args: Pass, e: Error): void {
     if (args.received === args.fileInfo.length) return;
+
+    if (e.message === 'cancel') this.emit('debug', 'xdccJS:: TCP_CANCEL');
+    else this.emit('debug', `xdccJS:: TCP_ERROR @ ${e.message}`);
+
     this.SetupTimeout({
       candidate: args.candidate,
       eventType: e.message === 'cancel' ? 'cancel' : 'error',
@@ -212,8 +231,12 @@ export default class Downloader extends CtcpParser {
   }
 
   private onClose(args: Pass, e: boolean): void {
-    if (e && args.received !== args.fileInfo.length) return;
+    if (e && args.received !== args.fileInfo.length) {
+      this.emit('debug', `xdccJS:: TCP_CLOSE_ERROR @ ${e}`);
+      return;
+    }
     this.print('%success% done.', 6);
+    this.emit('debug', 'xdccJS:: TCP_CLOSE_SUCCESS');
     args.candidate.timeout.clear();
     args.candidate.success.push(args.fileInfo.file);
     if (args.server && args.pick) {
@@ -247,7 +270,7 @@ export default class Downloader extends CtcpParser {
     }
 
     if (this.verbose && args.bar) args.bar.tick(data.length);
-    if (!args.client.destroyed && args.client.writable) {
+    if (!args.client?.destroyed && args.client?.writable) {
       args.client.write(sendBuffer);
     }
     args.candidate.emit('downloading', args.fileInfo, args.received, (args.received / args.fileInfo.length) * 100);

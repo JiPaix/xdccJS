@@ -178,6 +178,7 @@ export default class Connect extends Client {
 
   private onConnect(): void {
     this.on('connected', async () => {
+      this.emit('debug', 'IRC:: CONNECTED');
       clearTimeout(this.connectionTimeout);
       this.chan.forEach((chan) => this.join(chan));
       this.print(`%success% connected to : %bold%%yellow%${this.host}`);
@@ -187,8 +188,12 @@ export default class Connect extends Client {
           await this.nickServAuth();
           this.changeNick(this.originalNickname);
           if (!this.nickRandomized) this.nickname = this.originalNickname;
+          this.emit('debug', 'IRC:: NICKSERV_IDENT_OK');
         } catch (e) {
-          if (e instanceof Error) this.print(`%danger% failed: %red%${e.message}`, 2);
+          if (e instanceof Error) {
+            this.emit('debug', `IRC:: NICKSERV_IDENT_ERROR @ ${e.message}`);
+            this.print(`%danger% failed: %red%${e.message}`, 2);
+          }
           this.quit();
           return;
         }

@@ -32,7 +32,7 @@ interface TimeoutSetup {
   executeLater?: () => void
   disconnectAfter?: {
     stream: fs.WriteStream | PassThrough
-    socket: net.Socket
+    socket?: net.Socket
     server?: net.Server
     pick?: number | undefined
     bar?: ProgressBar
@@ -81,6 +81,7 @@ export class TimeOut extends Connect {
     }) => {
       const regexp = new RegExp(regex);
       if (regexp.test(ev.message)) {
+        this.emit('debug', 'xdccJSS:: DOWNLOAD_QUEUED');
         this.print(
           `%info% You have been %cyan%queued%reset% by %yellow%${job.nick}%reset%, please wait.`,
           6,
@@ -127,6 +128,7 @@ export class TimeOut extends Connect {
     this.say(candidate.cancelNick, 'XDCC CANCEL');
     const error = new Error(candidate.timeout.message);
     this.emit(candidate.timeout.eventType, error, candidate.timeout.fileInfo);
+    this.emit('debug', `xdccJS:: EVENT_${candidate.timeout.eventType.toLocaleUpperCase()}_ERROR @ ${error.message}`);
     candidate.emit(candidate.timeout.eventType, error.message, candidate.timeout.fileInfo);
     if (this.verbose) {
       const msg = `%danger% ${candidate.timeout.message}`;
@@ -141,6 +143,7 @@ export class TimeOut extends Connect {
     if (candidate.retry < this.retry) {
       candidate.retry += 1;
       this.say(candidate.nick, `xdcc send ${candidate.now}`);
+      this.emit('debug', 'xdccJSS:: DOWNLOAD_RETRY');
       this.print(`%info% retrying: ${candidate.retry}/${this.retry}`, 6);
       candidate.timeout.to = setTimeout(() => {
         this.routine(candidate);
@@ -150,6 +153,7 @@ export class TimeOut extends Connect {
       candidate.timeout.clear();
       const pad = candidate.retry + 5;
       const message = `%danger% skipped pack: ${candidate.now}`;
+      this.emit('debug', 'xdccJSS:: DOWNLOAD_SKIPPED');
       this.print(message, pad);
       candidate.emit('error', message, fileInfo);
       candidate.failures.push(candidate.now);

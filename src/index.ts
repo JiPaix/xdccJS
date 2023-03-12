@@ -89,6 +89,10 @@ export type GlobalMessageEvents = {
    * ```
    */
   ready: () => void
+  /**
+   * debug messages
+   */
+  debug: (msg: string) => void
 }
 
 /**
@@ -109,6 +113,7 @@ export default class XDCC extends EventEmitter<GlobalMessageEvents> {
   }
 
   private listen(): void {
+    this.irc.on('debug', (msg) => this.emit('debug', msg));
     this.irc.on('ready', () => {
       this.emit('ready');
     });

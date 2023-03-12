@@ -59,6 +59,7 @@ export class CtcpParser extends AddJob {
     this.on('ctcp request', (resp: { [prop: string]: string }): void => {
       const isDownloadRequest = this.checkBeforeDL(resp, this.candidates[0]);
       if (isDownloadRequest) {
+        this.emit('debug', 'xdccJS:: BEFORE_TCP_OK');
         this.emit('prepareDL', isDownloadRequest);
       }
     });

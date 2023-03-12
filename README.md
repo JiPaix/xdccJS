@@ -81,7 +81,7 @@ const opts = {
   nickname: 'ItsMeJiPaix', // Nickname                                                      - default: xdccJS + random
   chan: ['#candy', '#fruits'], // Array of channels                                         - default : [ ] (no chan)
   path: 'downloads', // Download path or 'false'                                            - default: false (which enables piping)
-  nickServ: 'complex_password', // Your NickServ password (no spaces)                               - default: undefined (disabled)
+  nickServ: 'complex_password', // Your NickServ password (no spaces)                       - default: undefined (disabled)
   retry: 2, // Nb of retries before skip                                                    - default: 1
   timeout: 50, // Nb of seconds before a download is considered timed out                   - default: 30
   verbose: true, // Display download progress and jobs status                               - default: false
@@ -268,6 +268,12 @@ const arrayOfJobs = await xdccJS.jobs()
 - ```js
     job.on('cancel', (message) => {
       console.error(message) //=> "cancelled by user"
+    })
+    ```
+> [**xdccJS**].on( **'debug'** ) : *debug message*  
+- ```js
+    xdccJS.on('debug', (message) => {
+      console.info(message)
     })
     ```
 ### Pipes

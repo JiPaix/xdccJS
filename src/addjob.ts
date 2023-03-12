@@ -21,6 +21,7 @@ export default class AddJob extends TimeOut {
 
   protected onRequest(): void {
     this.on('request', (args: { target: string; packets: number[] }) => {
+      this.emit('debug', 'xdccJS:: DOWNLOAD_REGISTERED');
       const candidate = this.getCandidate(args.target);
       this.prepareCandidate(candidate);
     });
@@ -180,6 +181,7 @@ export default class AddJob extends TimeOut {
       padding: 6,
       delay: this.timeout,
     });
+    this.emit('debug', 'xdccJS:: DOWNLOAD_REQUESTING');
     this.print(
       `%success% sending command: /MSG %yellow%${candidate.nick}%reset% xdcc send %yellow%${candidate.now}`,
       4,
@@ -195,6 +197,7 @@ export default class AddJob extends TimeOut {
 
   protected onNext(): void {
     this.on('next', (candidate: Job, verbose:boolean) => {
+      this.emit('debug', 'xdccJS:: DOWNLOAD_NEXT');
       if (candidate.queue.length) {
         this.prepareCandidate(candidate);
       } else {
@@ -217,6 +220,7 @@ export default class AddJob extends TimeOut {
           this.print(message, 6);
         }
         if (!this.candidates.length) {
+          this.emit('debug', 'xdccJS:: EVENT_CAN_QUIT');
           this.emit('can-quit');
         } else {
           const newcandidate = this.candidates[0];
