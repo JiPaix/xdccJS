@@ -1,5 +1,5 @@
 # Changelog
-## [v4.6.1](https://github.com/jipaix/xdccjs/tree/v4.6.1)
+## [v4.6.2](https://github.com/jipaix/xdccjs/tree/v4.6.2)
 ### Feat(lib)
 * add 'debug' event
 ### Fix(lib+cli)
