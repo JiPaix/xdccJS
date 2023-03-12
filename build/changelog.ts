@@ -1,6 +1,7 @@
 /* eslint-disable comma-dangle */
 /* eslint-disable import/no-extraneous-dependencies */
 import axios, { AxiosResponse } from 'axios';
+import type { TextChannel } from 'discord.js';
 import {
   APIEmbedField, Channel, Client, EmbedBuilder, GatewayIntentBits
 } from 'discord.js';
@@ -94,8 +95,8 @@ function postToDiscord():Promise<void> {
       if (!chan) return reject(new Error('couldn\'t find channel'));
       if (!chan.isTextBased()) return reject(new Error('channel is not text based'));
       try {
-        await chan.send('@everyone');
-        await chan.send({ embeds: [embed] });
+        await (chan as TextChannel).send('@everyone');
+        await (chan as TextChannel).send({ embeds: [embed] });
         discord.off('error', reject);
         discord.destroy();
         return resolve();

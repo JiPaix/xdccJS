@@ -16,21 +16,21 @@ jobs:
       matrix:
         node-version: ["14.x", "16.x", "17.x"]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v1
+      uses: github/codeql-action/init@v2
     - run: |
         npm install
         node ./node_modules/ts-node/dist/bin.js ./build/copyfiles.ts
         node ./node_modules/typescript/bin/tsc
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v1
-    - uses: MontyD/package-json-updated-action@1.0.1
+      uses: github/codeql-action/analyze@v2
+    - uses: JiPaix/package-json-updated-action@v1.0.5
       id: version-updated
       with:
         path: package.json
@@ -41,8 +41,8 @@ jobs:
     if: github.ref == 'refs/heads/main' && needs.build.outputs.has-updated
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
       with:
         node-version: "16.x"
         registry-url: 'https://registry.npmjs.org'
