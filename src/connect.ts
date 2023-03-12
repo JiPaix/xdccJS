@@ -151,7 +151,7 @@ export default class Connect extends Client {
       params.tls = { enable: false, rejectUnauthorized: true };
     }
     this.tls = params.tls;
-    this.timeout = Connect.is({ name: 'timeout', variable: params.timeout, type: 30 });
+    this.timeout = (Connect.is({ name: 'timeout', variable: params.timeout, type: 30 })) * 1000;
     this.onConnect();
     this.connect({
       host: this.host,
@@ -231,7 +231,7 @@ export default class Connect extends Client {
         this.off('raw', rawListener);
         this.off('notice', noticeListener);
         reject(new Error(`%danger% NickServ authentication failed: ${error.length ? error : 'unknown error'}`));
-      }, this.timeout * 1000);
+      }, this.timeout);
 
       this.say('NickServ', `identify ${this.originalNickname} ${this.nickservPassword}`);
     });

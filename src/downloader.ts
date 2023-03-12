@@ -147,7 +147,7 @@ export default class Downloader extends CtcpParser {
       received: 0,
       bufferType: fileInfo.length > 4294967295 ? '64bit' : '32bit',
     };
-    client.setTimeout(this.timeout * 1000);
+    client.setTimeout(this.timeout);
     client.on('timeout', () => this.onTimeOut(pass));
     client.on('error', (e) => this.onError(pass, e));
     const sendBuffer = Buffer.alloc(pass.bufferType === '64bit' ? 8 : 4);

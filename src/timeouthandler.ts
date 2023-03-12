@@ -117,7 +117,7 @@ export class TimeOut extends Connect {
       } else {
         this.redownload(candidate);
       }
-    }, delay * 1000);
+    }, delay);
   }
 
   private routine(candidate: Job): void {
@@ -145,7 +145,7 @@ export class TimeOut extends Connect {
       candidate.timeout.to = setTimeout(() => {
         this.routine(candidate);
         this.redownload(candidate, fileInfo);
-      }, this.timeout * 1000);
+      }, this.timeout);
     } else {
       candidate.timeout.clear();
       const pad = candidate.retry + 5;
