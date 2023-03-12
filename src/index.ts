@@ -2,7 +2,6 @@
 /* eslint-disable max-classes-per-file */
 import { EventEmitter } from 'eventemitter3';
 import type { PassThrough } from 'stream';
-import type TypedEmitter from 'typed-emitter';
 import { Packets } from './addjob';
 import Downloader, { ParamsDL } from './downloader';
 import type { FileInfo } from './interfaces/fileinfo';
@@ -99,7 +98,7 @@ export interface Params extends ParamsDL {
   encoding?: 'utf8'
 }
 
-export default class XDCC extends (EventEmitter as new () => TypedEmitter<GlobalMessageEvents>) {
+export default class XDCC extends EventEmitter<GlobalMessageEvents> {
   irc: Downloader;
 
   constructor(params: Params) {

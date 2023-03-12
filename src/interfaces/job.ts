@@ -4,7 +4,6 @@ import * as fs from 'fs';
 import { clone } from 'lodash';
 import * as net from 'net';
 import type { PassThrough } from 'stream';
-import type TypedEmitter from 'typed-emitter';
 import ProgressBar from '../lib/progress';
 import { Candidate } from './candidate';
 import { FileInfo } from './fileinfo';
@@ -75,7 +74,7 @@ export type JobMessageEvents = {
   message: (messageEvent: { nick:string, type: string, message: string}) => void,
 }
 
-export class Job extends (EventEmitter as new () => TypedEmitter<JobMessageEvents>) {
+export class Job extends EventEmitter<JobMessageEvents> {
   /**
      * Cancel Job
      * @example
