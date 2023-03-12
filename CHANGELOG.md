@@ -1,4 +1,10 @@
 # Changelog
+## [v4.6.5](https://github.com/jipaix/xdccjs/tree/v4.6.5)
+### refactor(lib)
+* add more 'debug' events
+### Fix(deps)
+* fix potential security threat: Prototype Pollution in JSON5 via Parse Method
+---
 ## [v4.6.2](https://github.com/jipaix/xdccjs/tree/v4.6.2)
 ### Feat(lib)
 * add 'debug' event
