@@ -1,4 +1,12 @@
 # Changelog
+## [v4.6.0](https://github.com/jipaix/xdccjs/tree/v4.6.0)
+### Feat(lib)
+* add 'debug' event
+### Fix(lib+cli)
+* ensure timeout is always in seconds
+### Chores
+* update dependencies
+---
 ## [v4.5.69](https://github.com/jipaix/xdccjs/tree/v4.5.68)
 ### Feat(lib+cli)
 * alpha support for ipv6 downloads: parameter is only required for bot using both passive dcc and IPv6
