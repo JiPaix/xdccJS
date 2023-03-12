@@ -157,7 +157,7 @@ export class CtcpParser extends AddJob {
         delay: this.timeout,
         fileInfo,
       });
-      this.emit('debug', 'xdccJS:: BEFORE_TCP_REQUEST_RESUME')
+      this.emit('debug', 'xdccJS:: BEFORE_TCP_REQUEST_RESUME');
       return true;
     }
     return false;
