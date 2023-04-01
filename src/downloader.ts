@@ -12,13 +12,23 @@ import * as ProgressBar from './lib/progress';
 export type ParamsDL = ParamsCTCP & {
   /**
    * Array of ports for passive DCC
-   * @default `5001`
+   * @default 5001
    * @remark Some xdcc bots use passive dcc, this require to have these ports opened on your computer/router/firewall
    * @example
    * ```js
    * params.passivePort = [3213, 3214]
+   * ```
    */
   passivePort?: number[]
+  /**
+   * Throttle speed (kB/s)
+   * @default undefined
+   * @example
+   * ```js
+   * param.throttle = 500
+   * ```
+   */
+  throttle?:number
 }
 
 interface Pass {
@@ -41,10 +51,13 @@ export default class Downloader extends CtcpParser {
     v6: string | undefined;
   }>;
 
+  throttle?: number;
+
   constructor(params: ParamsDL) {
     super(params);
     this.ip = Downloader.getIp();
     this.passivePort = CtcpParser.is({ name: 'passivePort', variable: params.passivePort, type: [5001] });
+    this.throttle = params.throttle;
     this.on('prepareDL', (downloadrequest: { fileInfo: FileInfo; candidate: Job }) => {
       this.prepareDL(downloadrequest);
     });
@@ -164,7 +177,8 @@ export default class Downloader extends CtcpParser {
     client.on('timeout', () => this.onTimeOut(pass));
     client.on('error', (e) => this.onError(pass, e));
     const sendBuffer = Buffer.alloc(pass.bufferType === '64bit' ? 8 : 4);
-    client.on('data', (data) => this.onData(pass, data, sendBuffer));
+    const now = Date.now();
+    client.on('data', async (data) => this.onData(pass, data, sendBuffer, now));
     client.once('data', () => this.emit('debug', 'xdccJS:: TCP_DOWNLOADING'));
     client.on('close', (e) => this.onClose(pass, e));
   }
@@ -250,7 +264,7 @@ export default class Downloader extends CtcpParser {
     this.emit('next', args.candidate, this.verbose);
   }
 
-  private onData(args: Pass, data: Buffer, sendBuffer: Buffer): void {
+  private async onData(args: Pass, data: Buffer, sendBuffer: Buffer, timeBeforeStart:number): Promise<void> {
     if (args.received === 0) {
       args.candidate.timeout.clear();
       if (!this.path) {
@@ -260,6 +274,15 @@ export default class Downloader extends CtcpParser {
     }
     args.stream.write(data);
     args.received += data.length;
+
+    if (this.throttle) {
+      const sleepMs = Math.max(0, (args.received / this.throttle) - Date.now() + timeBeforeStart);
+      if (sleepMs) {
+        await new Promise((resolve) => {
+          setTimeout(resolve, sleepMs);
+        });
+      }
+    }
 
     if (args.bufferType === '64bit') {
       sendBuffer.writeBigUInt64BE(BigInt(args.received), 0);

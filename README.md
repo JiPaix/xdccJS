@@ -88,6 +88,7 @@ const opts = {
   randomizeNick: false, // Add random numbers at end of nickname                            - default: true
   passivePort: [5000, 5001, 5002], // Array of port(s) to use with Passive DCC              - default: [5001]
   botNameMatch: false, // Block downloads if the bot's name does not match the request      - default: true
+  throttle: 500, // Throttle download speed to N kB/s                                       - default: undefined (disabled)
   queue: /soMething(.*)maTching/g //                                                        - default: undefined (disabled)
   // ^ Regex matching the bot's message when you're request is moved to a queue    
 }
@@ -340,6 +341,7 @@ npm install xdccjs -g
 -p, --path <path>          Download path - optional
 -b, --bot <botname>        XDCC bot nickname - required
 -d, --download <packs...>  Packs to download - required
+--throttle <number>        Throttle download speed (kB/s) - default disabled
 --nickserv <password>      Authenticate to NickServ - default: disabled
 --passive-port <number>    Port to use for passive dccs - optional
 --ipv6                     Use IPv6, only required if bot use both passive dcc and IPv6 - default: disabled

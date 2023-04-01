@@ -57,6 +57,7 @@ export class BaseCommander {
       .option('-p, --path <path>', 'Download path \x1b[2m- optional\x1b[0m', path.normalize)
       .option('-b, --bot <botname>', 'XDCC bot nickname \x1b[2m- required\x1b[0m')
       .option('-d, --download <packs...>', 'Packs to download \x1b[2m- required\x1b[0m')
+      .option('--throttle <number>', 'Throttle download speed (kB/s) \x1b[2m- default: disabled\x1b[0m', (k:string) => BaseCommander.parseIfNotInt(k, 'throttle'))
       .option('--nickserv <password>', 'Authenticate to NickServ \x1b[2m- default: disabled\x1b[0m')
       .option('--passive-port <number>', 'Port to use for passive dccs \x1b[2m- optional\x1b[0m', (k:string) => BaseCommander.parseIfNotInt(k, 'passive-port'))
       .option('--ipv6', 'Use IPv6, only required if bot use \x1b[1mboth\x1b[0m passive dcc and IPv6 \x1b[2m- default: disabled\x1b[0m', false)
@@ -79,9 +80,21 @@ export class BaseCommander {
       .parse();
   }
 
-  private static parseIfNotInt(numstring: string, optName:string): number {
+  private static parseIfNotInt(numstring: string, optName:'port' | 'throttle' | 'passive-port' | 'retry' | 'wait' | 'timeout'): number {
+    const cannotBeLessThanZero = (optName === 'retry' || optName === 'throttle' || optName === 'wait' || optName === 'timeout');
+
+    const notAnumber = Number.isNaN(parseInt(numstring, 10)) || Number.isNaN(parseFloat(numstring));
+    if (notAnumber) throw new BinError(`%danger% option --${optName} must be a number`);
+
+    if (cannotBeLessThanZero) {
+      const number = parseFloat(numstring);
+      if (number <= 0) throw new BinError(`%danger% option --${optName} cannot be less or equal 0`);
+      return number;
+    }
+
     const number = parseInt(numstring, 10);
-    if (Number.isNaN(number)) throw new BinError(`%danger% option --${optName} must be a number`);
+    if (number < 1025 || number > 65535) throw new BinError(`%danger% option --${optName} must be between larger than 1024 and les than or equal 65536`);
+
     return number;
   }
 
