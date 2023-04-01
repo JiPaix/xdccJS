@@ -23,7 +23,7 @@ It can also be used as a <a href="#command-line-interface">command-line</a> down
 - [Advanced IRC commands and middlewares](#advanced-irc-commands)
 - [CLI](#command-line-interface)
   - [Installation](#installation-1)
-  - [Options](#options)
+  - [Options](#cli-options)
   - [Usage](#usage)
   - [Profiles](#profiles)
   - [Important notes](#fyi)
@@ -330,7 +330,7 @@ An extended version of this example is available [here](/examples/irc-framework.
 ```bash
 npm install xdccjs -g
 ```  
-## Options
+## CLI Options
 ```
 -V, --version              output the version number
 -h, --host <server>        IRC server hostname - required
