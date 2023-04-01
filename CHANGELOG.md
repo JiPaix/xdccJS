@@ -1,4 +1,11 @@
 # Changelog
+## [v4.7.0](https://github.com/jipaix/xdccjs/tree/v4.7.0)
+### feat(lib+cli)
+* add option to throttle bandwidth
+### chores
+* update dev dependencies
+* update readme
+---
 ## [v4.6.5](https://github.com/jipaix/xdccjs/tree/v4.6.5)
 ### refactor(lib)
 * add more 'debug' events
