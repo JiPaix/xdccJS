@@ -94,6 +94,23 @@ export type GlobalMessageEvents = {
    * debug messages
    */
   debug: (msg: string) => void
+
+  'irc error': (IrcErrorEventArgs: import('irc-framework').IrcErrorEventArgs) => void
+  join: (JoinEventArgs: import('irc-framework').JoinEventArgs) => void
+  kick: (QuitEventArgs: import('irc-framework').QuitEventArgs) => void
+  message: (MessageEventArgs: import('irc-framework').MessageEventArgs) => void
+  mode: (ModeEventArgs: import('irc-framework').ModeEventArgs) => void
+  'nick in use': (NickInUseEventArgs: import('irc-framework').NickInUseEventArgs) => void
+  'nick invalid': (NickInvalidEventArgs: import('irc-framework').NickInvalidEventArgs) => void
+  notice: (MessageEventArgs: import('irc-framework').MessageEventArgs) => void
+  part: (QuitEventArgs: import('irc-framework').QuitEventArgs) => void
+  quit: (QuitEventArgs: import('irc-framework').QuitEventArgs) => void
+  raw: (RawEventArgs: import('irc-framework').RawEventArgs) => void
+  'raw socket connected': (event: {}) => void;
+  registered: (RegisteredEventArgs: import('irc-framework').RegisteredEventArgs) => void
+  'server options': (ServerOptionsEventArgs: import('irc-framework').ServerOptionsEventArgs) => void
+  'socket close': (event: {}) => void;
+  'socket connected': (event: {}) => void;
 }
 
 /**
@@ -135,13 +152,80 @@ export default class XDCC extends EventEmitter<GlobalMessageEvents> {
       randomizeNick: boolean | undefined,
     };
 
+  action: (target: string, message: string) => string[];
+
+  ban: (channel: string, mask: string) => void;
+
+  banlist: (channel: string, cb: (e: Event) => any) => void;
+
+  changeNick: (nick: string) => void;
+
+  channel: (channel_name: string) => import('irc-framework').IrcChannel;
+
+  ctcpRequest: (target: string, type: string, ...params: any[]) => void;
+
+  ctcpResponse: (target: string, type: string) => void;
+
+  invite: (channel: string, nick: string) => void;
+
+  join: (channel: string, key?: string | undefined) => void;
+
+  mode: (channel: string, mode: string, extra_args?: string[] | undefined) => void;
+
+  notice: (target: string, message: string) => string[];
+
+  part: (channel: string, message?: string | undefined) => void;
+
+  ping: (message?: string | undefined) => void;
+
+  raw: (raw_data_line: string) => void;
+
+  rawString: { (...parameters: string[]): string; (parameters: string[]): string; };
+
+  say: (target: string, message: string) => string[];
+
+  sendMessage: (commandName: string, target: string, message: string) => string[];
+
+  setTopic: (channel: string, newTopic: string) => void;
+
+  unban: (channel: string, mask: string) => void;
+
+  who: (target: string, cb: (event: any) => void) => void;
+
+  whois: (nick: string, cb: (event: any) => void) => void;
+
+  whowas: (target: string, cb: (event: Event) => any) => void;
 
   constructor(params: Params) {
     // eslint-disable-next-line constructor-super
     super();
     this.irc = new Bridge(params);
     this.listenCustomEvents();
+    this.listenNativeEvents();
     this.config = this.irc.config.bind(this.irc);
+    this.action = this.irc.action.bind(this.irc);
+    this.ban = this.irc.ban.bind(this.irc);
+    this.banlist = this.irc.banlist.bind(this.irc);
+    this.changeNick = this.irc.changeNick.bind(this.irc);
+    this.channel = this.irc.channel.bind(this.irc);
+    this.ctcpRequest = this.irc.ctcpRequest.bind(this.irc);
+    this.ctcpResponse = this.irc.ctcpResponse.bind(this.irc);
+    this.invite = this.irc.invite.bind(this.irc);
+    this.join = this.irc.join.bind(this.irc);
+    this.mode = this.irc.mode.bind(this.irc);
+    this.notice = this.irc.notice.bind(this.irc);
+    this.part = this.irc.part.bind(this.irc);
+    this.ping = this.irc.ping.bind(this.irc);
+    this.quit = this.irc.quit.bind(this.irc);
+    this.raw = this.irc.raw.bind(this.irc);
+    this.rawString = this.irc.rawString.bind(this.irc);
+    this.say = this.irc.say.bind(this.irc);
+    this.sendMessage = this.irc.sendMessage.bind(this.irc);
+    this.setTopic = this.irc.setTopic.bind(this.irc);
+    this.unban = this.irc.unban.bind(this.irc);
+    this.who = this.irc.who.bind(this.irc);
+    this.whois = this.irc.whois.bind(this.irc);
+    this.whowas = this.irc.whowas.bind(this.irc);
   }
 
   public get user() {
@@ -155,6 +239,24 @@ export default class XDCC extends EventEmitter<GlobalMessageEvents> {
   private get candidates() {
     return Object.freeze(this.irc.candidates);
   }
+
+  private listenNativeEvents(): void {
+    this.irc.on('irc error', (event) => this.emit('irc error', event));
+    this.irc.on('join', (event) => this.emit('join', event));
+    this.irc.on('kick', (event) => this.emit('kick', event));
+    this.irc.on('message', (event) => this.emit('message', event));
+    this.irc.on('mode', (event) => this.emit('mode', event));
+    this.irc.on('nick in use', (event) => this.emit('nick in use', event));
+    this.irc.on('nick invalid', (event) => this.emit('nick invalid', event));
+    this.irc.on('notice', (event) => this.emit('notice', event));
+    this.irc.on('part', (event) => this.emit('part', event));
+    this.irc.on('quit', (event) => this.emit('quit', event));
+    this.irc.on('raw', (event) => this.emit('raw', event));
+    this.irc.on('raw socket connected', (event) => this.emit('raw socket connected', event));
+    this.irc.on('registered', (event) => this.emit('registered', event));
+    this.irc.on('server options', (event) => this.emit('server options', event));
+    this.irc.on('socket close', (event) => this.emit('socket close', event));
+    this.irc.on('socket connected', (event) => this.emit('socket connected', event));
   }
 
   private listenCustomEvents(): void {
