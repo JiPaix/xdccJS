@@ -106,13 +106,45 @@ export interface Params extends ParamsDL {
 export default class XDCC extends EventEmitter<GlobalMessageEvents> {
   private irc: Bridge;
 
+  /**
+   * Change config
+   */
+  config: (
+    params: Partial<
+    {
+      passivePort: number[],
+      throttle: number,
+      nickname: string,
+      chan: string[],
+      path: string | null,
+      botNameMatch: boolean,
+      retry: number,
+      timeout: number,
+      verbose: boolean,
+      randomizeNick: boolean,
+    }>) => {
+      passivePort: number[],
+      throttle: number | undefined,
+      nickname: string,
+      chan: string[],
+      path: string | boolean,
+      botNameMatch: boolean,
+      retry: number,
+      timeout: number,
+      verbose: boolean,
+      randomizeNick: boolean | undefined,
+    };
+
+
   constructor(params: Params) {
     // eslint-disable-next-line constructor-super
     super();
     this.irc = new Bridge(params);
+    this.listenCustomEvents();
+    this.config = this.irc.config.bind(this.irc);
   }
 
-  private listen(): void {
+  private listenCustomEvents(): void {
     this.irc.on('debug', (msg) => this.emit('debug', msg));
     this.irc.on('ready', () => {
       this.emit('ready');
