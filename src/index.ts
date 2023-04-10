@@ -144,6 +144,19 @@ export default class XDCC extends EventEmitter<GlobalMessageEvents> {
     this.config = this.irc.config.bind(this.irc);
   }
 
+  public get user() {
+    return this.irc.user;
+  }
+
+  public get connected() {
+    return this.irc.connected;
+  }
+
+  private get candidates() {
+    return Object.freeze(this.irc.candidates);
+  }
+  }
+
   private listenCustomEvents(): void {
     this.irc.on('debug', (msg) => this.emit('debug', msg));
     this.irc.on('ready', () => {
