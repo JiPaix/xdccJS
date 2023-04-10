@@ -1,9 +1,9 @@
 import * as fs from 'fs';
-import * as path from 'path';
 import * as os from 'os';
-import BinError from './errorhandler';
+import * as path from 'path';
 import XDCC, { Params } from '..';
 import { BaseCommander, savedParams } from './commander';
+import BinError from './errorhandler';
 
 export default class Profiles extends BaseCommander {
   profilePath: string;
@@ -146,8 +146,8 @@ export default class Profiles extends BaseCommander {
     if (this.program.retry) this.defaultProfile[0].retry = this.program.retry;
     if (this.program.passivePort) this.defaultProfile[0].passivePort = [this.program.passivePort];
     if (this.program.bot) this.defaultProfile[1].bot = this.program.bot;
-    this.defaultProfile[0].randomizeNick = this.program.randomize;
+    this.defaultProfile[0].randomizeNick = this.program.randomize || false;
     this.defaultProfile[1].wait = this.program.wait;
-    this.defaultProfile[0].botNameMatch = this.program.botNameMatch;
+    this.defaultProfile[0].botNameMatch = this.program.botNameMatch || false;
   }
 }

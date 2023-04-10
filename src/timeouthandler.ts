@@ -18,7 +18,7 @@ export type ParamsTimeout = ParamsIRC & {
    * xdccJS.download('xdcc|bot', '20, 25')
    * // if download of pack '20' fails it will retry twice before skipping to pack '25'
    */
-  retry?: number
+  retry: number
   /**
    * Queue Regex
    */
@@ -43,17 +43,14 @@ interface TimeoutSetup {
 export class TimeOut extends Connect {
   protected portInUse: number[];
 
-  retry: number;
+  protected retry: number;
 
-  queue?: RegExp;
+  protected queue?: RegExp;
 
   constructor(params: ParamsTimeout) {
     super(params);
     this.portInUse = [];
-    this.retry = TimeOut.is({ name: 'retry', variable: params.retry, type: 1 });
-    if (params.queue && !(params.queue instanceof RegExp)) {
-      throw Error('queue must be a RegExp');
-    }
+    this.retry = params.retry;
     this.queue = params.queue;
   }
 

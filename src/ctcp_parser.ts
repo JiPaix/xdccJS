@@ -33,7 +33,7 @@ export type ParamsCTCP = ParamsTimeout & {
    * params.path = false
    * ```
    * */
-  path?: string | false
+  path: string | false
   /**
    * Block downloads if the bot's name does not match the request
    * @example
@@ -43,19 +43,19 @@ export type ParamsCTCP = ParamsTimeout & {
    * //=> Only accept files comming from 'BOT-A'
    * ```
    */
-   botNameMatch?: boolean
+   botNameMatch: boolean
 }
 export class CtcpParser extends AddJob {
-  path: string | boolean;
+  protected path: string | boolean;
 
-  botNameMatch: boolean;
+  protected botNameMatch: boolean;
 
-  protected resumequeue: ResumeQueue[] = [];
+  private resumequeue: ResumeQueue[] = [];
 
   constructor(params: ParamsCTCP) {
     super(params);
-    this.botNameMatch = CtcpParser.is({ name: 'botNameMatch', variable: params.botNameMatch, type: true });
-    this.path = CtcpParser.pathCheck(params.path);
+    this.botNameMatch = params.botNameMatch;
+    this.path = params.path;
     this.on('ctcp request', (resp: { [prop: string]: string }): void => {
       const isDownloadRequest = this.checkBeforeDL(resp, this.candidates[0]);
       if (isDownloadRequest) {
@@ -65,7 +65,7 @@ export class CtcpParser extends AddJob {
     });
   }
 
-  private static pathCheck(fpath?: ParamsCTCP['path']): string | false {
+  static pathCheck(fpath?: ParamsCTCP['path']): string | false {
     if (typeof fpath === 'string') {
       const tmp = path.normalize(fpath);
       if (path.isAbsolute(tmp)) {

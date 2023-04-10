@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /* eslint-disable no-new */
-import XdccJSbin from './xdccjs';
+import Bridge from '../bridge';
 import BinError from './errorhandler';
-import Connect from '../connect';
+import XdccJSbin from './xdccjs';
 
 try {
   new XdccJSbin();
 } catch (e) {
   if (e instanceof BinError) {
-    console.error(Connect.replace(e.message));
+    console.error(Bridge.replace(e.message));
   }
 }

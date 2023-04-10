@@ -189,7 +189,7 @@ export default class AddJob extends TimeOut {
     this.say(candidate.nick, `xdcc send ${candidate.now}`);
   }
 
-  public getCandidate(target: string): Job {
+  private getCandidate(target: string): Job {
     return this.candidates.filter(
       (candidates) => candidates.nick.localeCompare(target, 'en', { sensitivity: 'base' }) === 0,
     )[0];

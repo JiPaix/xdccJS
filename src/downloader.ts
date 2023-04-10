@@ -20,7 +20,7 @@ export type ParamsDL = ParamsCTCP & {
    * params.passivePort = [3213, 3214]
    * ```
    */
-  passivePort?: number[]
+  passivePort: number[]
   /**
    * Throttle speed (KiB/s)
    * @default undefined
@@ -45,20 +45,21 @@ interface Pass {
 }
 
 export default class Downloader extends CtcpParser {
-  passivePort: number[];
+  protected passivePort: number[];
 
-  ip: Promise<{
+  private ip: Promise<{
     v4: string | undefined;
     v6: string | undefined;
   }>;
 
-  throttle?: number;
+  protected throttle?: number;
 
   constructor(params: ParamsDL) {
     super(params);
     this.ip = Downloader.getIp();
-    this.passivePort = CtcpParser.is({ name: 'passivePort', variable: params.passivePort, type: [5001] });
-    if (params.throttle) this.throttle = params.throttle * 1024;
+    this.passivePort = params.passivePort;
+    this.throttle = params.throttle;
+
     this.on('prepareDL', (downloadrequest: { fileInfo: FileInfo; candidate: Job }) => {
       this.prepareDL(downloadrequest);
     });

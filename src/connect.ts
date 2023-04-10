@@ -25,7 +25,7 @@ export type ParamsIRC = {
    * params.port = 6669
    * ```
    */
-  port?: number
+  port: number
   /**
    * Nickname to use on IRC
    * @default `'xdccJS' + randomInt`
@@ -34,7 +34,7 @@ export type ParamsIRC = {
    * params.nickname = 'JiPaix'
    * ```
    */
-  nickname?: string
+  nickname: string
   /**
    * Channel(s) to join
    * @remark Hashtags are optional
@@ -48,7 +48,7 @@ export type ParamsIRC = {
    * params.chan = ['#wee', 'happy']
    * ```
    */
-  chan?: string[] | string
+  chan: string[]
   /**
    * Add Random numbers to nickname
    * @default: `true`
@@ -57,7 +57,7 @@ export type ParamsIRC = {
    * params.randomizeNick = false
    * ```
    */
-  randomizeNick?: boolean
+  randomizeNick: boolean
   /**
    * Display information regarding your download in console
    * @default `false`
@@ -66,16 +66,16 @@ export type ParamsIRC = {
    * params.verbose = true
    * ```
    */
-  verbose?: boolean
+  verbose: boolean
   /**
-   * Time before a download is considered timed out
+   * Time before a download is considered timed out in seconds
    * @default `30`
    */
-  timeout?: number
+  timeout: number
   /**
    * TLS/SSL
    */
-  tls?: {
+  tls: {
      /**
       * Enable TLS/SSL
       * @default `false`
@@ -113,9 +113,9 @@ export default class Connect extends Client {
 
   protected nickname: string;
 
-  private originalNickname: string;
+  protected originalNickname: string;
 
-  private nickRandomized?: boolean;
+  protected nickRandomized?: boolean;
 
   protected port: number;
 
@@ -132,7 +132,7 @@ export default class Connect extends Client {
 
   constructor(params: ParamsIRC) {
     super();
-    this.nickname = params.nickname || 'xdccJS';
+    this.nickname = params.nickname;
     this.originalNickname = this.nickname;
     this.nickRandomized = params.randomizeNick;
     this.nickservPassword = params.nickServ;
@@ -140,18 +140,14 @@ export default class Connect extends Client {
     if (this.nickRandomized || this.nickservPassword) {
       this.nickname = Connect.nickRandomizer(this.nickname);
     }
-    this.host = Connect.is({ name: 'host', variable: params.host, type: 'string' });
-    this.port = Connect.is({ name: 'port', variable: params.port, type: 6667 });
-    this.verbose = Connect.is({ name: 'verbose', variable: params.verbose, type: false });
-    this.chan = Connect.chanCheck(params.chan);
-    if (params.tls) {
-      params.tls.enable = Connect.is({ name: 'tls.enable', variable: params.tls.enable, type: false });
-      params.tls.rejectUnauthorized = Connect.is({ name: 'tls.rejectUnauthorized', variable: params.tls.rejectUnauthorized, type: true });
-    } else {
-      params.tls = { enable: false, rejectUnauthorized: true };
-    }
+
+    this.host = params.host;
+    this.port = params.port;
     this.tls = params.tls;
-    this.timeout = (Connect.is({ name: 'timeout', variable: params.timeout, type: 30 })) * 1000;
+    this.timeout = params.timeout;
+    this.verbose = params.verbose;
+    this.chan = params.chan;
+
     this.onConnect();
     this.connect({
       host: this.host,
@@ -323,9 +319,19 @@ export default class Connect extends Client {
   }
 
   static is<T, D>(opts: { name: string, variable: T, type: 'string'|'number'|'boolean'|'object'}): T
-  static is<T, D>(opts: { name: string, variable: T, type: D}): D
-  static is<T, D>(opts: { name: string, variable: T, type: 'string'|'number'|'boolean'|'object'| D }): T | D {
+  static is<T, D>(opts: { name: string, variable: T, type: 'string'|'number'|'boolean'|'object'}, condition: boolean, conditionError: string): T
+  static is<T, D>(opts: { name: string, variable: T, type: D }): D
+  // eslint-disable-next-line max-len
+  static is<T, D>(opts: { name: string, variable: T, type: D, condition: boolean, conditionError: string }): D
+  static is<T, D>(opts: { name: string, variable: T, type: 'string'|'number'|'boolean'|'object'| D }, condition?: boolean, conditionError?: string): T | D {
     const { name, variable, type } = opts;
+
+    if (typeof condition !== 'undefined' && !condition) {
+      const err = new TypeError(`condition for '${name}' aren't met: ${conditionError || variable}'`);
+      err.name += ' [ERR_INVALID_ARG_TYPE]';
+      throw err;
+    }
+
     if (type === 'string' || type === 'number' || type === 'boolean' || type === 'object') {
     // eslint-disable-next-line valid-typeof
       if (type === typeof variable) return variable;
@@ -333,7 +339,9 @@ export default class Connect extends Client {
       err.name += ' [ERR_INVALID_ARG_TYPE]';
       throw err;
     }
+
     if (typeof type === typeof variable) return variable;
+
     return type;
   }
 

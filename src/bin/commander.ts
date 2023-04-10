@@ -1,7 +1,7 @@
 import commander, { program } from 'commander';
 import * as path from 'path';
 import { Params } from '..';
-import Connect from '../connect';
+import Bridge from '../bridge';
 import { version } from '../version.json';
 import BinError from './errorhandler';
 
@@ -19,7 +19,7 @@ export interface InterfaceCLI extends commander.Command {
   download?: string[]
   path?: string
   nickname?: string
-  channel?: string
+  channel?: string[]
   retry?: number
   passivePort?: number
   ipv6?: boolean
@@ -57,7 +57,7 @@ export class BaseCommander {
       .option('-p, --path <path>', 'Download path \x1b[2m- optional\x1b[0m', path.normalize)
       .option('-b, --bot <botname>', 'XDCC bot nickname \x1b[2m- required\x1b[0m')
       .option('-d, --download <packs...>', 'Packs to download \x1b[2m- required\x1b[0m')
-      .option('--throttle <number>', 'Throttle download speed (kB/s) \x1b[2m- default: disabled\x1b[0m', (k:string) => BaseCommander.parseIfNotInt(k, 'throttle'))
+      .option('--throttle <number>', 'Throttle download speed (KiB/s) \x1b[2m- default: disabled\x1b[0m', (k:string) => BaseCommander.parseIfNotInt(k, 'throttle'))
       .option('--nickserv <password>', 'Authenticate to NickServ \x1b[2m- default: disabled\x1b[0m')
       .option('--passive-port <number>', 'Port to use for passive dccs \x1b[2m- optional\x1b[0m', (k:string) => BaseCommander.parseIfNotInt(k, 'passive-port'))
       .option('--ipv6', 'Use IPv6, only required if bot use \x1b[1mboth\x1b[0m passive dcc and IPv6 \x1b[2m- default: disabled\x1b[0m', false)
@@ -93,7 +93,7 @@ export class BaseCommander {
     }
 
     const number = parseInt(numstring, 10);
-    if (number < 1025 || number > 65535) throw new BinError(`%danger% option --${optName} must be between larger than 1024 and les than or equal 65536`);
+    if (number < 1025 || number > 65535) throw new BinError(`%danger% option --${optName} must be larger than 1024 and les than or equal 65536`);
 
     return number;
   }
@@ -110,7 +110,7 @@ export class BaseCommander {
   }
 
   protected log(string: string, pad = 0): void {
-    if (!this.program.quiet) console.error(''.padStart(pad) + Connect.replace(string));
+    if (!this.program.quiet) console.error(''.padStart(pad) + Bridge.replace(string));
   }
 
   protected xdccJSOPTS(): Params {
@@ -120,14 +120,15 @@ export class BaseCommander {
     }
     if (this.program.nickserv) {
       try {
-        Connect.identifyCheck(this.program.nickserv);
+        Bridge.identifyCheck(this.program.nickserv);
       } catch (e) {
         if (e instanceof TypeError) {
           throw new BinError('%danger% option \'nickserv\' should only contain the password (no spaces), eg. %grey%--nickserv complex_password');
         }
       }
     }
-    return {
+
+    return Bridge.checkParams({
       host: this.program.host,
       port: this.program.port,
       tls: {
@@ -145,7 +146,7 @@ export class BaseCommander {
       queue: this.program.queue,
       timeout: this.program.timeout,
       nickServ: this.program.nickserv,
-    };
+    });
   }
 
   protected hasProfileAction():boolean {

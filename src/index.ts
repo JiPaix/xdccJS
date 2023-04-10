@@ -3,7 +3,8 @@
 import { EventEmitter } from 'eventemitter3';
 import type { PassThrough } from 'stream';
 import { Packets } from './addjob';
-import Downloader, { ParamsDL } from './downloader';
+import Bridge from './bridge';
+import { ParamsDL } from './downloader';
 import type { FileInfo } from './interfaces/fileinfo';
 import type { Job } from './interfaces/job';
 
@@ -103,13 +104,12 @@ export interface Params extends ParamsDL {
 }
 
 export default class XDCC extends EventEmitter<GlobalMessageEvents> {
-  irc: Downloader;
+  private irc: Bridge;
 
   constructor(params: Params) {
     // eslint-disable-next-line constructor-super
     super();
-    this.irc = new Downloader(params);
-    this.listen();
+    this.irc = new Bridge(params);
   }
 
   private listen(): void {
@@ -167,15 +167,7 @@ export default class XDCC extends EventEmitter<GlobalMessageEvents> {
    * @param bot Bot Name
    */
   public async jobs(bot?: string) {
-    if (bot) {
-      return this.irc.getCandidate(bot);
-    }
-    const results:Job[] = [];
-    const promises = this.irc.candidates.map(async (job) => {
-      results.push(job);
-    });
-    await Promise.all(promises);
-    if (results.length) return results;
-    return undefined;
+    if (!bot) return this.candidates;
+    return Object.freeze(this.candidates.find((b) => b.nick.localeCompare(bot, 'en', { sensitivity: 'base' }) === 0));
   }
 }
