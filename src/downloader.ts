@@ -3,6 +3,7 @@
 import * as fs from 'fs';
 import * as net from 'net';
 import { PassThrough } from 'stream';
+import { ThrottleGroup } from 'stream-throttle';
 import { CtcpParser, ParamsCTCP } from './ctcp_parser';
 import type { FileInfo } from './interfaces/fileinfo';
 import type { Job } from './interfaces/job';
@@ -21,7 +22,7 @@ export type ParamsDL = ParamsCTCP & {
    */
   passivePort?: number[]
   /**
-   * Throttle speed (kB/s)
+   * Throttle speed (KiB/s)
    * @default undefined
    * @example
    * ```js
@@ -57,7 +58,7 @@ export default class Downloader extends CtcpParser {
     super(params);
     this.ip = Downloader.getIp();
     this.passivePort = CtcpParser.is({ name: 'passivePort', variable: params.passivePort, type: [5001] });
-    this.throttle = params.throttle;
+    if (params.throttle) this.throttle = params.throttle * 1024;
     this.on('prepareDL', (downloadrequest: { fileInfo: FileInfo; candidate: Job }) => {
       this.prepareDL(downloadrequest);
     });
@@ -162,6 +163,7 @@ export default class Downloader extends CtcpParser {
     candidate.cancel = this.makeCancelable(candidate, client);
     this.print(`%info% downloading : %cyan%${fileInfo.file}`, 5);
     const bar = Downloader.setupProgressBar(fileInfo.length);
+
     const pass: Pass = {
       server,
       client,
@@ -177,8 +179,16 @@ export default class Downloader extends CtcpParser {
     client.on('timeout', () => this.onTimeOut(pass));
     client.on('error', (e) => this.onError(pass, e));
     const sendBuffer = Buffer.alloc(pass.bufferType === '64bit' ? 8 : 4);
-    const now = Date.now();
-    client.on('data', async (data) => this.onData(pass, data, sendBuffer, now));
+
+    const { throttle } = { ...this };
+
+    if (throttle) {
+      const tg = new ThrottleGroup({ rate: throttle });
+      const thr = client.pipe(tg.throttle({ rate: throttle }));
+      thr.on('data', (data) => this.onData(pass, data, sendBuffer));
+    } else {
+      client.on('data', (data) => this.onData(pass, data, sendBuffer));
+    }
     client.once('data', () => this.emit('debug', 'xdccJS:: TCP_DOWNLOADING'));
     client.on('close', (e) => this.onClose(pass, e));
   }
@@ -264,7 +274,7 @@ export default class Downloader extends CtcpParser {
     this.emit('next', args.candidate, this.verbose);
   }
 
-  private async onData(args: Pass, data: Buffer, sendBuffer: Buffer, timeBeforeStart:number): Promise<void> {
+  private onData(args: Pass, data: Buffer, sendBuffer: Buffer): void {
     if (args.received === 0) {
       args.candidate.timeout.clear();
       if (!this.path) {
@@ -274,15 +284,6 @@ export default class Downloader extends CtcpParser {
     }
     args.stream.write(data);
     args.received += data.length;
-
-    if (this.throttle) {
-      const sleepMs = Math.max(0, (args.received / this.throttle) - Date.now() + timeBeforeStart);
-      if (sleepMs) {
-        await new Promise((resolve) => {
-          setTimeout(resolve, sleepMs);
-        });
-      }
-    }
 
     if (args.bufferType === '64bit') {
       sendBuffer.writeBigUInt64BE(BigInt(args.received), 0);

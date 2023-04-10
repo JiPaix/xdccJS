@@ -52,6 +52,7 @@
     "@types/lodash": "^4.14.192",
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.15.11",
+    "@types/stream-throttle": "^0.1.1",
     "@typescript-eslint/eslint-plugin": "^5.57.0",
     "@typescript-eslint/parser": "^5.57.0",
     "chai": "^4.3.7",
@@ -73,6 +74,7 @@
     "eventemitter3": "^5.0.0",
     "ip-regex": "^5.0.0",
     "irc-framework": "^4.13.1",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "stream-throttle": "^0.1.3"
   }
 }
