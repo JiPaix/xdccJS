@@ -88,6 +88,13 @@ declare class ProgressBar {
    * Total number of ticks to complete.
    */
   total: number
+
+  /**
+   * Human readable transfert
+   * @param bytes nb of bytes
+   * @param decimals nb of decimals to show
+   */
+  humanFileSize(bytes: number, decimals?: number): string
 }
 
 declare namespace ProgressBar {

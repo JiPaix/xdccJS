@@ -246,9 +246,13 @@ ProgressBar.prototype.terminate = function () {
  * Convert bytes to human readable size
  * @param {number} size size in byte
  */
-ProgressBar.prototype.humanFileSize = function (size) {
-  var i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024))
-  return (size / Math.pow(1024, i)).toFixed(2) + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i] + '/s'
+ProgressBar.prototype.humanFileSize = function (bytes, decimals = 2) {
+  if (!+bytes) return '0 Bytes'
+  const k = 1024
+  const dm = decimals < 0 ? 0 : decimals
+  const sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}/s`
 }
 
 /**
