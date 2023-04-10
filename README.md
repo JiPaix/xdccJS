@@ -77,11 +77,11 @@ const opts = {
   tls: {
     enable: true, // Enable TLS Support                                                     - default: false
     rejectUnauthorized: true, // Reject self-signed certificates                            - default: false
-  }, 
+  },
   nickname: 'ItsMeJiPaix', // Nickname                                                      - default: xdccJS + random
+  nickServ: 'complex_password', // Your NickServ password (no spaces)                       - default: undefined (disabled)
   chan: ['#candy', '#fruits'], // Array of channels                                         - default : [ ] (no chan)
   path: 'downloads', // Download path or 'false'                                            - default: false (which enables piping)
-  nickServ: 'complex_password', // Your NickServ password (no spaces)                       - default: undefined (disabled)
   retry: 2, // Nb of retries before skip                                                    - default: 1
   timeout: 50, // Nb of seconds before a download is considered timed out                   - default: 30
   verbose: true, // Display download progress and jobs status                               - default: false
@@ -93,6 +93,29 @@ const opts = {
   // ^ Regex matching the bot's message when you're request is moved to a queue    
 }
 ```
+
+
+### Config
+>xdccJS.**config( parameters?** : object **)**
+change parameters during runtime  
+If there's a file downloading `throttle` and `passivePort` won't be applied until the next download
+```js
+xdccJS.config({
+  passivePort: [5000, 5001, 5002],
+  throttle: 800,
+  nickname: 'TrustMe',
+  chan: ['#candy', '#fruits'], 
+  path: 'download/subfolder',
+  botNameMatch: false,
+  retry: 5,
+  timeout: 50,
+  verbose: false,
+  randomizeNick: true,
+  queue: /soMething(.*)maTching/g
+})
+```
+
+
 ### Download
 >xdccJS.**download( bot** : string, **packets** : string | number | number[] | string[], **ipv6?**: boolean **)**  
 `download()` is asynchronous and returns a `Job`  
@@ -309,17 +332,15 @@ xdccJS.on('can-quit', () => {
 })
 ```
 ## Advanced IRC commands
-**xdccJS uses [@kiwiirc/irc-framework](https://github.com/kiwiirc/irc-framework)** client which is **entirely** accessible via the `irc` property.  
+**[@kiwiirc/irc-framework](https://github.com/kiwiirc/irc-framework) is embed into xdccJS**.  
 Check their client API [documentation](https://github.com/kiwiirc/irc-framework/blob/master/docs/clientapi.md)
 ```js
-// middlewares
-xdccJS.irc.use(middleware)
 
 xdccJS.on('ready', () => {
   // change nickname
-  xdccJS.irc.changeNick('new-nickname')
+  xdccJS.changeNick('new-nickname')
   // listen to kick events
-  xdccJS.irc.on('kick', (info) => {
+  xdccJS.on('kick', (info) => {
     //=> do something..
   })
 })

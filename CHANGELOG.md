@@ -1,4 +1,16 @@
 # Changelog
+## [v5.0.0](https://github.com/jipaix/xdccjs/tree/v5.0.0)
+### BREAKING CHANGES
+* `xdcc.irc` is no longer needed and accessible, methods and event are directly embed into `xdcc`
+### fix(lib+cli)
+* throttle doesn't affect bandwidth
+* change units (KiB, MiB, GiB, etc..)
+## feat(lib)
+* add `xdcc.config()` - change/access parameters during runtime
+* access irc-framework methods and events `xdcc.irc.join('#lol')` -> `xdcc.join('#lol')`
+### refactor(lib)
+* check user's parameters beforehand
+---
 ## [v4.7.0](https://github.com/jipaix/xdccjs/tree/v4.7.0)
 ### feat(lib+cli)
 * add option to throttle bandwidth
