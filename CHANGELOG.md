@@ -1,4 +1,19 @@
 # Changelog
+## [v5.1.0](https://github.com/jipaix/xdccjs/tree/v5.1.0)
+### BREAKING CHANGES
+* `xdcc.download`'s ipv6 parameter must be passed through an object: `xdcc.download('bot', 1, { ipv6: true })` 
+### feat(lib)
+* add per download throttle: `xdcc.download('bot', 1, { throttle: 1000 })`
+* download's throttle can be applied on top of global throttle
+```js
+xdccJS.config({ throttle: 5000 })
+await xdccJS.download('BOT-A', 1, { throttle: 500 })
+await xdccJS.download('BOT-A', 2, { throttle: 1000 })
+await xdccJS.download('BOT-B', 1)
+// BOT-A packet 1 and 2 is throttled at 1000 (latest value)
+// BOT-B throttled at 5000
+```
+---
 ## [v5.0.0](https://github.com/jipaix/xdccjs/tree/v5.0.0)
 ### BREAKING CHANGES
 * `xdcc.irc` is no longer needed and accessible, methods and event are directly embed into `xdcc`

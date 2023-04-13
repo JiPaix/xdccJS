@@ -117,9 +117,10 @@ xdccJS.config({
 
 
 ### Download
->xdccJS.**download( bot** : string, **packets** : string | number | number[] | string[], **ipv6?**: boolean **)**  
+>xdccJS.**download( bot** : string, **packets** : string | number | number[] | string[], **options?**: { **ipv6?**: boolean ** **throttle?**: number } **)**  
 `download()` is asynchronous and returns a `Job`  
-`ipv6` parameter is only required for bot using **both** passive dcc and IPv6
+`options` are optional, per job
+`options.ipv6` parameter is only required when if a bot's is ipv6 **AND** uses passive DCC
 ```js
 xdccJS.on('ready', async () => {
   const blue = await xdccJS.download('XDCC|BLUE', '1-3, 8, 55')
@@ -157,21 +158,26 @@ calling `download()` multiple times for the same target will update current job.
 ```js
 xdccJS.on('ready', async () => {
   // jobs are automatically updated
-  const job1 = await xdccJS.download('BOT-A', 1)
-  const job2 = await xdccJS.download('BOT-A', 2)
-  const job3 = await xdccJS.download('BOT-A', 3)
-  job1 === job2 //=> true
-  job2 === job3 //=> true
+  const botA_1 = await xdccJS.download('BOT-A', 1)
+  const botA_2 = await xdccJS.download('BOT-A', 2)
+  const botA_3 = await xdccJS.download('BOT-A', 3)
+  // botA_1 === botA_2 === botA_3
+
 
   // but each "target" has its own job
-  const job4 = await xdccJS.download('DIFFERENT_TARGET', 4)
-  job1 === job4 //=> false
+  const botB_1 = await xdccJS.download('DIFFERENT_TARGET', 4)
+  // botA_1 !== botB_1
 
   // once a job's done, its lifetime ends
-  job1.on('done', async () => {
-    const job5 = await xdccJS.download('BOT-A', 5)
-    job1 === job4 //=> false
+  botA_1.on('done', async () => {
+    const botA_5 = await xdccJS.download('BOT-A', 5)
+    // botA_1 !== botA_5
   })
+
+  // Job options are overwritable
+  await xdccJS.download('BOT-B', 1, { throttle: 500 })
+  await xdccJS.download('BOT-B', 2, { throttle: 1000 })
+  // => Both packets, 1 and 2, will be throttled at 1000 (latest)
 })
 ```
 #### You can also retrieve on going jobs
