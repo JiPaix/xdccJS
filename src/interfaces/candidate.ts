@@ -22,9 +22,14 @@ export interface Candidate {
     clear: () => void
   }
   /**
-   * @ignore
+   * Options
    */
-  ipv6?: boolean
+  opts?: Partial<{
+    /** is ipv6? */
+    ipv6:boolean,
+    /** Throttle speed in KiB/s */
+    throttle: number
+  }>
   /**
    * Package number currently downloading
    */

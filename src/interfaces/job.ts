@@ -129,7 +129,7 @@ export class Job extends EventEmitter<JobMessageEvents> {
     };
 
   /** @ignore */
-  ipv6: boolean | undefined;
+  opts?: Partial<{ ipv6:boolean, throttle: number }>;
 
   constructor(candidate: Candidate, cancelFn: () => void) {
     // eslint-disable-next-line constructor-super
@@ -146,7 +146,7 @@ export class Job extends EventEmitter<JobMessageEvents> {
     this.retry = candidate.retry;
     this.success = candidate.success;
     this.timeout = candidate.timeout;
-    this.ipv6 = candidate.ipv6;
+    this.opts = candidate.opts;
   }
 
   /**

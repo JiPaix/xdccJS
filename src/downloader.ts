@@ -117,7 +117,7 @@ export default class Downloader extends CtcpParser {
         this.processDL(server, client, stream, candidate, fileInfo, pick);
       });
 
-      const listenIp = candidate.ipv6 ? '::' : '0.0.0.0';
+      const listenIp = candidate.opts && candidate.opts.ipv6 ? '::' : '0.0.0.0';
 
       server.listen(pick, listenIp, () => {
         this.ip.then((ip) => {
@@ -181,7 +181,7 @@ export default class Downloader extends CtcpParser {
     client.on('error', (e) => this.onError(pass, e));
     const sendBuffer = Buffer.alloc(pass.bufferType === '64bit' ? 8 : 4);
 
-    const { throttle } = { ...this };
+    const { throttle } = { ...candidate.opts } || { ...this };
 
     if (throttle) {
       const tg = new ThrottleGroup({ rate: throttle });

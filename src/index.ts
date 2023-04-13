@@ -298,8 +298,12 @@ export default class XDCC extends EventEmitter<GlobalMessageEvents> {
    *  xdccJS.download('XDCC|YELLOW', 4)
    * })
    */
-  download(target: string, packets: Packets, ipv6?:boolean):Promise<Job> {
-    return this.irc.download(target, packets, ipv6);
+  download(
+    target: string,
+    packets: Packets,
+    opts?: Partial<{ ipv6:boolean, throttle: number }>,
+  ):Promise<Job> {
+    return this.irc.download(target, packets, opts);
   }
 
   /**

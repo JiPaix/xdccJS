@@ -27,7 +27,11 @@ export default class AddJob extends TimeOut {
     });
   }
 
-  private static constructCandidate(target: string, range: number[], ipv6?:boolean): Candidate {
+  private static constructCandidate(
+    target: string,
+    range: number[],
+    opts?: Partial<{ipv6:boolean, throttle: number }>,
+  ): Candidate {
     return {
       nick: target,
       cancelNick: target,
@@ -36,7 +40,7 @@ export default class AddJob extends TimeOut {
       now: 0,
       failures: [],
       success: [],
-      ipv6,
+      opts,
       timeout: {
         clear: (): void => {
           throw Error('calling clear too soon');
@@ -60,11 +64,15 @@ export default class AddJob extends TimeOut {
     return fn;
   }
 
-  public async download(target: string, packets: Packets, ipv6?: boolean): Promise<Job> {
+  public async download(
+    target: string,
+    packets: Packets,
+    opts?: Partial<{ ipv6:boolean, throttle: number }>,
+  ): Promise<Job> {
     const range = await AddJob.parsePackets(packets);
     let candidate = this.getCandidate(target);
     if (!candidate) {
-      const base = AddJob.constructCandidate(target, range, ipv6);
+      const base = AddJob.constructCandidate(target, range, opts);
       const cancelFn = this.makeCancelable(base);
       const newCand = new Job(base, cancelFn);
       AddJob.makeClearable(newCand);
