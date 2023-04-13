@@ -10,7 +10,6 @@ export type savedParams = {
   bot?: string
 }
 export interface InterfaceCLI extends commander.Command {
-
   host?: string
   port?: number
   tls?: boolean
@@ -23,6 +22,7 @@ export interface InterfaceCLI extends commander.Command {
   retry?: number
   passivePort?: number
   ipv6?: boolean
+  throttle?: number
   randomize?: boolean
   botNameMatch?: boolean
   queue?: RegExp

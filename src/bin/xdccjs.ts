@@ -80,7 +80,11 @@ export default class XdccJSbin extends Profiles {
         if (start > 0) {
           this.clearMSG();
         }
-        const job = await xdccJS.download(bot, download, this.program.ipv6);
+        const job = await xdccJS.download(
+          bot,
+          download,
+          { ipv6: this.program.ipv6, throttle: this.program.throttle },
+        );
         if (!this.program.path) {
           job.on('pipe', (stream) => {
             stream.pipe(process.stdout);
