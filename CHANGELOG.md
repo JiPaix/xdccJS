@@ -1,5 +1,5 @@
 # Changelog
-## [v5.1.0](https://github.com/jipaix/xdccjs/tree/v5.1.0)
+## [v5.1.1](https://github.com/jipaix/xdccjs/tree/v5.1.2)
 ### BREAKING CHANGES
 * `xdcc.download`'s ipv6 parameter must be passed through an object: `xdcc.download('bot', 1, { ipv6: true })` 
 ### feat(lib)
