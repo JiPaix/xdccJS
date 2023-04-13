@@ -81,6 +81,7 @@ export default class AddJob extends TimeOut {
     } else {
       const tmp: Job['queue'] = candidate.queue.concat(range);
       candidate.queue = tmp.sort((a, b) => a - b);
+      if (opts) candidate.opts = { ...candidate.opts, ...opts };
     }
     if (this.candidates.length === 1 && candidate.now === 0) {
       this.passMessage(candidate);
