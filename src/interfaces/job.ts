@@ -165,11 +165,12 @@ export class Job extends EventEmitter<JobMessageEvents> {
      * ```
      */
   public show(): {
-      nick: string
-      queue: number[]
-      now: number
-      success: string[]
-      failed: number[]
+      nick: Job['nick']
+      queue: Job['queue']
+      now: Job['now']
+      success: Job['success']
+      failed: Job['failures']
+      opts: Job['opts']
       } {
     const info = {
       nick: clone(this.nick),
@@ -177,6 +178,7 @@ export class Job extends EventEmitter<JobMessageEvents> {
       now: clone(this.now),
       success: clone(this.success),
       failed: clone(this.failures),
+      opts: clone(this.opts),
       cancel: this.cancel,
     };
     return info;
@@ -194,26 +196,3 @@ export class Job extends EventEmitter<JobMessageEvents> {
     return true;
   }
 }
-
-export type displayedJob = {
-    /**
-     * Bot nickname
-     */
-    nick: string
-    /**
-     * Package still in queue
-     */
-    queue: number[]
-    /**
-     * Package currently downloading
-     */
-    now: number
-    /**
-     * List of file names successfuly downloaded
-     */
-    success: string[]
-    /**
-     * List of packages number that failed
-     */
-    failed: number[]
-  }
