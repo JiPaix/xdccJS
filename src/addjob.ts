@@ -2,6 +2,7 @@
 /* eslint-disable no-param-reassign */
 import type { MessageEventArgs } from 'irc-framework';
 import * as net from 'net';
+import Downloader from './downloader';
 import type { Candidate } from './interfaces/candidate';
 import { Job } from './interfaces/job';
 import type { ParamsTimeout } from './timeouthandler';
@@ -32,6 +33,16 @@ export default class AddJob extends TimeOut {
     range: number[],
     opts?: Partial<{ipv6:boolean, throttle: number }>,
   ): Candidate {
+    if(opts && opts.throttle) {
+      opts.throttle = Downloader.is({
+        name: 'throttle',
+        variable: opts.throttle,
+        type: 10,
+        condition: opts.throttle > 0,
+        conditionError: 'throttle cannot be equal or less than 0',
+      });
+      opts.throttle *= 1024;
+    }
     return {
       nick: target,
       cancelNick: target,
