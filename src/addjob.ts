@@ -33,7 +33,7 @@ export default class AddJob extends TimeOut {
     range: number[],
     opts?: Partial<{ipv6:boolean, throttle: number }>,
   ): Candidate {
-    if(opts && opts.throttle) {
+    if (opts && opts.throttle) {
       opts.throttle = Downloader.is({
         name: 'throttle',
         variable: opts.throttle,
