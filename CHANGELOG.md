@@ -1,4 +1,10 @@
 # Changelog
+## [v5.1.5](https://github.com/jipaix/xdccjs/tree/v5.1.5)
+### feat(lib)
+* add add throttle/ipv6 status to `Job.show()`
+### fix(lib)
+* `download()` throttle's option was treated as Bytes instead of KiB
+---
 ## [v5.1.2](https://github.com/jipaix/xdccjs/tree/v5.1.2)
 ### BREAKING CHANGES
 * `xdcc.download`'s ipv6 parameter must be passed through an object: `xdcc.download('bot', 1, { ipv6: true })` 
