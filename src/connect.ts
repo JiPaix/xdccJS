@@ -7,6 +7,7 @@
 /* eslint-disable @typescript-eslint/triple-slash-reference */
 /// <reference path="./@types/irc-framework.ts"/>
 import { Client, MessageEventArgs } from 'irc-framework';
+import packageJson from '../package.json';
 
 export type ParamsIRC = {
   /**
@@ -44,6 +45,15 @@ export type ParamsIRC = {
    * ```
    */
   gecos: string
+  /**
+   * Version of the IRC client
+   * @default `'xdccJS' + packageJson.version`
+   * @example
+   * ```js
+   * params.version = 'mIRC 6.35'
+   * ```
+   */
+  version: string
   /**
    * Channel(s) to join
    * @remark Hashtags are optional
@@ -164,6 +174,7 @@ export default class Connect extends Client {
       nick: this.nickname,
       username: params.nickname || 'xdccJS',
       gecos: params.gecos || 'xdccJS',
+      version: params.version || `xdccJS ${packageJson.version}`,
       auto_reconnect_max_wait: 0,
       auto_reconnect_max_retries: 0,
       ssl: this.tls.enable,
