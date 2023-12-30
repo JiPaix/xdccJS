@@ -36,6 +36,15 @@ export type ParamsIRC = {
    */
   nickname: string
   /**
+   * Real name to use on IRC
+   * @default `xdccJS`
+   * @example
+   * ```js
+   * params.gecos = 'JiPaix'
+   * ```
+   */
+  gecos: string
+  /**
    * Channel(s) to join
    * @remark Hashtags are optional
    * @example
@@ -154,6 +163,7 @@ export default class Connect extends Client {
       port: this.port,
       nick: this.nickname,
       username: params.nickname || 'xdccJS',
+      gecos: params.gecos || 'xdccJS',
       auto_reconnect_max_wait: 0,
       auto_reconnect_max_retries: 0,
       ssl: this.tls.enable,
