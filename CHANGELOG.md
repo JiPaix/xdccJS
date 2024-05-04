@@ -1,4 +1,19 @@
 # Changelog
+## [v5.3.0](https://github.com/jipaix/xdccjs/tree/v5.3.0)
+### feat(lib)
+* add gecos: expose custom message to other clients in the "real name" field (WHOIS).
+* add version: expose xdccJS version (or custom message) in the "version" field (WHOIS).
+```js
+new XDCC({
+  // ... host, port, etc..
+  gecos: 'Most client call this field "real name" but meh..',
+  version: 'mIRC 6.35'
+})
+```
+### chores
+* revert to npm
+* update eslint config
+---
 ## [v5.2.4](https://github.com/jipaix/xdccjs/tree/v5.2.4)
 ### feat(lib)
 * add eta to the 'downloading' event
