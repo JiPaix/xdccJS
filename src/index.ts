@@ -196,7 +196,7 @@ export default class XDCC extends EventEmitter<GlobalMessageEvents> {
 
   whowas: (target: string, cb: (event: Event) => any) => void;
 
-  constructor(params: Params) {
+  constructor(params: Partial<ParamsDL> & { host: string }) {
     // eslint-disable-next-line constructor-super
     super();
     this.irc = new Bridge(params);

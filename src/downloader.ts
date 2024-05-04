@@ -13,7 +13,7 @@ import * as ProgressBar from './lib/progress';
 export type ParamsDL = ParamsCTCP & {
   /**
    * Array of ports for passive DCC
-   * @default 5001
+   * @default [5001]
    * @remark Some xdcc bots use passive dcc, this require to have these ports opened on your computer/router/firewall
    * @example
    * ```js

@@ -2,7 +2,7 @@ import Downloader, { ParamsDL } from './downloader';
 import humanFileSize from './lib/progress/humanFileSize';
 
 export default class Bridge extends Downloader {
-  constructor(params: ParamsDL) {
+  constructor(params: Partial<ParamsDL>) {
     const testedParams = Bridge.checkParams(params);
 
     super(testedParams);
