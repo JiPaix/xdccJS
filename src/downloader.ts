@@ -182,7 +182,7 @@ export default class Downloader extends CtcpParser {
     client.on('error', (e) => this.onError(pass, e));
     const sendBuffer = Buffer.alloc(pass.bufferType === '64bit' ? 8 : 4);
 
-    const { throttle } = { ...candidate.opts } || { ...this };
+    const throttle = candidate.opts ? candidate.opts.throttle : this.throttle;
 
     if (throttle) {
       const tg = new ThrottleGroup({ rate: throttle });
