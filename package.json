@@ -1,6 +1,6 @@
 {
   "name": "xdccjs",
-  "version": "5.4.3",
+  "version": "5.2.4",
   "description": "download files from XDCC bots on IRC, complete implementation of the XDCC protocol",
   "engines": {
     "node": ">=16.0.0"
@@ -22,8 +22,9 @@
     "test": "ts-node --log-error --files --project ./tests/tsconfig.json ./tests/lib.ts",
     "prebuild": "rimraf dist && node ./node_modules/ts-node/dist/bin.js ./build/copyfiles.ts",
     "build": "node ./node_modules/typescript/bin/tsc ",
-    "prepublishOnly": "npm run build",
-    "postpublish": "pkg ./dist/bin/index.js --out-path executables --compress Brotli && node ./node_modules/ts-node/dist/bin.js ./build/changelog.ts"
+    "prerelease": "npm run lint && npm run build",
+    "release": "pkg ./dist/bin/index.js --out-path executables --compress Brotli",
+    "postrelease": "node ./node_modules/ts-node/dist/bin.js ./build/changelog.ts"
   },
   "repository": {
     "type": "git",

@@ -1,4 +1,4 @@
-name: build & lint
+name: CI
 on:
   push:
     branches:
@@ -39,4 +39,24 @@ jobs:
       run: |
         npm ci
         npm run build
-
+  publish-if-needed:
+    needs: [lint, build]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: "18.x"
+        registry-url: 'https://registry.npmjs.org'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - run: |
+        touch .env
+        echo PA_TOKEN=${{ secrets.PA_TOKEN }} >> .env
+        echo DISCORD_CHANNEL_ID=${{ secrets.DISCORD_CHANNEL_ID }} >> .env
+        echo DISCORD_SECRET=${{ secrets.DISCORD_SECRET }} >> .env
+        npm install
+        npm run build
+        npm run release
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

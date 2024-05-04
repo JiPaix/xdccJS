@@ -1,63 +1,18 @@
-name: publish
+name: NPM Release
 on:
-  push:
-    tags:
-      - '*'
-    branches:
-      - main
+  release:
+    types: [published]
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: ["21.x"]
-    steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - name: Lint
-      run: |
-        npm ci
-        npm run lint
   build:
     runs-on: ubuntu-latest
-    outputs:
-      node-version: ${{ matrix.node-version }}
-    strategy:
-      matrix:
-        node-version: ["18.x"]
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - name: Build
-      run: |
-        npm ci
-        npm run build
-  publish:
-    needs: [lint, build]
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: "18.x"
-        registry-url: 'https://registry.npmjs.org'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - run: |
-        touch .env
-        echo PA_TOKEN=${{ secrets.PA_TOKEN }} >> .env
-        echo DISCORD_CHANNEL_ID=${{ secrets.DISCORD_CHANNEL_ID }} >> .env
-        echo DISCORD_SECRET=${{ secrets.DISCORD_SECRET }} >> .env
-        npm install
-        npm run build
-        npm publish
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-
+      - uses: actions/checkout@v4
+      # Setup .npmrc file to publish to npm
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm ci
+      - run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

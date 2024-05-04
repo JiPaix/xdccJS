@@ -2,6 +2,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import axios, { AxiosResponse } from 'axios';
 import type { TextChannel } from 'discord.js';
+import 'dotenv/config'
+
 import {
   APIEmbedField, Channel, Client, EmbedBuilder, GatewayIntentBits
 } from 'discord.js';
@@ -109,7 +111,28 @@ function postToDiscord():Promise<void> {
   });
 }
 
+function getReleases() {
+  return axios.get(
+    'https://api.github.com/repos/jipaix/xdccjs/releases',
+    {
+      headers: {
+        Accept: 'application/vnd.github.v3+json',
+        Authorization: `token ${process.env.PA_TOKEN}`,
+      },
+    },
+  ) as Promise<AxiosResponse<{tag_name: string}[]>>;
+}
+
 async function start() {
+  try {
+    const release = await getReleases();
+    const find = release.data.find(t => t.tag_name.endsWith(version))
+    if(find) return console.log('already released');
+  } catch(e) {
+    console.error('couldn\'t get releases');
+    throw e;
+  }
+
   try {
     await postToDiscord();
   } catch (e) {
