@@ -1,5 +1,5 @@
 # Changelog
-## [v5.2.0](https://github.com/jipaix/xdccjs/tree/v5.2.0)
+## [v5.2.4](https://github.com/jipaix/xdccjs/tree/v5.2.4)
 ### feat(lib)
 * add eta to the 'downloading' event
   * ```js
@@ -7,6 +7,15 @@
        console.log(`${eta} ms remaining`)
      })
     ```
+### fix(lib+cli)
+* throttle parameter was ignored in some edge cases
+### chores
+* revert to npm
+* update eslint config
+---
+## [v5.2.0](https://github.com/jipaix/xdccjs/tree/v5.2.0)
+### BROKEN RELEASE
+---
 ### fix(lib)
 * `download()` throttle's option was treated as Bytes instead of KiB
 ---
