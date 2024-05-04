@@ -1,4 +1,4 @@
-name: build
+name: CI
 on:
   push:
     branches:
@@ -8,37 +8,25 @@ on:
       - main
 jobs:
   build:
-    if: "!contains(github.event.head_commit.message, '[ci skip]')"
     runs-on: ubuntu-latest
     outputs:
-      has-updated: ${{ steps.version-updated.outputs.has-updated }}
+      node-version: ${{ matrix.node-version }}
     strategy:
       matrix:
-        node-version: ["14.x", "16.x", "18.x"]
+        node-version: ["14.x", '16.x' ,"18.x", "20.x", "21.x", "22.x"]
     steps:
     - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+    - uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-    - run: |
+    - name: Build
+      run: |
         npm install
-        node ./node_modules/ts-node/dist/bin.js ./build/copyfiles.ts
-        node ./node_modules/typescript/bin/tsc
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
-    - uses: JiPaix/package-json-updated-action@v1.0.5
-      id: version-updated
-      with:
-        path: package.json
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        npm run build
   publish:
     needs: build
-    if: github.ref == 'refs/heads/main' && needs.build.outputs.has-updated
+    if: startsWith(github.ref, 'refs/tags/v') && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -52,6 +40,7 @@ jobs:
         echo DISCORD_CHANNEL_ID=${{ secrets.DISCORD_CHANNEL_ID }} >> .env
         echo DISCORD_SECRET=${{ secrets.DISCORD_SECRET }} >> .env
         npm install
+        npm run build
         npm publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
