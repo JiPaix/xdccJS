@@ -1,9 +1,0 @@
-node_modules
-dist
-@types
-*.js
-test.*
-test/
-lib/**
-src/**/*.d.ts
-src/version.json
