@@ -2,7 +2,7 @@ import Downloader, { ParamsDL } from './downloader';
 import humanFileSize from './lib/progress/humanFileSize';
 import {version} from '../package.json'
 
-function arraysEqual(a: any[], b: any[]): boolean {
+function arraysEqual(a: unknown[], b: unknown[]): boolean {
   if (a.length !== b.length) return false;
   for (let i = 0; i < a.length; i++) {
     if (a[i] !== b[i]) return false;
@@ -119,7 +119,7 @@ export default class Bridge extends Downloader {
 
     if(params.throttle !== this.throttle) {
       this.throttle = params.throttle;
-      this.print(`%success% throttle: %yellow%${this.throttle ? 'off' : this.throttle + 'KiB/s'}%reset%`, 2);
+      this.print(`%success% throttle: %yellow%${this.throttle ? humanFileSize(this.throttle) : 'off'}%reset%`, 2);
     }
 
     if(params.gecos !== this.gecos) {
@@ -164,8 +164,7 @@ export default class Bridge extends Downloader {
       return this.parameters;
     } catch(e) {
       if(e instanceof Error) this.print(`%danger% failed to change config: ${e.message}`)
-    } finally {
-      return this.parameters;
     }
+    return this.parameters;
   }
 }
