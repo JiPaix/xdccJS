@@ -177,7 +177,7 @@ export default class Connect extends Client {
     this.host = params.host;
     this.port = params.port;
     this.tls = params.tls;
-    this.timeout = params.timeout*1000;
+    this.timeout = params.timeout * 1000;
     this.verbose = params.verbose;
     this.chan = params.chan;
     this.onConnect();

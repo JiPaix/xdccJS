@@ -113,8 +113,8 @@ export default class Bridge extends Downloader {
     }
 
     if(params.timeout !== this.timeout) {
-      this.timeout = params.timeout;
-      this.print(`%success% timeout: %yellow%${this.timeout}s%reset%`, 2);
+      this.timeout = params.timeout * 1000;
+      this.print(`%success% timeout: %yellow%${this.timeout/1000}s%reset%`, 2);
     }
 
     if(params.throttle !== this.throttle) {
@@ -150,7 +150,7 @@ export default class Bridge extends Downloader {
         tls: this.tls,
         retry: this.retry,
         throttle: this.throttle,
-        timeout: this.timeout,
+        timeout: this.timeout/1000,
         gecos: this.gecos,
         version: this.version,
       }
