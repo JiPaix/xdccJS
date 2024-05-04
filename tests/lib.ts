@@ -1,11 +1,10 @@
 import 'dotenv/config';
-import XDCC from '../src'
-import { env } from 'process'
+import { env } from 'process';
+import XDCC from '../src';
 
 const xdccJS = new XDCC({
   host: env.SERVER,
-})
-
+});
 
 function msToReadableTime(ms: number) {
   const seconds = Math.floor(ms / 1000);
@@ -28,15 +27,14 @@ function msToReadableTime(ms: number) {
   return readableString;
 }
 
-
-xdccJS.on('ready', ()=> {
-  xdccJS.download(env.BOT, env.PACK)
+xdccJS.on('ready', () => {
+  xdccJS.download(env.BOT, env.PACK);
   let lastTime = Date.now();
   xdccJS.on('downloading', (fileinfo, received, percentage, eta) => {
-    if(lastTime + 500 < Date.now()) {
-      lastTime = Date.now()
-      console.log(`Downloading ${fileinfo.file} - ${received}/${fileinfo.length} - (${percentage}%) @ETA (${msToReadableTime(eta)})`)
+    if (lastTime + 500 < Date.now()) {
+      lastTime = Date.now();
+      console.log(`Downloading ${fileinfo.file} - ${received}/${fileinfo.length} - (${percentage}%) @ETA (${msToReadableTime(eta)})`);
     }
-  })
+  });
   xdccJS.on('done', () => console.log('done'));
-})
+});
