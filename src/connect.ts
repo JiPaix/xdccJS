@@ -318,8 +318,8 @@ export default class Connect extends Client {
     );
   }
 
-  static is<T, D>(opts: { name: string, variable: T, type: 'string'|'number'|'boolean'|'object'}): T
-  static is<T, D>(opts: { name: string, variable: T, type: 'string'|'number'|'boolean'|'object'}, condition: boolean, conditionError: string): T
+  static is<T>(opts: { name: string, variable: T, type: 'string'|'number'|'boolean'|'object'}): T
+  static is<T>(opts: { name: string, variable: T, type: 'string'|'number'|'boolean'|'object'}, condition: boolean, conditionError: string): T
   static is<T, D>(opts: { name: string, variable: T, type: D }): D
   // eslint-disable-next-line max-len
   static is<T, D>(opts: { name: string, variable: T, type: D, condition: boolean, conditionError: string }): D

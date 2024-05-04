@@ -106,11 +106,11 @@ export type GlobalMessageEvents = {
   part: (QuitEventArgs: import('irc-framework').QuitEventArgs) => void
   quit: (QuitEventArgs: import('irc-framework').QuitEventArgs) => void
   raw: (RawEventArgs: import('irc-framework').RawEventArgs) => void
-  'raw socket connected': (event: {}) => void;
+  'raw socket connected': (event: object) => void;
   registered: (RegisteredEventArgs: import('irc-framework').RegisteredEventArgs) => void
   'server options': (ServerOptionsEventArgs: import('irc-framework').ServerOptionsEventArgs) => void
-  'socket close': (event: {}) => void;
-  'socket connected': (event: {}) => void;
+  'socket close': (event: object) => void;
+  'socket connected': (event: object) => void;
 }
 
 /**
@@ -156,13 +156,13 @@ export default class XDCC extends EventEmitter<GlobalMessageEvents> {
 
   ban: (channel: string, mask: string) => void;
 
-  banlist: (channel: string, cb: (e: Event) => any) => void;
+  banlist: (channel: string, cb: (e: Event) => void) => void;
 
   changeNick: (nick: string) => void;
 
   channel: (channel_name: string) => import('irc-framework').IrcChannel;
 
-  ctcpRequest: (target: string, type: string, ...params: any[]) => void;
+  ctcpRequest: (target: string, type: string, ...params: unknown[]) => void;
 
   ctcpResponse: (target: string, type: string) => void;
 
@@ -190,11 +190,11 @@ export default class XDCC extends EventEmitter<GlobalMessageEvents> {
 
   unban: (channel: string, mask: string) => void;
 
-  who: (target: string, cb: (event: any) => void) => void;
+  who: (target: string, cb: (event: unknown) => void) => void;
 
-  whois: (nick: string, cb: (event: any) => void) => void;
+  whois: (nick: string, cb: (event: unknown) => void) => void;
 
-  whowas: (target: string, cb: (event: Event) => any) => void;
+  whowas: (target: string, cb: (event: Event) => unknown) => void;
 
   constructor(params: Partial<ParamsDL> & { host: string }) {
     // eslint-disable-next-line constructor-super
