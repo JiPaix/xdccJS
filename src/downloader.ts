@@ -33,6 +33,7 @@ export type ParamsDL = ParamsCTCP & {
 }
 
 interface Pass {
+  startTime?: number
   server?: net.Server
   client?: net.Socket
   stream: fs.WriteStream | PassThrough
@@ -276,7 +277,10 @@ export default class Downloader extends CtcpParser {
   }
 
   private onData(args: Pass, data: Buffer, sendBuffer: Buffer): void {
+    const startTime = args.startTime || Date.now();
+
     if (args.received === 0) {
+      args.startTime = startTime;
       args.candidate.timeout.clear();
       if (!this.path) {
         args.candidate.emit('pipe', args.stream, args.fileInfo);
@@ -285,6 +289,11 @@ export default class Downloader extends CtcpParser {
     }
     args.stream.write(data);
     args.received += data.length;
+
+    const elapsedTime = Date.now() - startTime;
+    const downloadSpeed = args.received / elapsedTime
+    const remainingData = args.fileInfo.length - args.received;
+    const eta = remainingData / downloadSpeed;
 
     if (args.bufferType === '64bit') {
       sendBuffer.writeBigUInt64BE(BigInt(args.received), 0);
@@ -298,8 +307,8 @@ export default class Downloader extends CtcpParser {
     if (!args.client?.destroyed && args.client?.writable) {
       args.client.write(sendBuffer);
     }
-    args.candidate.emit('downloading', args.fileInfo, args.received, (args.received / args.fileInfo.length) * 100);
-    this.emit('downloading', args.fileInfo, args.received, (args.received / args.fileInfo.length) * 100);
+    args.candidate.emit('downloading', args.fileInfo, args.received, (args.received / args.fileInfo.length) * 100, eta);
+    this.emit('downloading', args.fileInfo, args.received, (args.received / args.fileInfo.length) * 100, eta);
   }
 
   protected static setupProgressBar(len: number): ProgressBar {

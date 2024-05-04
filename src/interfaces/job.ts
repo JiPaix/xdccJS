@@ -43,12 +43,12 @@ export type JobMessageEvents = {
    * Event triggered while a file from the job is downloading
    * @example
    * ```js
-   * job.on('downloading', (fileInfo, received, percentage) => {
-   *  console.log(`${fileInfo.file} @ ${received} of ${fileInfo.length} [${percentage}%]`)
+   * job.on('downloading', (fileInfo, received, percentage, eta) => {
+   *  console.log(`${fileInfo.file} @ ${received} of ${fileInfo.length} [${percentage}%] - ${eta} ms remaining`)
    * })
    * ```
    */
-  downloading: (fileInfo: FileInfo, received: number, percentage: number) => void,
+  downloading: (fileInfo: FileInfo, received: number, percentage: number, eta:number) => void,
   /**
    * Event triggered when a download from the job starts and is ready to be piped
    * @example

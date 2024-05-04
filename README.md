@@ -231,13 +231,13 @@ const arrayOfJobs = await xdccJS.jobs()
     ```
 > [**xdccJS** | **Job**].on( **'downloading'** ) : *Data is being received (a file is downloading)*
 - ```js
-    xdccJS.on('downloading', (fileInfo, received, percentage) => {
+    xdccJS.on('downloading', (fileInfo, received, percentage, eta) => {
       console.log(fileInfo) //=> { file: 'filename.pdf', filePath: '/path/to/filename.pdf', length: 5844849 }
       console.log(`downloading: '${fileInfo.file}'`) //=> downloading: 'your file.pdf'
     })
 
-    job.on('downloading', (fileInfo, received, percentage) => {
-      console.log(percentage) //=> 10.55
+    job.on('downloading', (fileInfo, received, percentage, eta) => {
+      console.log(`${percentage}% - ${eta} ms remaining`) //=> 10.55% - 153500 ms remaining
     })
     ```
 > [**xdccJS** | **Job**].on( **'downloaded'** ) : *A file successfully downloaded*

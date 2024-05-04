@@ -42,12 +42,12 @@ export type GlobalMessageEvents = {
    * Event triggered while a file is downloading
    * @example
    * ```js
-   * xdccJS.on('downloading', (fileInfo, received, percentage) => {
-   *   console.log(`${fileInfo.file} @ ${received} of ${fileInfo.length} [${percentage}%]`)
+   * xdccJS.on('downloading', (fileInfo, received, percentage, eta) => {
+   *   console.log(`${fileInfo.file} @ ${received} of ${fileInfo.length} [${percentage}%] - ${eta} ms remaining`)
    * })
    * ```
    */
-  downloading: (fileInfo:FileInfo, received: number, percentage: number) => void,
+  downloading: (fileInfo:FileInfo, received: number, percentage: number, eta: number) => void,
   /**
    * Event triggered when a file has been downloaded
    * @example
@@ -280,8 +280,8 @@ export default class XDCC extends EventEmitter<GlobalMessageEvents> {
     this.irc.on('error', (err) => {
       this.emit('error', err);
     });
-    this.irc.on('downloading', (fileInfo, received, percentage) => {
-      this.emit('downloading', fileInfo, received, percentage);
+    this.irc.on('downloading', (fileInfo, received, percentage, eta) => {
+      this.emit('downloading', fileInfo, received, percentage, eta);
     });
   }
 
