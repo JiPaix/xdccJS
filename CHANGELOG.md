@@ -1,5 +1,5 @@
 # Changelog
-## [v5.4.8](https://github.com/jipaix/xdccjs/tree/v5.4.8)
+## [v5.4.9](https://github.com/jipaix/xdccjs/tree/v5.4.9)
 ### deprecate
 * Node versions below 16.0.0 aren't supported anymore
 ### feat(lib)
