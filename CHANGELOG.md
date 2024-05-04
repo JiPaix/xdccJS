@@ -1,40 +1,39 @@
 # Changelog
-## [v5.4.3](https://github.com/jipaix/xdccjs/tree/v5.4.3)
+## [v5.4.8](https://github.com/jipaix/xdccjs/tree/v5.4.8)
 ### deprecate
 * Node versions below 16.0.0 aren't supported anymore
 ### feat(lib)
 * add gecos: expose custom message to other clients in the "real name" field (WHOIS).
 * add version: expose xdccJS version (or custom message) in the "version" field (WHOIS).
-```js
-new XDCC({
-  // ... host, port, etc..
-  gecos: 'Most client call this field "real name" but meh..',
-  version: 'mIRC 6.35'
-})
-```
-### chores
-* revert to npm
-* update eslint config
----
-## [v5.2.4](https://github.com/jipaix/xdccjs/tree/v5.2.4)
-### feat(lib)
+    * ```js
+      new XDCC({
+        // ... host, port, etc..
+        gecos: 'Most client call this field "real name" but meh..',
+        version: 'mIRC 6.35'
+      })
+      ```
 * add eta to the 'downloading' event
   * ```js
-     xdccJS.on('downloading', (fileInfo, received, percentage, eta) => {
+      xdccJS.on('downloading', (fileInfo, received, percentage, eta) => {
        console.log(`${eta} ms remaining`)
-     })
+      })
     ```
 ### fix(lib+cli)
 * throttle parameter was ignored in some edge cases
+### fix(lib)
+* `download()` throttle's option was treated as Bytes instead of KiB
 ### chores
 * revert to npm
 * update eslint config
 ---
-## [v5.2.0](https://github.com/jipaix/xdccjs/tree/v5.2.0)
+## [v5.4.3](https://github.com/jipaix/xdccjs/tree/v5.4.3)
 ### BROKEN RELEASE
 ---
-### fix(lib)
-* `download()` throttle's option was treated as Bytes instead of KiB
+## [v5.2.4](https://github.com/jipaix/xdccjs/tree/v5.2.4)
+### BROKEN RELEASE
+---
+## [v5.2.0](https://github.com/jipaix/xdccjs/tree/v5.2.0)
+### BROKEN RELEASE
 ---
 ## [v5.1.5](https://github.com/jipaix/xdccjs/tree/v5.1.5)
 ### feat(lib)
