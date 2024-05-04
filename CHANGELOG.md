@@ -1,7 +1,18 @@
 # Changelog
+## [v5.2.0](https://github.com/jipaix/xdccjs/tree/v5.2.0)
+### feat(lib)
+* add eta to the 'downloading' event
+  * ```js
+     xdccJS.on('downloading', (fileInfo, received, percentage, eta) => {
+       console.log(`${eta} ms remaining`)
+     })
+    ```
+### fix(lib)
+* `download()` throttle's option was treated as Bytes instead of KiB
+---
 ## [v5.1.5](https://github.com/jipaix/xdccjs/tree/v5.1.5)
 ### feat(lib)
-* add add throttle/ipv6 status to `Job.show()`
+* add throttle/ipv6 status to `Job.show()`
 ### fix(lib)
 * `download()` throttle's option was treated as Bytes instead of KiB
 ---
