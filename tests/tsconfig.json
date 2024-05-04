@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["node", "./test-env"]
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "ts-node": {
+    "files": true
+  },
+  "files": [
+    "./lib.ts", "./test-env.d.ts"
+  ]
+}

@@ -19,6 +19,7 @@
   },
   "scripts": {
     "lint": "eslint \"src/**\"",
+    "test": "ts-node --log-error --files --project ./tests/tsconfig.json ./tests/lib.ts",
     "prebuild": "rimraf dist && node ./node_modules/ts-node/dist/bin.js ./build/copyfiles.ts",
     "build": "node ./node_modules/typescript/bin/tsc ",
     "prepublishOnly": "npm run build",
