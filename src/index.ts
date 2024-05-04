@@ -126,31 +126,7 @@ export default class XDCC extends EventEmitter<GlobalMessageEvents> {
   /**
    * Change config
    */
-  config: (
-    params: Partial<
-    {
-      passivePort: number[],
-      throttle: number,
-      nickname: string,
-      chan: string[],
-      path: string | null,
-      botNameMatch: boolean,
-      retry: number,
-      timeout: number,
-      verbose: boolean,
-      randomizeNick: boolean,
-    }>) => {
-      passivePort: number[],
-      throttle: number | undefined,
-      nickname: string,
-      chan: string[],
-      path: string | boolean,
-      botNameMatch: boolean,
-      retry: number,
-      timeout: number,
-      verbose: boolean,
-      randomizeNick: boolean | undefined,
-    };
+  config: (params: Omit<Partial<ParamsDL>, 'host'|'port'>) => ParamsDL;
 
   action: (target: string, message: string) => string[];
 
