@@ -1,5 +1,7 @@
 # Changelog
-## [v5.3.0](https://github.com/jipaix/xdccjs/tree/v5.3.0)
+## [v5.4.0](https://github.com/jipaix/xdccjs/tree/v5.4.0)
+### deprecate
+* Node versions below 16.0.0 aren't supported anymore
 ### feat(lib)
 * add gecos: expose custom message to other clients in the "real name" field (WHOIS).
 * add version: expose xdccJS version (or custom message) in the "version" field (WHOIS).
@@ -151,7 +153,6 @@ params.queue = /download(.*)\d+\sout\sof\s\d+\/gi
 * download bar not rendering new lines when a download is interrupted
 ### Fix(lib)
 * cancel message/event wasn't triggered if there was no active downloads
-```
 ---
 ## [v4.5.0](https://github.com/jipaix/xdccjs/tree/v4.5.0)
 ### Fix(lib+cli)
