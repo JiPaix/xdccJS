@@ -49,7 +49,7 @@ export default class Bridge extends Downloader {
     }
   }
 
-  protected set parameters(params:Omit<ParamsDL, 'host'|'port'>) {
+  protected set parameters(params:Omit<ParamsDL, 'host'|'port'|'username'>) {
     if(this.nickname !== params.nickname) {
       if(params.randomizeNick) params.nickname = Bridge.nickRandomizer(params.nickname);
       this.nickname = params.nickname;
@@ -156,7 +156,7 @@ export default class Bridge extends Downloader {
       }
     }
 
-  config(params: Omit<Partial<ParamsDL>, 'host'|'port'>) {
+  config(params: Omit<Partial<ParamsDL>, 'host'|'port'|'username'>) {
     if (!params) return this.parameters;
     try {
       const testedParams = Bridge.checkParams({...this.parameters, ...params})
