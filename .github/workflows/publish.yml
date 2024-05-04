@@ -1,9 +1,8 @@
-name: CI
+name: publish
 on:
   push:
-    branches:
-     - main
-  pull_request:
+    tags:
+      - '*'
     branches:
       - main
 jobs:
@@ -28,7 +27,7 @@ jobs:
       node-version: ${{ matrix.node-version }}
     strategy:
       matrix:
-        node-version: ['16.x' ,"18.x", "20.x", "21.x", "22.x"]
+        node-version: ["18.x"]
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
@@ -48,10 +47,6 @@ jobs:
       with:
         node-version: "18.x"
         registry-url: 'https://registry.npmjs.org'
-    - uses: JiPaix/package-json-updated-action@v1.0.3
-      id: version-updated
-      with:
-        path: package.json
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - run: |
@@ -62,7 +57,7 @@ jobs:
         npm install
         npm run build
         npm publish
-      if: steps.version-updated.outputs.has-updated
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
 
