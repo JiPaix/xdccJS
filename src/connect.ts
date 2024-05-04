@@ -61,7 +61,7 @@ export type ParamsIRC = {
    * params.username = 'JiPaix'
    * ```
    */
-  username?: string
+  username: string
   /**
    * Channel(s) to join
    * @remark Hashtags are optional
@@ -142,7 +142,7 @@ export default class Connect extends Client {
 
   protected originalNickname: string;
 
-  protected nickRandomized?: boolean;
+  protected nickRandomized: boolean;
 
   protected port: number;
 
@@ -156,10 +156,16 @@ export default class Connect extends Client {
   protected timeout: number;
 
   private nickservPassword?: string;
+  protected gecos: string;
+  protected version: string;
+  protected username: string;
 
   constructor(params: ParamsIRC) {
     super();
+    this.gecos = params.gecos;
+    this.version = params.version;
     this.nickname = params.nickname;
+    this.username = params.username;
     this.originalNickname = this.nickname;
     this.nickRandomized = params.randomizeNick;
     this.nickservPassword = params.nickServ;
@@ -171,16 +177,15 @@ export default class Connect extends Client {
     this.host = params.host;
     this.port = params.port;
     this.tls = params.tls;
-    this.timeout = params.timeout;
+    this.timeout = params.timeout*1000;
     this.verbose = params.verbose;
     this.chan = params.chan;
-
     this.onConnect();
     this.connect({
       host: this.host,
       port: this.port,
       nick: this.nickname,
-      username: params.username || params.nickname || 'xdccJS',
+      username: params.username,
       gecos: params.gecos || 'xdccJS',
       version: params.version || `xdccJS ${packageJson.version}`,
       auto_reconnect_max_wait: 0,

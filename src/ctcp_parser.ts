@@ -46,7 +46,7 @@ export type ParamsCTCP = ParamsTimeout & {
    botNameMatch: boolean
 }
 export class CtcpParser extends AddJob {
-  protected path: string | boolean;
+  protected path: string | false;
 
   protected botNameMatch: boolean;
 
