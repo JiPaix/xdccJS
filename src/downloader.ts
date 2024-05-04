@@ -291,7 +291,7 @@ export default class Downloader extends CtcpParser {
     args.received += data.length;
 
     const elapsedTime = Date.now() - startTime;
-    const downloadSpeed = args.received / elapsedTime
+    const downloadSpeed = args.received / elapsedTime;
     const remainingData = args.fileInfo.length - args.received;
     const eta = remainingData / downloadSpeed;
 
