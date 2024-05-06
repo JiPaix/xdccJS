@@ -1,4 +1,8 @@
 # Changelog
+## [v5.4.10](https://github.com/jipaix/xdccjs/tree/v5.4.10)
+### fix
+* npm release is missing build files
+---
 ## [v5.4.9](https://github.com/jipaix/xdccjs/tree/v5.4.9)
 ### deprecate
 * Node versions below 16.0.0 aren't supported anymore
