@@ -1,5 +1,5 @@
 # Changelog
-## [v5.4.10](https://github.com/jipaix/xdccjs/tree/v5.4.10)
+## [v5.4.11](https://github.com/jipaix/xdccjs/tree/v5.4.11)
 ### fix
 * npm release is missing build files
 ---
