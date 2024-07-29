@@ -54,7 +54,7 @@
     "@types/chai": "^4.3.15",
     "@types/lodash": "^4.17.0",
     "@types/mocha": "^10.0.6",
-    "@types/node": "^20.12.8",
+    "@types/node": "^22.0.0",
     "@types/stream-throttle": "^0.1.4",
     "chai": "^5.1.0",
     "discord.js": "^14.8.0",
