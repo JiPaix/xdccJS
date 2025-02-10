@@ -59,7 +59,7 @@
     "chai": "^5.1.0",
     "discord.js": "^14.8.0",
     "dotenv": "^16.4.5",
-    "eslint": "^8.57.0",
+    "eslint": "^9.20.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "globals": "^15.1.0",
     "mocha": "^10.4.0",
